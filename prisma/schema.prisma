@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bulk_upload_batch {
+  id         String             @id @default(uuid())
+  fileName   String?
+  createdAt  DateTime           @default(now())
+  status     BulkUploadStatus   @default(PENDING)
+  itemCount  Int                @default(0)
+  errorCount Int                @default(0)
+  userId     String?
+  user       user?              @relation("UserBatches", fields: [userId], references: [id])
+  items      bulk_upload_item[]
+
+  @@index([userId], map: "bulk_upload_batch_userId_fkey")
+}
+
+model bulk_upload_item {
+  id           String               @id @default(uuid())
+  batchId      String
+  productId    String?
+  title        String
+  slug         String
+  price        Int
+  manufacturer String?
+  description  String?
+  mainImage    String?
+  categoryId   String
+  inStock      Int
+  status       BulkUploadItemStatus @default(CREATED)
+  error        String?
+  batch        bulk_upload_batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  product      product?             @relation("ProductBulkItems", fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([batchId], map: "bulk_upload_item_batchId_fkey")
+  @@index([productId], map: "bulk_upload_item_productId_fkey")
+}
+
+model category {
+  id      String    @id
+  name    String    @unique(map: "Category_name_key")
+  product product[]
+}
+
+model customer_order {
+  id          String                   @id
+  name        String
+  lastname    String
+  phone       String
+  email       String
+  company     String
+  adress      String
+  apartment   String
+  postalCode  String
+  dateTime    DateTime?                @default(now())
+  status      String
+  city        String
+  country     String
+  orderNotice String?
+  total       Int
+  products    customer_order_product[]
+}
+
+model customer_order_product {
+  id              String         @id @default(uuid())
+  customerOrderId String
+  productId       String
+  quantity        Int
+  customerOrder   customer_order @relation(fields: [customerOrderId], references: [id])
+  product         product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([customerOrderId], map: "customer_order_product_customerOrderId_fkey")
+  @@index([productId], map: "customer_order_product_productId_fkey")
+}
+
+model image {
+  imageID   String @id
+  productID String
+  image     String
+  product   product @relation(fields: [productID], references: [id], onDelete: Cascade) // Added relation
+}
+
+model merchant {
+  id          String    @id
+  name        String
+  description String?
+  email       String?
+  phone       String?
+  address     String?
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  product     product[]
+}
+
+model notification {
+  id        String                @id
+  userId    String
+  title     String
+  message   String                @db.Text
+  type      notification_type
+  isRead    Boolean               @default(false)
+  priority  notification_priority @default(NORMAL)
+  metadata  Json?
+  createdAt DateTime              @default(now())
+  updatedAt DateTime
+  user      user                  @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Notification_userId_fkey")
+
+  @@index([createdAt], map: "Notification_createdAt_idx")
+  @@index([userId], map: "Notification_userId_idx")
+  @@index([userId, isRead], map: "Notification_userId_isRead_idx")
+  @@index([userId, type], map: "Notification_userId_type_idx")
+}
+
+model product {
+  id              String                   @id
+  slug            String                   @unique(map: "Product_slug_key")
+  title           String
+  mainImage       String
+  price           Int                      @default(0)
+  rating          Int                      @default(0)
+  description     String
+  manufacturer    String
+  inStock         Int                      @default(1)
+  categoryId      String
+  merchantId      String
+  bulkUploadItems bulk_upload_item[]       @relation("ProductBulkItems")
+  customerOrders  customer_order_product[]
+  category        category                 @relation(fields: [categoryId], references: [id], onDelete: Cascade, map: "Product_categoryId_fkey")
+  merchant        merchant                 @relation(fields: [merchantId], references: [id], map: "Product_merchantId_fkey")
+  wishlist        wishlist[]
+  images          image[]
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
+  @@index([merchantId], map: "Product_merchantId_fkey")
+}
+
+model user {
+  id                String              @id @default(uuid())
+  email             String              @unique(map: "User_email_key")
+  password          String?
+  role              String?             @default("user")
+  bulkUploadBatches bulk_upload_batch[] @relation("UserBatches")
+  notification      notification[]
+  wishlist          wishlist[]
+}
+
+model wishlist {
+  id        String  @id
+  productId String
+  userId    String
+  product   product @relation(fields: [productId], references: [id], onDelete: Cascade, map: "Wishlist_productId_fkey")
+  user      user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Wishlist_userId_fkey")
+
+  @@index([productId], map: "Wishlist_productId_fkey")
+  @@index([userId], map: "Wishlist_userId_fkey")
+}
+
+enum BulkUploadStatus {
+  PENDING
+  COMPLETED
+  PARTIAL
+  FAILED
+}
+
+enum BulkUploadItemStatus {
+  CREATED
+  UPDATED
+  ERROR
+}
+
+enum notification_type {
+  ORDER_UPDATE
+  PAYMENT_STATUS
+  PROMOTION
+  SYSTEM_ALERT
+}
+
+enum notification_priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}

@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base styles for light mode */
+body {
+  @apply bg-white text-gray-900;
+}
+
+/* Dark mode styles */
+.dark body {
+  @apply bg-gray-900 text-white;
+}
+
+.range {
+  --range-shdw: #facc15;
+}
+
+.checkbox:checked,
+.checkbox[checked='true'],
+.checkbox[aria-checked='true'] {
+  background-repeat: no-repeat;
+  animation: checkmark var(--animation-input, 0.2s) ease-out;
+  background-color: #facc15;
+  background-image:
+    linear-gradient(-45deg, transparent 65%, #facc15 65.99%),
+    linear-gradient(45deg, transparent 75%, #facc15 75.99%),
+    linear-gradient(-45deg, #facc15 40%, transparent 40.99%),
+    linear-gradient(
+      45deg,
+      #facc15 30%,
+      white 30.99%,
+      white 40%,
+      transparent 40.99%
+    ),
+    linear-gradient(-45deg, white 50%, #facc15 50.99%);
+}
+
+/* Grilli Common Styles */
+.btn {
+  position: relative;
+  color: var(--gold-crayola, #5e4c03); /* Tailwind yellow-500 */
+  font-size: 1.2rem; /* label-2 */
+  font-weight: 700; /* weight-bold */
+  text-transform: uppercase;
+  letter-spacing: 3px; /* letterSpacing-5 */
+  max-width: max-content;
+  border: 2px solid var(--gold-crayola, #000000);
+  padding: 12px 45px;
+  overflow: hidden;
+  z-index: 1;
+  display: block;
+  margin-inline: auto;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200%;
+  height: 200%;
+  border-radius: 50%; /* radius-circle */
+  background-color: var(--gold-crayola, #c9b567);
+  transition: all 0.25s ease; /* transition-2 */
+  z-index: -1;
+}
+
+.btn .text {
+  transition: all 0.25s ease;
+} /* transition-1 */
+
+.btn .text-2 {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: max-content;
+  color: var(--smoky-black-1, #0d0d0d); /* Tailwind black or very dark gray */
+}
+
+.btn:hover::before,
+.btn:focus-visible::before {
+  bottom: -50%;
+}
+
+.btn:hover .text-1,
+.btn:focus-visible .text-1 {
+  transform: translateY(-40px);
+}
+
+.btn:hover .text-2,
+.btn:focus-visible .text-2 {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Hero Button specific styles */
+.hero-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gold-crayola, #5a4a0b);
+  border-radius: 50%;
+  animation: rotate360 15s linear infinite;
+}
+
+@keyframes rotate360 {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+/* Slider reveal animations */
+@keyframes sliderReveal {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-sliderReveal {
+  transform: translateY(30px);
+  opacity: 0;
+  animation: sliderReveal 1s ease forwards;
+}
+
+/* Smooth scale for background image */
+@keyframes smoothScale {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-smoothScale {
+  animation: smoothScale 7s linear forwards;
+}
+
+/* New animation for floating shapes */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(5deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(15px) rotate(-5deg); }
+}
+.animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
+
+.section-subtitle::after {
+  content: url('/images/separator.svg'); /* Assuming separator.svg is in public/images */
+  display: block;
+  width: 100px;
+  margin-inline: auto;
+  margin-block-start: 5px;
+}
+
+.hover-underline {
+  position: relative;
+  max-width: max-content;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 5px;
+  border-block: 1px solid var(--gold-crayola, #facc15);
+  transform: scaleX(0.2);
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.hover-underline:is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+.contact-number::after {
+  bottom: -5px;
+}
