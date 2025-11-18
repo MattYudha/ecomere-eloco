@@ -87,7 +87,7 @@ model image {
 }
 
 model merchant {
-  id          String    @id
+  id          String    @id @default(uuid())
   name        String
   description String?
   email       String?
@@ -95,7 +95,7 @@ model merchant {
   address     String?
   status      String    @default("ACTIVE")
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime  @updatedAt
   product     product[]
 }
 

@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import Link from "next/link";
@@ -15,9 +16,13 @@ export default function NewMerchantPage() {
     description: "",
     status: "ACTIVE",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
+  // --------------------------
+  // HANDLE INPUT CHANGE
+  // --------------------------
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -27,30 +32,29 @@ export default function NewMerchantPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // --------------------------
+  // HANDLE SUBMIT
+  // --------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       toast.error("Merchant name is required");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const response = await apiClient.post("/api/merchants", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // ⚠️ FIX: axios tidak pakai method/body seperti fetch  
+      const response = await apiClient.post("/api/merchants", formData);
 
-      if (!response.ok) {
-        throw new Error("Failed to create merchant");
-      }
-
-      const data = await response.json();
       toast.success("Merchant created successfully");
-      router.push(`/admin/merchant/${data.id}`);
+
+      const newMerchant = await response.json();
+
+      // Redirect ke halaman detail
+      router.push(`/admin/merchant/${newMerchant.id}`);
     } catch (error) {
       console.error("Error creating merchant:", error);
       toast.error("Failed to create merchant");
@@ -62,7 +66,7 @@ export default function NewMerchantPage() {
   return (
     <div className="flex h-screen">
       <DashboardSidebar />
-      <div className="flex-1 p-10 overflow-y-auto">
+      <div className="flex-1 p-10 overflow-y-auto bg-gradient-to-br from-gray-100 to-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Add New Merchant</h1>
           <Link
@@ -73,8 +77,10 @@ export default function NewMerchantPage() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white/80 rounded-lg shadow-xl p-6 backdrop-blur-lg border border-gray-200">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* NAME */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">Name</label>
               <input
@@ -87,6 +93,8 @@ export default function NewMerchantPage() {
                 placeholder="Merchant name"
               />
             </div>
+
+            {/* EMAIL */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">Email</label>
               <input
@@ -98,6 +106,8 @@ export default function NewMerchantPage() {
                 placeholder="email@example.com"
               />
             </div>
+
+            {/* PHONE */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">Phone</label>
               <input
@@ -109,6 +119,8 @@ export default function NewMerchantPage() {
                 placeholder="Phone number"
               />
             </div>
+
+            {/* STATUS */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">Status</label>
               <select
@@ -121,6 +133,8 @@ export default function NewMerchantPage() {
                 <option value="INACTIVE">Inactive</option>
               </select>
             </div>
+
+            {/* ADDRESS */}
             <div className="md:col-span-2">
               <label className="block text-gray-700 font-medium mb-2">Address</label>
               <input
@@ -132,6 +146,8 @@ export default function NewMerchantPage() {
                 placeholder="Merchant address"
               />
             </div>
+
+            {/* DESCRIPTION */}
             <div className="md:col-span-2">
               <label className="block text-gray-700 font-medium mb-2">Description</label>
               <textarea
@@ -142,17 +158,20 @@ export default function NewMerchantPage() {
                 placeholder="Enter merchant description"
               ></textarea>
             </div>
+
+            {/* SUBMIT BUTTON */}
             <div className="md:col-span-2">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
-                className={`bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition ${
+                className={`bg-blue-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 ${
                   isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >
                 {isSubmitting ? "Creating..." : "Create Merchant"}
               </button>
             </div>
+
           </form>
         </div>
       </div>

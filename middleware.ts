@@ -1,11 +1,16 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import { withAuth, type NextAuthRequest } from "next-auth/middleware";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { createHash } from "crypto";
 
 // Hashes a string using SHA-256
-function hash(data: string): string {
-  return createHash("sha256").update(data).digest("hex");
+async function hash(data: string): Promise<string> {
+  const textEncoder = new TextEncoder();
+  const dataBuffer = textEncoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hexHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hexHash;
 }
 
 async function logVisitor(req: NextRequest) {
@@ -16,7 +21,8 @@ async function logVisitor(req: NextRequest) {
   }
 
   try {
-    const ip = req.ip ?? req.headers.get("x-forwarded-for") ?? "unknown";
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : "unknown";
     const userAgent = req.headers.get("user-agent") ?? "unknown";
 
     // Simple bot detection
@@ -24,7 +30,7 @@ async function logVisitor(req: NextRequest) {
       return;
     }
     
-    const ipHash = hash(ip);
+    const ipHash = await hash(ip);
     
     // Fire-and-forget the database call
     prisma.visitorLog.create({
@@ -43,7 +49,7 @@ async function logVisitor(req: NextRequest) {
 
 
 export default withAuth(
-  async function middleware(req: NextRequest) {
+  async function middleware(req: NextAuthRequest) {
     // We run the visitor logging logic and auth logic.
     // We don't await logVisitor to avoid blocking the request.
     logVisitor(req);
