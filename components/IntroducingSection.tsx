@@ -121,7 +121,7 @@ const IntroducingSection = () => {
       <div className="absolute bottom-0 right-0 w-40 h-40 border-b-2 border-r-2 border-[#cb6112]/30"></div>
 
       {/* Decorative Images */}
-      <img src="/assets/shape-5.png" alt="Decorative Shape 5" className="absolute top-1/4 left-10 w-96 h-96 object-contain opacity-40 animate-float-slow z-0 max-md:hidden" />
+      <img src="/assets/shape-5.png" alt="Decorative Shape 5" className="absolute top-1/4 left-10 w-[700px] h-[700px] object-contain opacity-40 animate-float-slow z-0 max-md:hidden" />
       <img src="/assets/shape-6.png" alt="Decorative Shape 6" className="absolute bottom-1/4 right-10 w-96 h-96 object-contain opacity-40 animate-float-slow delay-500 z-0 max-md:hidden" />
 
       {/* Main Content */}
@@ -275,6 +275,8 @@ const IntroducingSection = () => {
         }
         .animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
       `}</style>
+      {/* Smooth transition gradient to the next section */}
+      <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent z-20"></div>
     </div>
   );
 };

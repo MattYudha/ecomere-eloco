@@ -46,3 +46,4 @@ export { default as OrderItem } from "./OrderItem";
 export { default as NotificationBell } from "./NotificationBell";
 export { default as NotificationCard } from "./NotificationCard";
 export { default as BulkUploadHistory } from "./BulkUploadHistory";
+export { default as SalesChart } from "./SalesChart";

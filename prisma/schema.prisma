@@ -146,6 +146,7 @@ model user {
   email             String              @unique(map: "User_email_key")
   password          String?
   role              String?             @default("user")
+  createdAt         DateTime            @default(now())
   bulkUploadBatches bulk_upload_batch[] @relation("UserBatches")
   notification      notification[]
   wishlist          wishlist[]
@@ -187,4 +188,14 @@ enum notification_priority {
   NORMAL
   HIGH
   URGENT
+}
+
+model VisitorLog {
+  id        String   @id @default(uuid())
+  ipHash    String
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ipHash])
 }

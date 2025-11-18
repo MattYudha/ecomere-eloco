@@ -57,16 +57,18 @@ const newCategories = [
 const CategoryMenu = () => {
   return (
     <div
-      className="relative py-24 bg-cover bg-center overflow-hidden"
+      className="relative py-32 bg-cover bg-center overflow-hidden min-h-[90vh]"
       style={{ backgroundImage: "url('/footer-bg.jpg')" }}
     >
       {/* 1. Overlay Gradient (Seperti IntroducingSection) */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/70 to-black/80"></div>
-      
-      {/* 2. Grid Pattern Overlay (Seperti IntroducingSection) */}
+      <div className="absolute top-20 left-10 w-96 h-96 bg-[#cb6112]/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       <div className="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(203,97,18,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(203,97,18,0.1)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+      <div className="absolute top-0 left-0 w-40 h-40 border-t-2 border-l-2 border-[#cb6112]/30"></div>
+      <div className="absolute bottom-0 right-0 w-40 h-40 border-b-2 border-r-2 border-[#cb6112]/30"></div>
 
-      <div className="relative z-10 max-w-screen-xl mx-auto px-6">
+      <div className="relative z-10 max-w-screen-xl mx-auto px-6 pt-20">
         
         {/* 3. Judul yang Di-improve (Seperti IntroducingSection) */}
         <h2 className="text-white text-5xl md:text-7xl font-extrabold text-center mb-16 font-forum leading-tight animate-slide-up">
@@ -140,6 +142,8 @@ const CategoryMenu = () => {
         .animate-slide-up { animation: slide-up 0.8s ease-out; }
         .animate-glow-new { animation: glow-new 2s ease-in-out infinite; }
       `}</style>
+      {/* Smooth transition gradient to the next section */}
+      <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent z-20"></div>
     </div>
   );
 };

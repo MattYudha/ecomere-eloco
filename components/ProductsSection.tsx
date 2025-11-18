@@ -56,20 +56,20 @@ const ProductsSection = () => {
   return (
     <div
       id="featured-products" // Added ID for scrolling
-      className="relative border-t-2 border-b-2 border-grilli-gold bg-cover bg-center bg-white dark:bg-gray-800"
+      className="relative bg-cover bg-center bg-white dark:bg-gray-800"
       style={{ backgroundImage: "url('/footer-bg.jpg')" }}
     >
       <div className="absolute inset-0 bg-black opacity-60"></div>
       {/* Decorative Images */}
       <img src="/assets/shape-1.png" alt="Decorative Shape 1" className="absolute top-1/4 left-0 w-80 h-80 object-contain opacity-40 animate-float-slow z-0 max-md:hidden" />
-      <img src="/assets/shape-2.png" alt="Decorative Shape 2" className="absolute bottom-1/4 right-20 w-64 h-64 object-contain opacity-30 animate-float-slow delay-500 z-0 max-md:hidden" />
+      <img src="/assets/shape-2.png" alt="Decorative Shape 2" className="absolute bottom-1/4 right-20 w-[400px] h-[400px] object-contain opacity-30 animate-float-slow delay-500 z-0 max-md:hidden" />
 
       <div className="relative max-w-screen-2xl mx-auto pt-20">
         <Heading
           title="FEATURED PRODUCTS"
-          className="text-black dark:text-white"
+          className="text-black dark:text-white transform translate-y-[-120px] font-bold drop-shadow-sm"
         />
-        <div className="grid grid-cols-4 justify-items-center max-w-screen-2xl mx-auto py-10 gap-x-2 px-10 gap-y-8 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
+        <div className="grid grid-cols-4 justify-items-center max-w-screen-2xl mx-auto py-10 gap-x-2 px-10 gap-y-8 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 transform translate-y-[-80px]">
           {products.length > 0 ? (
             products.map((product: any) => (
               <ProductItem key={product.id} product={product} color="white" />
@@ -81,6 +81,8 @@ const ProductsSection = () => {
           )}
         </div>
       </div>
+      {/* Smooth transition gradient to the footer */}
+      <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent z-20"></div>
     </div>
   );
 };
