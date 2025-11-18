@@ -1,5 +1,5 @@
-import { withAuth, type NextAuthRequest } from "next-auth/middleware";
-import { NextResponse, NextRequest } from "next/server";
+import { withAuth } from "next-auth/middleware";
+import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { createHash } from "crypto";
 
@@ -49,10 +49,10 @@ async function logVisitor(req: NextRequest) {
 
 
 export default withAuth(
-  async function middleware(req: NextAuthRequest) {
+  async function middleware(req) {
     // We run the visitor logging logic and auth logic.
     // We don't await logVisitor to avoid blocking the request.
-    logVisitor(req);
+    logVisitor(req as NextRequest);
 
     // Existing authentication logic for admin routes
     if (req.nextUrl.pathname.startsWith("/admin")) {

@@ -35,7 +35,7 @@ export default async function RootLayout({
           <ThemeProvider>
             <Providers> {/* This now only contains Toaster */}
               <SessionTimeoutWrapper />
-              <Header user={session?.user as user | null} />
+              <Header />
               <div className="pt-[80px] relative z-10 mb-20">
                 {children}
               </div>

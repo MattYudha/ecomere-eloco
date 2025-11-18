@@ -19,13 +19,11 @@ import ThemeToggle from "./ThemeToggle"; // Added import for ThemeToggle
 import { useRef } from "react"; // Import useRef
 import { Session } from "next-auth"; // Import Session type
 
-interface HeaderProps {
-  user: user | null;
-}
+interface HeaderProps {}
 
 const HEADER_TOP_HEIGHT = 0; // Approximate height of the top bar in pixels
 
-const Header = ({ user }: HeaderProps) => {
+const Header = ({}: HeaderProps) => {
   const { data: session } = useSession() as { data: Session | null };
   const router = useRouter();
   const pathname = usePathname();
@@ -103,7 +101,7 @@ const Header = ({ user }: HeaderProps) => {
               </Link>
             )}
             {/* Notification Bell - Desktop */}
-            {user && <NotificationBell />}
+            <NotificationBell />
 
             {/* User Dropdown / Login-Register - Desktop */}
             {session?.user ? (
