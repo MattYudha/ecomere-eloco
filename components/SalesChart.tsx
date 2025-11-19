@@ -3,18 +3,23 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// Data penjualan dummy untuk 7 hari terakhir
-const salesData = [
-  { name: 'Day 1', revenue: 4000 },
-  { name: 'Day 2', revenue: 3000 },
-  { name: 'Day 3', revenue: 2000 },
-  { name: 'Day 4', revenue: 2780 },
-  { name: 'Day 5', revenue: 1890 },
-  { name: 'Day 6', revenue: 2390 },
-  { name: 'Day 7', revenue: 3490 },
-];
+interface SalesChartProps {
+  data?: { name: string; revenue: number }[];
+  loading: boolean;
+}
 
-const SalesChart = () => {
+const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
+  if (loading) {
+    return (
+      <div className="w-full h-96 flex flex-col justify-center items-center gap-y-2
+                      bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
+                      dark:bg-black/20 dark:border-gray-700 mt-4">
+        <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
+        <p>Loading chart...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-96 flex flex-col justify-center items-center gap-y-2
                     bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
@@ -22,7 +27,7 @@ const SalesChart = () => {
       <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={salesData}
+          data={data}
           margin={{
             top: 5,
             right: 30,

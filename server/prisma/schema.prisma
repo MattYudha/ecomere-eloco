@@ -62,6 +62,7 @@ model Customer_order {
   apartment   String
   postalCode  String
   dateTime    DateTime?                @default(now())
+  updatedAt   DateTime                 @updatedAt
   status      String
   city        String
   country     String

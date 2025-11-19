@@ -9,10 +9,19 @@ export type ProductInCart = {
   amount: number;
 };
 
+export type WishlistedProduct = {
+  id: string;
+  slug: string;
+  title: string;
+  mainImage: string; // Ensure this is always a string for wishlisted products
+  price: number;
+};
+
 export type State = {
   products: ProductInCart[];
   allQuantity: number;
   total: number;
+  wishlist: WishlistedProduct[];
 };
 
 export type Actions = {
@@ -21,14 +30,20 @@ export type Actions = {
   updateCartAmount: (id: string, quantity: number) => void;
   calculateTotals: () => void;
   clearCart: () => void;
+  setWishlist: (products: WishlistedProduct[]) => void;
+  addToWishlistLocal: (product: WishlistedProduct) => void;
+  removeFromWishlistLocal: (productId: string) => void;
+  isProductInWishlist: (productId: string) => boolean;
+  clearWishlist: () => void;
 };
 
 export const useProductStore = create<State & Actions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       products: [],
       allQuantity: 0,
       total: 0,
+      wishlist: [],
       addToCart: (newProduct) => {
         set((state) => {
           const cartItem = state.products.find(
@@ -98,6 +113,22 @@ export const useProductStore = create<State & Actions>()(
           return { products: [...state.products] };
         });
       },
+      // Wishlist actions
+      setWishlist: (products) => set({ wishlist: products }),
+      addToWishlistLocal: (product) => {
+        set((state) => ({
+          wishlist: [...state.wishlist, product],
+        }));
+      },
+      removeFromWishlistLocal: (productId) => {
+        set((state) => ({
+          wishlist: state.wishlist.filter((product) => product.id !== productId),
+        }));
+      },
+      isProductInWishlist: (productId) => {
+        return get().wishlist.some((product) => product.id === productId);
+      },
+      clearWishlist: () => set({ wishlist: [] }),
     }),
     {
       name: "products-storage", // name of the item in the storage (must be unique)

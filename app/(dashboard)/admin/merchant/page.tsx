@@ -13,7 +13,7 @@ interface Merchant {
   address: string | null;
   description: string | null;
   status: string;
-  products: any[];
+  product: any[]; // Changed from products to product
 }
 
 export default function MerchantPage() {
@@ -87,7 +87,7 @@ export default function MerchantPage() {
                         {merchant.status}
                       </span>
                     </td>
-                    <td className="py-4">{merchant.products.length}</td>
+                    <td className="py-4">{merchant.product.length}</td>
                     <td className="py-4">
                       <Link
                         href={`/admin/merchant/${merchant.id}`}

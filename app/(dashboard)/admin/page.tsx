@@ -14,6 +14,7 @@ interface DashboardStats {
   orders: StatData;
   customers: StatData;
   visitors: StatData;
+  weeklySales: { name: string; revenue: number }[];
 }
 
 const AdminDashboardPage = () => {
@@ -98,7 +99,7 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Grafik Penjualan Mingguan */}
-        <SalesChart />
+        <SalesChart data={stats?.weeklySales} loading={loading} />
 
       </div>
     </div>

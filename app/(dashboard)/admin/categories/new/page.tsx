@@ -24,13 +24,23 @@ const DashboardNewCategoryPage = () => {
         name: name, // Send the raw name
       });
 
-      if (response.status === 201) {
+      if (response.ok) { // Check if the response was successful (2xx status)
         toast.success("Category added successfully!");
         setName("");
-        router.push("/admin/categories"); // Redirect back to the list
+        router.push("/admin/categories");
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "There was an error creating the category.");
+        let errorBody = "There was an error creating the category.";
+        try {
+          const errorData = await response.json();
+          // Prioritize 'message' from our API response, fallback to 'error' or a generic message
+          errorBody = errorData.message || errorData.error || errorBody;
+        } catch (jsonError) {
+          // If response.json() fails, it means the body was not valid JSON
+          // We can try to read it as text if needed for debugging, or stick to generic message
+          console.error("Failed to parse error response as JSON:", jsonError);
+          // errorBody remains the generic message
+        }
+        toast.error(errorBody);
       }
     } catch (error) {
       console.error("Error creating category:", error);

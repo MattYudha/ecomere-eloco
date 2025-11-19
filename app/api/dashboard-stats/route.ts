@@ -9,6 +9,12 @@ const calculatePercentageChange = (current: number, previous: number) => {
   return ((current - previous) / previous) * 100;
 };
 
+// Interface for weekly sales data objects
+interface WeeklySaleData {
+  name: string;
+  revenue?: number; // revenue is added later, so it's optional initially
+}
+
 export async function GET() {
   try {
     // 1. Define date ranges for today and yesterday
@@ -27,11 +33,11 @@ export async function GET() {
         total: true,
       },
       where: {
-        dateTime: {
+        updatedAt: {
           gte: today,
           lt: tomorrow,
         },
-        status: "COMPLETED",
+        status: "DELIVERED",
       },
     });
 
@@ -69,11 +75,11 @@ export async function GET() {
         total: true,
       },
       where: {
-        dateTime: {
+        updatedAt: {
           gte: yesterday,
           lt: today,
         },
-        status: "COMPLETED",
+        status: "DELIVERED",
       },
     });
 
@@ -105,6 +111,36 @@ export async function GET() {
       },
     });
 
+    // --- Weekly Revenue Calculation ---
+    const weeklyRevenuePromises = [];
+    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weeklySalesData: WeeklySaleData[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const day = new Date();
+      day.setDate(today.getDate() - i);
+      day.setHours(0, 0, 0, 0);
+
+      const nextDay = new Date(day);
+      nextDay.setDate(day.getDate() + 1);
+
+      const promise = prisma.customer_order.aggregate({
+        _sum: {
+          total: true,
+        },
+        where: {
+          updatedAt: {
+            gte: day,
+            lt: nextDay,
+          },
+          status: "DELIVERED",
+        },
+      });
+      weeklyRevenuePromises.push(promise);
+      weeklySalesData.push({ name: dayLabels[day.getDay()] });
+    }
+    // --- End of Weekly Revenue Calculation ---
+
     // 4. Execute all promises in parallel
     const [
       todayRevenueResult,
@@ -115,6 +151,7 @@ export async function GET() {
       yesterdayOrders,
       yesterdayCustomers,
       yesterdayVisitorsGroups,
+      ...weeklyRevenueResults
     ] = await Promise.all([
       todayRevenuePromise,
       todayOrdersPromise,
@@ -124,6 +161,7 @@ export async function GET() {
       yesterdayOrdersPromise,
       yesterdayCustomersPromise,
       yesterdayVisitorsPromise,
+      ...weeklyRevenuePromises,
     ]);
 
     // 5. Process results and calculate percentages
@@ -132,6 +170,11 @@ export async function GET() {
 
     const todayVisitors = todayVisitorsGroups.length;
     const yesterdayVisitors = yesterdayVisitorsGroups.length;
+
+    // Process weekly revenue
+    weeklyRevenueResults.forEach((result, index) => {
+      weeklySalesData[index].revenue = result._sum.total || 0;
+    });
 
     const stats = {
       revenue: {
@@ -150,6 +193,7 @@ export async function GET() {
         value: todayVisitors,
         change: calculatePercentageChange(todayVisitors, yesterdayVisitors),
       },
+      weeklySales: weeklySalesData,
     };
 
     return NextResponse.json(stats);

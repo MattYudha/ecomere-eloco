@@ -176,37 +176,39 @@ const CheckoutPage = () => {
       // Check if response is ok before parsing
       if (!response.ok) {
         console.error("❌ Response not OK:", response.status, response.statusText);
-        const errorText = await response.text();
-        console.error("Error response body:", errorText);
         
-        // Try to parse as JSON to get detailed error info
+        // --- START DEBUGGING BLOCK ---
+        // Clone the response to be able to read it twice
+        const clonedResponse = response.clone();
         try {
-          const errorData = JSON.parse(errorText);
-          console.error("Parsed error data:", errorData);
-          
-          // Handle different error types
-          if (response.status === 409) {
-            // Duplicate order error
-            toast.error(errorData.details || errorData.error || "Duplicate order detected");
-            return; // Don't throw, just return to stop execution
-          } else if (errorData.details && Array.isArray(errorData.details)) {
-            // Validation errors
-            errorData.details.forEach((detail: any) => {
-              toast.error(`${detail.field}: ${detail.message}`);
-            });
-          } else if (typeof errorData.details === 'string') {
-            // Single error message in details
-            toast.error(errorData.details);
-          } else {
-            // Fallback error message
-            toast.error(errorData.error || "Order creation failed");
-          }
-        } catch (parseError) {
-          console.error("Could not parse error as JSON:", parseError);
-          toast.error("Order creation failed. Please try again.");
+            const rawErrorText = await clonedResponse.text();
+            console.log("📄 RAW SERVER ERROR RESPONSE:", rawErrorText);
+        } catch (e) {
+            console.error("Could not get raw text from error response.");
         }
-        
-        return; // Stop execution instead of throwing
+        // --- END DEBUGGING BLOCK ---
+
+        let errorData = { error: "Order creation failed", details: "Please try again." };
+        try {
+          // Try to get detailed error information from the server
+          errorData = await response.json();
+        } catch (jsonError) {
+          console.error("Could not parse error as JSON:", jsonError);
+        }
+
+        console.error("Parsed error data:", errorData);
+
+        // Handle different error types
+        if (response.status === 409) {
+          toast.error(errorData.details || errorData.error);
+        } else if (errorData.details && Array.isArray(errorData.details)) {
+          errorData.details.forEach((detail: any) => {
+            toast.error(`${detail.field}: ${detail.message}`);
+          });
+        } else {
+          toast.error(errorData.error || "An unexpected error occurred.");
+        }
+        return; // Stop execution
       }
 
       const data = await response.json();

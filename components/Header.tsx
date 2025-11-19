@@ -114,7 +114,7 @@ const Header = ({}: HeaderProps) => {
                   <span className="hidden lg:block">{session.user.name}</span>
                 </div>
                 <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dark:bg-gray-800 ${isDropdownOpen ? 'block' : 'hidden'}`}>
-                  {user?.role === "ADMIN" && (
+                  {session?.user?.role === "ADMIN" && (
                     <Link
                       href="/admin"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"

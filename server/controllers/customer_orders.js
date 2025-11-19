@@ -161,6 +161,7 @@ async function createCustomerOrder(request, response) {
     }
 
     // Generic error response
+    console.error("🔥 UNHANDLED ERROR in createCustomerOrder:", error);
     return response.status(500).json({ 
       error: "Internal server error",
       details: "Failed to create order. Please try again later."

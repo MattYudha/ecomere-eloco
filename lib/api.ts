@@ -4,7 +4,15 @@ export const apiClient = {
   baseUrl: config.apiBaseUrl,
   
   async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseUrl}${endpoint}`;
+    let url: string;
+
+    // If the endpoint starts with '/api/', it's a Next.js API route (relative to the frontend)
+    // Otherwise, it's for the custom Express server (use baseUrl)
+    if (endpoint.startsWith('/api/')) {
+      url = endpoint; // Use relative path for Next.js API routes
+    } else {
+      url = `${this.baseUrl}${endpoint}`; // Use baseUrl for custom server routes
+    }
     
     const defaultOptions: RequestInit = {
       headers: {

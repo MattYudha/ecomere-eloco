@@ -1,4 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
+const { sendMail } = require('./mail.js');
+const fs = require('fs').promises;
+const path = require('path');
 
 const prisma = new PrismaClient();
 
@@ -78,6 +81,37 @@ const createOrderUpdateNotification = async (userId, orderStatus, orderId, total
         }
       }
     });
+
+    // If order is delivered, send a professional email
+    if (orderStatus.toLowerCase() === 'delivered') {
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        if (user && user.email) {
+          const emailTemplatePath = path.join(__dirname, '..', 'templates', 'orderDelivered.html');
+          let htmlContent = await fs.readFile(emailTemplatePath, 'utf-8');
+
+          htmlContent = htmlContent
+            .replace('{{userName}}', user.name || 'Valued Customer')
+            .replace('{{orderId}}', orderId)
+            .replace('{{totalAmount}}', totalAmount ? totalAmount.toFixed(2) : 'N/A')
+            .replace('{{shopUrl}}', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+            .replace('{{currentYear}}', new Date().getFullYear());
+
+          await sendMail({
+            to: user.email,
+            subject: `Your Order #${orderId} Has Been Delivered!`,
+            html: htmlContent,
+          });
+          console.log(`📧 Delivered email notification sent to ${user.email}`);
+        }
+      } catch (emailError) {
+        console.error('❌ Failed to send "delivered" email:', emailError);
+        // Do not block the response for email errors
+      }
+    }
 
     console.log(`✅ Notification created for user ${userId}: ${statusInfo.title}`);
     return notification;

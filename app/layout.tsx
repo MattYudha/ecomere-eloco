@@ -10,6 +10,7 @@ import Providers from "@/Providers";
 import SessionTimeoutWrapper from "@/components/SessionTimeoutWrapper";
 import { ThemeProvider } from "@/context/ThemeContext"; // Import ThemeProvider
 import { user } from "@prisma/client"; // Import the user type
+import WishlistLoader from "@/components/WishlistLoader"; // Import WishlistLoader
 
 const inter = Inter({ subsets: ["latin"] });
 const forum = Forum({ subsets: ["latin"], weight: "400", variable: '--font-forum' });
@@ -37,7 +38,9 @@ export default async function RootLayout({
               <SessionTimeoutWrapper />
               <Header />
               <div className="pt-[80px] relative z-10 mb-20">
-                {children}
+                <WishlistLoader>
+                  {children}
+                </WishlistLoader>
               </div>
               <Footer />
             </Providers>
