@@ -115,11 +115,9 @@ const DashboardProductTable = () => {
 
           {/* Add Button */}
           <Link href="/admin/products/new">
-            <button
-              className="group relative overflow-hidden rounded-xl backdrop-blur-sm bg-slate-900 px-6 py-3 border border-slate-800 shadow-[0_4px_16px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
-            >
+            <button className="group relative overflow-hidden rounded-xl backdrop-blur-sm bg-slate-900 px-6 py-3 border border-slate-800 shadow-[0_4px_16px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-0.5">
               <div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"
                 style={{ transition: 'transform 0.8s, opacity 0.5s' }}
               />
 
@@ -235,9 +233,7 @@ const DashboardProductTable = () => {
                     {/* Stock Status */}
                     <td className="px-6 py-5">
                       {product?.inStock ? (
-                        <span
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100/80 backdrop-blur-sm border border-emerald-200/60 text-emerald-800 text-sm font-medium"
-                        >
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100/80 backdrop-blur-sm border border-emerald-200/60 text-emerald-800 text-sm font-medium">
                           <svg
                             className="w-4 h-4"
                             fill="currentColor"
@@ -252,9 +248,7 @@ const DashboardProductTable = () => {
                           In Stock
                         </span>
                       ) : (
-                        <span
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-100/80 backdrop-blur-sm border border-red-200/60 text-red-800 text-sm font-medium"
-                        >
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-100/80 backdrop-blur-sm border border-red-200/60 text-red-800 text-sm font-medium">
                           <svg
                             className="w-4 h-4"
                             fill="currentColor"
@@ -281,9 +275,7 @@ const DashboardProductTable = () => {
                     {/* Actions */}
                     <td className="px-6 py-5 text-right">
                       <Link href={`/admin/products/${product.id}`}>
-                        <button
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-sm bg-white/60 border border-white/60 hover:bg-white/80 hover:shadow-md text-slate-700 hover:text-slate-900 font-medium text-sm transition-all duration-200"
-                        >
+                        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-sm bg-white/60 border border-white/60 hover:bg-white/80 hover:shadow-md text-slate-700 hover:text-slate-900 font-medium text-sm transition-all duration-200">
                           <svg
                             className="w-4 h-4"
                             fill="none"

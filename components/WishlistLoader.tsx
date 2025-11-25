@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useProductStore } from "../app/_zustand/store";
-import apiClient from "@/lib/api";
-import toast from "react-hot-toast";
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useProductStore } from '../app/_zustand/store';
+import apiClient from '@/lib/api';
+import toast from 'react-hot-toast';
 
 interface WishlistLoaderProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ const WishlistLoader: React.FC<WishlistLoaderProps> = ({ children }) => {
 
   useEffect(() => {
     const fetchAndSetWishlist = async () => {
-      if (status === "loading") {
+      if (status === 'loading') {
         // Session is still loading, do nothing
         return;
       }
@@ -24,22 +24,26 @@ const WishlistLoader: React.FC<WishlistLoaderProps> = ({ children }) => {
       if (session?.user) {
         // User is logged in, fetch wishlist
         try {
-          const response = await apiClient.get("/api/wishlist");
+          const response = await apiClient.get('/api/wishlist');
           if (!response.ok) {
-            let errorMessage = "Failed to fetch wishlist.";
+            let errorMessage = 'Failed to fetch wishlist.';
             try {
               const errorData = await response.json();
-              errorMessage = errorData.error || errorData.details || errorMessage;
+              errorMessage =
+                errorData.error || errorData.details || errorMessage;
             } catch (jsonError) {
-              console.warn("Could not parse error response as JSON:", jsonError);
+              console.warn(
+                'Could not parse error response as JSON:',
+                jsonError,
+              );
             }
             throw new Error(errorMessage);
           }
           const data = await response.json();
           setWishlist(data); // Set wishlist in Zustand store
         } catch (error) {
-          console.error("[WISHLIST_LOADER_ERROR]", error);
-          toast.error("Failed to load your wishlist.");
+          console.error('[WISHLIST_LOADER_ERROR]', error);
+          toast.error('Failed to load your wishlist.');
           clearWishlist(); // Clear wishlist if fetching fails
         }
       } else {

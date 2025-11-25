@@ -1,16 +1,18 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class', // Added for dark mode functionality
   theme: {
     extend: {
       colors: {
-        'custom-yellow':'#FED700',
+        brand: '#cb6112',
+        'dark-bg': '#0f172a',
+        'custom-yellow': '#FED7700',
         'eerie-black-1': '#1A1A1A',
         'eerie-black-2': '#121212',
         'grilli-gold': '#DCCA87',
@@ -18,15 +20,19 @@ const config: Config = {
         'grilli-white': '#FFFFFF',
         'grilli-text': '#AAAAAA',
         'grilli-gray': '#808080',
-        'cream': '#F5F5DC',
+        cream: '#F5F5DC',
         'smoky-black-grilli': '#0F0E0D',
       },
       fontFamily: {
         forum: ['var(--font-forum)'],
         'dm-sans': ['var(--font-dm-sans)'],
-      }
+      },
     },
-  },  
-  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms"), require("daisyui")],
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('daisyui'),
+  ],
 };
 export default config;

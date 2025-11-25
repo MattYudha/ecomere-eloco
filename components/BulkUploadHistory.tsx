@@ -8,9 +8,9 @@
 // Output: list of bulk upload batches with details
 // *********************
 
-"use client";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+'use client';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -18,7 +18,7 @@ import {
   FaFileAlt,
   FaTrash,
   FaExclamationTriangle,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 
 interface BatchHistory {
   id: string;
@@ -51,17 +51,17 @@ const BulkUploadHistory = () => {
   const fetchBatchHistory = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3001/api/bulk-upload");
+      const response = await fetch('http://localhost:3001/api/bulk-upload');
 
       if (response.ok) {
         const data = await response.json();
         setBatches(data.batches || []);
       } else {
-        setError("Failed to load batch history");
+        setError('Failed to load batch history');
       }
     } catch (err) {
-      console.error("Error fetching batch history:", err);
-      setError("Network error occurred");
+      console.error('Error fetching batch history:', err);
+      setError('Network error occurred');
     } finally {
       setLoading(false);
     }
@@ -83,21 +83,21 @@ const BulkUploadHistory = () => {
       const response = await fetch(
         `http://localhost:3001/api/bulk-upload/${batchToDelete.id}?deleteProducts=${deleteProducts}`,
         {
-          method: "DELETE",
-        }
+          method: 'DELETE',
+        },
       );
 
       // Check if response has content before parsing JSON
       let data = null;
-      const contentType = response.headers.get("content-type");
+      const contentType = response.headers.get('content-type');
 
-      if (contentType && contentType.includes("application/json")) {
+      if (contentType && contentType.includes('application/json')) {
         const text = await response.text();
         if (text) {
           try {
             data = JSON.parse(text);
           } catch (e) {
-            console.error("Failed to parse JSON:", text);
+            console.error('Failed to parse JSON:', text);
           }
         }
       }
@@ -105,19 +105,19 @@ const BulkUploadHistory = () => {
       if (response.ok) {
         toast.success(
           deleteProducts
-            ? "Batch and products deleted successfully!"
-            : "Batch deleted successfully (products kept)"
+            ? 'Batch and products deleted successfully!'
+            : 'Batch deleted successfully (products kept)',
         );
         // Refresh list
         await fetchBatchHistory();
       } else {
         toast.error(
-          data?.error || `Failed to delete batch (${response.status})`
+          data?.error || `Failed to delete batch (${response.status})`,
         );
       }
     } catch (err) {
-      console.error("Error deleting batch:", err);
-      toast.error("Network error occurred");
+      console.error('Error deleting batch:', err);
+      toast.error('Network error occurred');
     } finally {
       setDeletingBatchId(null);
       setBatchToDelete(null);
@@ -134,13 +134,13 @@ const BulkUploadHistory = () => {
   const getStatusIcon = (status: string) => {
     const upperStatus = status.toUpperCase();
     switch (upperStatus) {
-      case "COMPLETED":
+      case 'COMPLETED':
         return <FaCheckCircle className="text-green-500 text-xl" />;
-      case "FAILED":
+      case 'FAILED':
         return <FaTimesCircle className="text-red-500 text-xl" />;
-      case "PARTIAL":
+      case 'PARTIAL':
         return <FaExclamationTriangle className="text-yellow-500 text-xl" />;
-      case "PENDING":
+      case 'PENDING':
         return <FaClock className="text-blue-500 text-xl" />;
       default:
         return <FaFileAlt className="text-gray-500 text-xl" />;
@@ -149,12 +149,12 @@ const BulkUploadHistory = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString("id-ID", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleString('id-ID', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -184,24 +184,30 @@ const BulkUploadHistory = () => {
   }
 
   return (
-    <div className="space-y-4 p-4 rounded-lg
+    <div
+      className="space-y-4 p-4 rounded-lg
                 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg
-                dark:bg-black/20 dark:border-gray-700">
+                dark:bg-black/20 dark:border-gray-700"
+    >
       <h2 className="text-2xl font-bold mb-4 text-white">📜 Upload History</h2>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && batchToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="rounded-lg p-6 max-w-md w-full mx-4 shadow-xl
+          <div
+            className="rounded-lg p-6 max-w-md w-full mx-4 shadow-xl
                       bg-white/10 backdrop-blur-md border border-white/20 text-white
-                      dark:bg-black/20 dark:border-gray-700">
+                      dark:bg-black/20 dark:border-gray-700"
+          >
             <div className="flex items-center gap-3 mb-4">
               <FaExclamationTriangle className="text-yellow-400 text-3xl" />
-              <h3 className="text-xl font-bold text-white">Delete Batch Upload</h3>
+              <h3 className="text-xl font-bold text-white">
+                Delete Batch Upload
+              </h3>
             </div>
 
             <p className="text-gray-200 mb-4">
-              Are you sure you want to delete{" "}
+              Are you sure you want to delete{' '}
               <strong>{batchToDelete.fileName}</strong>?
             </p>
 
@@ -238,8 +244,8 @@ const BulkUploadHistory = () => {
                 className="flex-1 px-4 py-2 bg-red-500/20 text-red-200 rounded hover:bg-red-500/30 transition-colors font-semibold border border-red-500/30"
               >
                 {deleteProducts
-                  ? "Delete Batch & Products"
-                  : "Delete Batch Only"}
+                  ? 'Delete Batch & Products'
+                  : 'Delete Batch Only'}
               </button>
             </div>
           </div>
@@ -257,9 +263,11 @@ const BulkUploadHistory = () => {
             <div className="flex items-center gap-3">
               {getStatusIcon(batch.status)}
               <div>
-                <h3 className="font-semibold text-lg text-white">{batch.fileName}</h3>
+                <h3 className="font-semibold text-lg text-white">
+                  {batch.fileName}
+                </h3>
                 <p className="text-sm text-gray-200">
-                  Uploaded by {batch.uploadedBy} •{" "}
+                  Uploaded by {batch.uploadedBy} •{' '}
                   {formatDate(batch.uploadedAt)}
                 </p>
               </div>
@@ -267,13 +275,13 @@ const BulkUploadHistory = () => {
             <div className="flex items-center gap-2">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  batch.status === "COMPLETED"
-                    ? "bg-green-500 text-white"
-                    : batch.status === "FAILED"
-                    ? "bg-red-500 text-white"
-                    : batch.status === "PARTIAL"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-500 text-white"
+                  batch.status === 'COMPLETED'
+                    ? 'bg-green-500 text-white'
+                    : batch.status === 'FAILED'
+                      ? 'bg-red-500 text-white'
+                      : batch.status === 'PARTIAL'
+                        ? 'bg-yellow-500 text-white'
+                        : 'bg-gray-500 text-white'
                 }`}
               >
                 {batch.status}
@@ -316,7 +324,7 @@ const BulkUploadHistory = () => {
               <p className="text-2xl font-bold text-blue-400">
                 {batch.totalRecords > 0
                   ? Math.round(
-                      (batch.successfulRecords / batch.totalRecords) * 100
+                      (batch.successfulRecords / batch.totalRecords) * 100,
                     )
                   : 0}
                 %

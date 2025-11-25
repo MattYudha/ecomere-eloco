@@ -10,7 +10,7 @@ export const createNotification = async (
   message: string,
   type: NotificationType,
   priority: NotificationPriority = NotificationPriority.NORMAL,
-  metadata?: any
+  metadata?: any,
 ) => {
   try {
     return await notificationApi.createNotification({
@@ -19,7 +19,7 @@ export const createNotification = async (
       message,
       type,
       priority,
-      metadata
+      metadata,
     });
   } catch (error) {
     console.error('Error creating notification:', error);
@@ -33,33 +33,36 @@ export const createNotification = async (
 export const createOrderUpdateNotification = async (
   userId: string,
   orderStatus: string,
-  orderId: string
+  orderId: string,
 ) => {
   const statusMessages = {
-    'pending': 'Your order has been received and is being processed.',
-    'confirmed': 'Your order has been confirmed and will be prepared for shipping.',
-    'processing': 'Your order is currently being processed.',
-    'shipped': 'Great news! Your order has been shipped and is on its way.',
-    'delivered': 'Your order has been successfully delivered.',
-    'cancelled': 'Your order has been cancelled.'
+    pending: 'Your order has been received and is being processed.',
+    confirmed:
+      'Your order has been confirmed and will be prepared for shipping.',
+    processing: 'Your order is currently being processed.',
+    shipped: 'Great news! Your order has been shipped and is on its way.',
+    delivered: 'Your order has been successfully delivered.',
+    cancelled: 'Your order has been cancelled.',
   };
 
   const priorities = {
-    'pending': NotificationPriority.NORMAL,
-    'confirmed': NotificationPriority.NORMAL,
-    'processing': NotificationPriority.NORMAL,
-    'shipped': NotificationPriority.HIGH,
-    'delivered': NotificationPriority.HIGH,
-    'cancelled': NotificationPriority.URGENT
+    pending: NotificationPriority.NORMAL,
+    confirmed: NotificationPriority.NORMAL,
+    processing: NotificationPriority.NORMAL,
+    shipped: NotificationPriority.HIGH,
+    delivered: NotificationPriority.HIGH,
+    cancelled: NotificationPriority.URGENT,
   };
 
   return createNotification(
     userId,
     `Order ${orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1)}`,
-    statusMessages[orderStatus as keyof typeof statusMessages] || 'Your order status has been updated.',
+    statusMessages[orderStatus as keyof typeof statusMessages] ||
+      'Your order status has been updated.',
     NotificationType.ORDER_UPDATE,
-    priorities[orderStatus as keyof typeof priorities] || NotificationPriority.NORMAL,
-    { orderId, status: orderStatus }
+    priorities[orderStatus as keyof typeof priorities] ||
+      NotificationPriority.NORMAL,
+    { orderId, status: orderStatus },
   );
 };
 
@@ -70,18 +73,18 @@ export const createPaymentNotification = async (
   userId: string,
   paymentStatus: 'success' | 'failed' | 'pending',
   amount: number,
-  orderId: string
+  orderId: string,
 ) => {
   const statusMessages = {
-    'success': `Payment of $${amount.toFixed(2)} has been successfully processed.`,
-    'failed': `Payment of $${amount.toFixed(2)} has failed. Please try again.`,
-    'pending': `Payment of $${amount.toFixed(2)} is being processed.`
+    success: `Payment of $${amount.toFixed(2)} has been successfully processed.`,
+    failed: `Payment of $${amount.toFixed(2)} has failed. Please try again.`,
+    pending: `Payment of $${amount.toFixed(2)} is being processed.`,
   };
 
   const priorities = {
-    'success': NotificationPriority.HIGH,
-    'failed': NotificationPriority.URGENT,
-    'pending': NotificationPriority.NORMAL
+    success: NotificationPriority.HIGH,
+    failed: NotificationPriority.URGENT,
+    pending: NotificationPriority.NORMAL,
   };
 
   return createNotification(
@@ -90,7 +93,7 @@ export const createPaymentNotification = async (
     statusMessages[paymentStatus],
     NotificationType.PAYMENT_STATUS,
     priorities[paymentStatus],
-    { orderId, amount, paymentStatus }
+    { orderId, amount, paymentStatus },
   );
 };
 
@@ -102,7 +105,7 @@ export const createPromotionNotification = async (
   title: string,
   message: string,
   promoCode?: string,
-  discount?: number
+  discount?: number,
 ) => {
   return createNotification(
     userId,
@@ -110,7 +113,7 @@ export const createPromotionNotification = async (
     message,
     NotificationType.PROMOTION,
     NotificationPriority.NORMAL,
-    { promoCode, discount }
+    { promoCode, discount },
   );
 };
 
@@ -121,14 +124,14 @@ export const createSystemAlertNotification = async (
   userId: string,
   title: string,
   message: string,
-  priority: NotificationPriority = NotificationPriority.HIGH
+  priority: NotificationPriority = NotificationPriority.HIGH,
 ) => {
   return createNotification(
     userId,
     title,
     message,
     NotificationType.SYSTEM_ALERT,
-    priority
+    priority,
   );
 };
 
@@ -141,12 +144,12 @@ export const createBulkNotifications = async (
   message: string,
   type: NotificationType,
   priority: NotificationPriority = NotificationPriority.NORMAL,
-  metadata?: any
+  metadata?: any,
 ) => {
-  const promises = userIds.map(userId => 
-    createNotification(userId, title, message, type, priority, metadata)
+  const promises = userIds.map((userId) =>
+    createNotification(userId, title, message, type, priority, metadata),
   );
-  
+
   try {
     return await Promise.allSettled(promises);
   } catch (error) {

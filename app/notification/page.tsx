@@ -15,7 +15,7 @@ const NotificationPage = () => {
     markNotificationAsRead,
     deleteNotificationById,
     unreadCount,
-    fetchUnreadCount
+    fetchUnreadCount,
   } = useNotifications();
 
   useEffect(() => {
@@ -43,7 +43,9 @@ const NotificationPage = () => {
       <div className="relative z-10 py-12 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Your Notifications</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Your Notifications
+            </h2>
             {unreadCount > 0 && (
               <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 text-sm font-semibold rounded-full">
                 {unreadCount} Unread
@@ -53,7 +55,8 @@ const NotificationPage = () => {
 
           {loading && (
             <div className="p-6 text-center text-gray-600 dark:text-gray-400 flex items-center justify-center">
-              <FaSpinner className="animate-spin mr-2" /> Loading notifications...
+              <FaSpinner className="animate-spin mr-2" /> Loading
+              notifications...
             </div>
           )}
 
@@ -79,18 +82,26 @@ const NotificationPage = () => {
                 <li
                   key={notification.id}
                   className={`p-4 flex items-start space-x-4 ${
-                    !notification.isRead ? 'bg-indigo-50 dark:bg-gray-700' : 'bg-white dark:bg-gray-800'
+                    !notification.isRead
+                      ? 'bg-indigo-50 dark:bg-gray-700'
+                      : 'bg-white dark:bg-gray-800'
                   } hover:bg-gray-50 dark:hover:bg-gray-700/70 transition-colors duration-200`}
                 >
                   <div className="flex-shrink-0 mt-1">
-                    <FaBell className={`w-5 h-5 ${!notification.isRead ? 'text-indigo-600' : 'text-gray-400 dark:text-gray-500'}`} />
+                    <FaBell
+                      className={`w-5 h-5 ${!notification.isRead ? 'text-indigo-600' : 'text-gray-400 dark:text-gray-500'}`}
+                    />
                   </div>
                   <div className="flex-1">
-                    <p className={`text-sm font-medium ${!notification.isRead ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                    <p
+                      className={`text-sm font-medium ${!notification.isRead ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+                    >
                       {notification.message}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(notification.createdAt), {
+                        addSuffix: true,
+                      })}
                     </p>
                   </div>
                   <div className="flex-shrink-0 flex space-x-2">

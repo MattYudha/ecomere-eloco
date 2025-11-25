@@ -5,7 +5,7 @@ const prisma = require('../utills/db');
 
 (async () => {
   try {
-    const name = 'curl-test-' + Math.random().toString(36).slice(2,8);
+    const name = 'curl-test-' + Math.random().toString(36).slice(2, 8);
     const cat = await prisma.category.create({ data: { name } });
     console.log(cat.id);
   } catch (e) {

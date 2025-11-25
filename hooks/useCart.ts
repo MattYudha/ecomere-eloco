@@ -38,24 +38,29 @@ export const useCart = (): UseCart => {
     }
   }, [cart]);
 
-  const addToCart = useCallback((item: Omit<CartItem, 'quantity'>, quantityToAdd = 1) => {
-    setCart((prevCart) => {
-      const existingItemIndex = prevCart.findIndex((cartItem) => cartItem.id === item.id);
+  const addToCart = useCallback(
+    (item: Omit<CartItem, 'quantity'>, quantityToAdd = 1) => {
+      setCart((prevCart) => {
+        const existingItemIndex = prevCart.findIndex(
+          (cartItem) => cartItem.id === item.id,
+        );
 
-      if (existingItemIndex > -1) {
-        // Item already in cart, update quantity
-        const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex] = {
-          ...updatedCart[existingItemIndex],
-          quantity: updatedCart[existingItemIndex].quantity + quantityToAdd,
-        };
-        return updatedCart;
-      } else {
-        // Item not in cart, add new item
-        return [...prevCart, { ...item, quantity: quantityToAdd }];
-      }
-    });
-  }, []);
+        if (existingItemIndex > -1) {
+          // Item already in cart, update quantity
+          const updatedCart = [...prevCart];
+          updatedCart[existingItemIndex] = {
+            ...updatedCart[existingItemIndex],
+            quantity: updatedCart[existingItemIndex].quantity + quantityToAdd,
+          };
+          return updatedCart;
+        } else {
+          // Item not in cart, add new item
+          return [...prevCart, { ...item, quantity: quantityToAdd }];
+        }
+      });
+    },
+    [],
+  );
 
   const removeFromCart = useCallback((id: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
@@ -67,7 +72,7 @@ export const useCart = (): UseCart => {
         return prevCart.filter((item) => item.id !== id);
       }
       return prevCart.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity } : item,
       );
     });
   }, []);

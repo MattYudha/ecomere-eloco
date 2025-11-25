@@ -1,52 +1,59 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse, type NextRequest } from "next/server";
-import prisma from "@/utils/db";
-import { createHash } from "crypto";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse, type NextRequest } from 'next/server';
+import prisma from '@/utils/db';
+import { createHash } from 'crypto';
 
 // Hashes a string using SHA-256
 async function hash(data: string): Promise<string> {
   const textEncoder = new TextEncoder();
   const dataBuffer = textEncoder.encode(data);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hexHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hexHash = hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
   return hexHash;
 }
 
 async function logVisitor(req: NextRequest) {
   // Exclude requests for static files, images, and API routes from being logged
   const pathname = req.nextUrl.pathname;
-  if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/assets') || pathname === '/favicon.ico') {
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/assets') ||
+    pathname === '/favicon.ico'
+  ) {
     return;
   }
 
   try {
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : "unknown";
-    const userAgent = req.headers.get("user-agent") ?? "unknown";
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+    const userAgent = req.headers.get('user-agent') ?? 'unknown';
 
     // Simple bot detection
-    if (userAgent.toLowerCase().includes("bot")) {
+    if (userAgent.toLowerCase().includes('bot')) {
       return;
     }
-    
-    const ipHash = await hash(ip);
-    
-    // Fire-and-forget the database call
-    prisma.visitorLog.create({
-      data: {
-        ipHash: ipHash,
-        userAgent: userAgent,
-      },
-    }).catch(err => {
-      console.error("Error logging visitor in background:", err);
-    });
 
+    const ipHash = await hash(ip);
+
+    // Fire-and-forget the database call
+    prisma.visitorLog
+      .create({
+        data: {
+          ipHash: ipHash,
+          userAgent: userAgent,
+        },
+      })
+      .catch((err) => {
+        console.error('Error logging visitor in background:', err);
+      });
   } catch (error) {
-    console.error("Failed to log visitor:", error);
+    console.error('Failed to log visitor:', error);
   }
 }
-
 
 export default withAuth(
   async function middleware(req) {
@@ -55,12 +62,12 @@ export default withAuth(
     logVisitor(req as NextRequest);
 
     // Existing authentication logic for admin routes
-    if (req.nextUrl.pathname.startsWith("/admin")) {
-      if (req.nextauth.token?.role !== "admin") {
-        return NextResponse.redirect(new URL("/", req.url));
+    if (req.nextUrl.pathname.startsWith('/admin')) {
+      if (req.nextauth.token?.role !== 'admin') {
+        return NextResponse.redirect(new URL('/', req.url));
       }
     }
-    
+
     // For all other cases, continue as normal
     return NextResponse.next();
   },
@@ -69,15 +76,15 @@ export default withAuth(
       authorized: ({ token, req }) => {
         // This callback determines if the user is authorized to access the page.
         // If accessing an admin route, token must exist and have 'admin' role.
-        if (req.nextUrl.pathname.startsWith("/admin")) {
-          return !!token && token.role === "admin";
+        if (req.nextUrl.pathname.startsWith('/admin')) {
+          return !!token && token.role === 'admin';
         }
-        
+
         // For any other route, access is always granted (public pages).
         return true;
       },
     },
-  }
+  },
 );
 
 export const config = {

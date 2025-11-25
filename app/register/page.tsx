@@ -1,20 +1,20 @@
-"use client";
-import { CustomButton, SectionTitle } from "@/components";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+'use client';
+import { CustomButton, SectionTitle } from '@/components';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
     // chechking if user has already registered redirect to home page
-    if (sessionStatus === "authenticated") {
-      router.replace("/");
+    if (sessionStatus === 'authenticated') {
+      router.replace('/');
     }
   }, [sessionStatus, router]);
 
@@ -22,7 +22,7 @@ const RegisterPage = () => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     return emailRegex.test(email);
   };
-  
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const email = e.target[2].value;
@@ -30,29 +30,29 @@ const RegisterPage = () => {
     const confirmPassword = e.target[4].value;
 
     if (!isValidEmail(email)) {
-      setError("Email is invalid");
-      toast.error("Email is invalid");
+      setError('Email is invalid');
+      toast.error('Email is invalid');
       return;
     }
 
     if (!password || password.length < 8) {
-      setError("Password is invalid");
-      toast.error("Password is invalid");
+      setError('Password is invalid');
+      toast.error('Password is invalid');
       return;
     }
 
     if (confirmPassword !== password) {
-      setError("Passwords are not equal");
-      toast.error("Passwords are not equal");
+      setError('Passwords are not equal');
+      toast.error('Passwords are not equal');
       return;
     }
 
     try {
       // sending API request for registering user
-      const res = await fetch("/api/register", {
-        method: "POST",
+      const res = await fetch('/api/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email,
@@ -63,14 +63,16 @@ const RegisterPage = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setError("");
-        toast.success("Registration successful");
-        router.push("/login");
+        setError('');
+        toast.success('Registration successful');
+        router.push('/login');
       } else {
         // Handle different types of errors
         if (data.details && Array.isArray(data.details)) {
           // Validation errors
-          const errorMessage = data.details.map((err: any) => err.message).join(", ");
+          const errorMessage = data.details
+            .map((err: any) => err.message)
+            .join(', ');
           setError(errorMessage);
           toast.error(errorMessage);
         } else if (data.error) {
@@ -78,18 +80,18 @@ const RegisterPage = () => {
           setError(data.error);
           toast.error(data.error);
         } else {
-          setError("Registration failed");
-          toast.error("Registration failed");
+          setError('Registration failed');
+          toast.error('Registration failed');
         }
       }
     } catch (error) {
-      toast.error("Error, try again");
-      setError("Error, try again");
+      toast.error('Error, try again');
+      setError('Error, try again');
       console.log(error);
     }
   };
 
-  if (sessionStatus === "loading") {
+  if (sessionStatus === 'loading') {
     return <h1>Loading...</h1>;
   }
   return (
@@ -230,8 +232,12 @@ const RegisterPage = () => {
                   textSize="lg"
                   className="relative overflow-hidden group bg-yellow-500/30 dark:bg-yellow-700/30 backdrop-blur-md border border-yellow-400/50 dark:border-yellow-600/50 text-white hover:bg-yellow-500/50 dark:hover:bg-yellow-700/50 transition-all duration-300 rounded-full"
                 >
-                  <span className="text-yellow-500 group-hover:text-white transition-colors duration-300">Register</span>{' '}
-                  <span className="text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors duration-300">Now</span>
+                  <span className="text-yellow-500 group-hover:text-white transition-colors duration-300">
+                    Register
+                  </span>{' '}
+                  <span className="text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors duration-300">
+                    Now
+                  </span>
                 </CustomButton>
 
                 <p className="text-red-600 text-center text-[16px] my-4">

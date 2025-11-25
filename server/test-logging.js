@@ -18,9 +18,12 @@ http.get('http://localhost:3001/nonexistent', (res) => {
 });
 
 // Test suspicious request
-http.get('http://localhost:3001/api/products?q=<script>alert("xss")</script>', (res) => {
-  console.log('✓ Security test completed');
-});
+http.get(
+  'http://localhost:3001/api/products?q=<script>alert("xss")</script>',
+  (res) => {
+    console.log('✓ Security test completed');
+  },
+);
 
 setTimeout(() => {
   console.log('\nTest completed. Check logs with: npm run logs');

@@ -1,9 +1,9 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import DashboardSidebar from "@/components/DashboardSidebar";
-import Link from "next/link";
-import apiClient from "@/lib/api";
-import { toast } from "react-hot-toast";
+'use client';
+import React, { useEffect, useState } from 'react';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import Link from 'next/link';
+import apiClient from '@/lib/api';
+import { toast } from 'react-hot-toast';
 
 interface Merchant {
   id: string;
@@ -23,15 +23,15 @@ export default function MerchantPage() {
   const fetchMerchants = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get("/api/merchants");
+      const response = await apiClient.get('/api/merchants');
       if (!response.ok) {
-        throw new Error("Failed to fetch merchants");
+        throw new Error('Failed to fetch merchants');
       }
       const data = await response.json();
       setMerchants(data);
     } catch (error) {
-      console.error("Error fetching merchants:", error);
-      toast.error("Failed to load merchants");
+      console.error('Error fetching merchants:', error);
+      toast.error('Failed to load merchants');
     } finally {
       setLoading(false);
     }
@@ -55,11 +55,15 @@ export default function MerchantPage() {
           </Link>
         </div>
 
-        <div className="rounded-lg shadow-md p-6
+        <div
+          className="rounded-lg shadow-md p-6
                     bg-white/10 backdrop-blur-md border border-white/20 text-white
-                    dark:bg-black/20 dark:border-gray-700">
+                    dark:bg-black/20 dark:border-gray-700"
+        >
           {loading ? (
-            <div className="text-center py-10 text-white">Loading merchants...</div>
+            <div className="text-center py-10 text-white">
+              Loading merchants...
+            </div>
           ) : merchants.length > 0 ? (
             <table className="w-full bg-transparent text-white">
               <thead>
@@ -73,15 +77,18 @@ export default function MerchantPage() {
               </thead>
               <tbody>
                 {merchants.map((merchant) => (
-                  <tr key={merchant.id} className="border-b border-white/10 hover:bg-white/10 dark:hover:bg-black/20">
+                  <tr
+                    key={merchant.id}
+                    className="border-b border-white/10 hover:bg-white/10 dark:hover:bg-black/20"
+                  >
                     <td className="py-4">{merchant.name}</td>
-                    <td className="py-4">{merchant.email || "N/A"}</td>
+                    <td className="py-4">{merchant.email || 'N/A'}</td>
                     <td className="py-4">
                       <span
                         className={`px-2 py-1 rounded text-xs ${
-                          merchant.status === "ACTIVE"
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
+                          merchant.status === 'ACTIVE'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
                         }`}
                       >
                         {merchant.status}
@@ -107,7 +114,9 @@ export default function MerchantPage() {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-10 text-white">No merchants found</div>
+            <div className="text-center py-10 text-white">
+              No merchants found
+            </div>
           )}
         </div>
       </div>

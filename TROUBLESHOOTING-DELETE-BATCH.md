@@ -25,8 +25,8 @@ Unexpected end of JSON input at handleDeleteConfirm
 const data = await response.json();
 
 // NEW (Safe):
-const contentType = response.headers.get("content-type");
-if (contentType && contentType.includes("application/json")) {
+const contentType = response.headers.get('content-type');
+if (contentType && contentType.includes('application/json')) {
   const text = await response.text();
   if (text) {
     data = JSON.parse(text);
@@ -50,7 +50,7 @@ return { canDelete: true, blockedProductIds: [] };
 // Always use res.status().json()
 return res.status(200).json({
   success: true,
-  message: "...",
+  message: '...',
   deletedProducts: false,
 });
 ```
@@ -111,7 +111,6 @@ node server/tests/test-db-bulk.js
 **Solution**:
 
 1. **Option A**: Delete batch only (keep products)
-
    - Uncheck "Also delete all products" checkbox
    - Products will remain in catalog
 
@@ -379,7 +378,6 @@ DELETE FROM bulk_upload_batch WHERE id = 'xxx';
 ### Backend:
 
 - `server/services/bulkUploadService.js`
-
   - Fixed `canDeleteProductsForBatch` return format
   - Changed `ok` to `canDelete`
   - Added `reason` field

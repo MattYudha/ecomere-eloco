@@ -1,82 +1,170 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext'; // Pastikan path ini sesuai
 
 const Footer = () => {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  // Define dynamic background styles
+  // Dark Mode: Elegant Deep Blue dengan "Aurora" glow dari bawah berwarna Tembaga
+  const footerBgStyle =
+    theme === 'dark'
+      ? {
+          background:
+            'radial-gradient(ellipse at bottom, rgba(203,97,18,0.2), #0f172a 80%)',
+          backgroundColor: '#0f172a',
+        }
+      : {
+          background: 'linear-gradient(to top, #ffffff, rgba(203,97,18,0.05))',
+          backgroundColor: '#ffffff',
+        };
+
   return (
     <footer
-      className="relative py-10 px-4 sm:px-6 lg:px-8 text-center bg-cover bg-center font-dm-sans bg-white text-black dark:bg-smoky-black-grilli dark:text-white"
-      style={{ backgroundImage: "url('/footer-bg.jpg')" }}
+      className="text-gray-800 dark:text-gray-200 font-['DM_Sans'] relative z-20 border-t-2 border-[#cb6112]/30"
+      style={footerBgStyle}
     >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-60"></div>
-
-      {/* Content */}
-      <div className="relative max-w-screen-xl mx-auto">
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Column 1: Brand and Subscribe */}
-          <div className="space-y-6 flex flex-col items-center">
-            <Link href="/" className="text-4xl font-forum text-gold-crayola">
-              ELOQO.CO
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Column 1: Brand and About */}
+          <div className="space-y-6 md:col-span-1">
+            <Link
+              href="/"
+              className="text-3xl font-bold font-['Forum'] text-gray-900 dark:text-white tracking-wide block"
+            >
+              <span className="text-[#cb6112]">ELOQO</span>.CO
             </Link>
-            <address className="not-italic">
-              sukapura, Jalan mangga dua no 16 rt03/02
-            </address>
-            <a href="mailto:eloqoco2025@gmail.com" className="hover:text-gold-crayola">eloqoco2025@gmail.com</a>
-            <a href="tel:+6287871563774" className="hover:text-gold-crayola">Contact Order : +62 878-7156-3774</a>
-            <p>Open : 09:00 am - 01:00 pm</p>
-            
-            <div className="w-24 mx-auto my-4">
-              <div className="border-t-2 border-gold-crayola w-1/3 mx-auto"></div>
-              <div className="border-t-2 border-gold-crayola w-full mx-auto my-1"></div>
-              <div className="border-t-2 border-gold-crayola w-1/3 mx-auto"></div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+              Delivering premium snacks with authentic flavors. Experience the
+              quality and taste in every bite, crafted for perfection.
+            </p>
+            <div className="flex space-x-5 pt-2">
+              {[FaFacebook, FaInstagram, FaTwitter, FaYoutube].map(
+                (Icon, index) => (
+                  <Link
+                    key={index}
+                    href="#"
+                    className="text-gray-400 hover:text-[#cb6112] dark:hover:text-[#cb6112] transition-all transform hover:scale-110"
+                  >
+                    <Icon size={22} />
+                  </Link>
+                ),
+              )}
             </div>
+          </div>
 
-            <p className="font-forum text-3xl text-white">Get News & Offers</p>
-            <p>Subscribe us & Get <span className="text-gold-crayola">25% Off.</span></p>
-            
-            <form action="" className="w-full max-w-sm mx-auto flex flex-col sm:flex-row gap-2">
-              <input 
-                type="email" 
-                name="email_address" 
-                placeholder="Your email" 
-                autoComplete="off" 
-                className="input-field w-full px-4 py-2 bg-eerie-black-1 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-gold-crayola"
-              />
-              <button type="submit" className="btn bg-gold-crayola text-eerie-black-1 font-bold py-2 px-6 hover:bg-opacity-90">
-                Subscribe
-              </button>
+          {/* Column 2: Quick Links */}
+          <div className="space-y-6">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white tracking-widest uppercase font-['Forum'] relative inline-block">
+              Quick Links
+              <span className="absolute -bottom-2 left-0 w-10 h-0.5 bg-[#cb6112]"></span>
+            </h3>
+            <ul className="space-y-3 text-sm">
+              {['Home', 'Shop All', 'About Us', 'Contact'].map((item) => (
+                <li key={item}>
+                  <Link
+                    href={
+                      item === 'Home'
+                        ? '/'
+                        : `/${item.toLowerCase().replace(' ', '-')}`
+                    }
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#cb6112] dark:hover:text-[#cb6112] transition-colors flex items-center gap-2 group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-[#cb6112] transition-all duration-300"></span>
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Help & Support */}
+          <div className="space-y-6">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white tracking-widest uppercase font-['Forum'] relative inline-block">
+              Support
+              <span className="absolute -bottom-2 left-0 w-10 h-0.5 bg-[#cb6112]"></span>
+            </h3>
+            <ul className="space-y-3 text-sm">
+              {[
+                'FAQ',
+                'Shipping Policy',
+                'Return Policy',
+                'Privacy Policy',
+              ].map((item) => (
+                <li key={item}>
+                  <Link
+                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#cb6112] dark:hover:text-[#cb6112] transition-colors flex items-center gap-2 group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-[#cb6112] transition-all duration-300"></span>
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Subscribe */}
+          <div className="space-y-6 md:col-span-1">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white tracking-widest uppercase font-['Forum'] relative inline-block">
+              Stay Updated
+              <span className="absolute -bottom-2 left-0 w-10 h-0.5 bg-[#cb6112]"></span>
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Subscribe to get the latest news, exclusive offers, and delicious
+              updates.
+            </p>
+            <form action="#" className="w-full">
+              <div
+                className="flex items-center rounded-full p-1.5 
+                            bg-white/10 dark:bg-white/5 backdrop-blur-md 
+                            border border-gray-200 dark:border-white/10 
+                            focus-within:border-[#cb6112] dark:focus-within:border-[#cb6112] 
+                            transition-all shadow-sm"
+              >
+                <input
+                  type="email"
+                  name="email_address"
+                  placeholder="Your email..."
+                  autoComplete="off"
+                  className="w-full bg-transparent px-4 py-2 text-gray-800 dark:text-white placeholder-gray-500 text-sm focus:outline-none"
+                />
+                <motion.button
+                  type="submit"
+                  className="bg-[#cb6112] text-white font-semibold py-2 px-6 rounded-full text-sm shadow-lg shadow-orange-500/20"
+                  whileHover={{ scale: 1.05, backgroundColor: '#d97720' }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Join
+                </motion.button>
+              </div>
             </form>
-          </div>
-
-          {/* Column 2: Links */}
-          <div className="flex flex-col items-center space-y-4">
-            <h3 className="font-forum text-3xl text-white mb-4">Links</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-gold-crayola">Home</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Menus</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">About Us</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Our Chefs</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Contact</a></li>
-            </ul>
-          </div>
-
-          {/* Column 3: Social */}
-          <div className="flex flex-col items-center space-y-4">
-            <h3 className="font-forum text-3xl text-white mb-4">Social</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-gold-crayola">Facebook</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Instagram</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Twitter</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Youtube</a></li>
-              <li><a href="#" className="hover:text-gold-crayola">Google Map</a></li>
-            </ul>
           </div>
         </div>
 
-        <div className="mt-20 pt-8 border-t border-gray-700">
-          <p className="text-gray-400">
-            &copy; 2025 ELOQO.CO. All Rights Reserved | Crafted by <a href="https://github.com/codewithsadee" target="_blank" rel="noopener noreferrer" className="text-gold-crayola hover:underline">codewithsadee</a>
+        <div className="mt-20 pt-8 border-t border-gray-200 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-gray-500">
+          <p>
+            &copy; {new Date().getFullYear()} ELOQO.CO. All Rights Reserved.
           </p>
+          <div className="flex gap-6">
+            <Link href="#" className="hover:text-[#cb6112] transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="#" className="hover:text-[#cb6112] transition-colors">
+              Cookie Settings
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

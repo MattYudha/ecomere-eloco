@@ -17,7 +17,9 @@ interface HeadingProps {
 
 const Heading = ({ title, className = '' }: HeadingProps) => {
   return (
-    <h2 className={`text-white text-7xl font-forum text-center mt-20 max-lg:text-5xl uppercase ${className}`}>
+    <h2
+      className={`text-white text-7xl font-forum text-center mt-20 max-lg:text-5xl uppercase ${className}`}
+    >
       {title}
     </h2>
   );

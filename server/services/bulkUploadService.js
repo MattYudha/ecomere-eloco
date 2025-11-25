@@ -1,25 +1,25 @@
-const { parse } = require("csv-parse/sync");
+const { parse } = require('csv-parse/sync');
 
 // Validate a single CSV row according to the Product schema constraints
 function validateRow(row) {
   const errs = [];
   const clean = {};
 
-  const title = String(row.title ?? "").trim();
-  const slug = String(row.slug ?? "").trim();
+  const title = String(row.title ?? '').trim();
+  const slug = String(row.slug ?? '').trim();
   const price = Number(row.price);
-  const categoryId = String(row.categoryId ?? "").trim();
+  const categoryId = String(row.categoryId ?? '').trim();
   const inStock = Number(row.inStock ?? 0);
 
-  if (!title) errs.push("title is required");
-  if (!slug) errs.push("slug is required");
+  if (!title) errs.push('title is required');
+  if (!slug) errs.push('slug is required');
   if (!Number.isFinite(price) || price < 0)
-    errs.push("price must be a non-negative number");
-  if (!categoryId) errs.push("categoryId is required");
+    errs.push('price must be a non-negative number');
+  if (!categoryId) errs.push('categoryId is required');
   if (!Number.isFinite(inStock) || inStock < 0)
-    errs.push("inStock must be a non-negative number");
+    errs.push('inStock must be a non-negative number');
 
-  if (errs.length) return { ok: false, error: errs.join(", ") };
+  if (errs.length) return { ok: false, error: errs.join(', ') };
 
   clean.title = title;
   clean.slug = slug;
@@ -37,7 +37,7 @@ function validateRow(row) {
 }
 
 async function parseCsvBufferToRows(buffer) {
-  const text = buffer.toString("utf-8");
+  const text = buffer.toString('utf-8');
   const records = parse(text, {
     columns: true,
     skip_empty_lines: true,
@@ -47,10 +47,10 @@ async function parseCsvBufferToRows(buffer) {
 }
 
 function computeBatchStatus(successCount, errorCount) {
-  if (successCount > 0 && errorCount === 0) return "COMPLETED";
-  if (successCount > 0 && errorCount > 0) return "PARTIAL";
-  if (successCount === 0 && errorCount > 0) return "FAILED";
-  return "PENDING";
+  if (successCount > 0 && errorCount === 0) return 'COMPLETED';
+  if (successCount > 0 && errorCount > 0) return 'PARTIAL';
+  if (successCount === 0 && errorCount > 0) return 'FAILED';
+  return 'PENDING';
 }
 
 // Create products + items for valid rows, error items for invalid
@@ -96,7 +96,7 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
           mainImage: row.mainImage,
           categoryId: row.categoryId,
           inStock: row.inStock,
-          status: "ERROR",
+          status: 'ERROR',
           error: `Category not found: ${row.categoryId}`,
         },
       });
@@ -111,9 +111,9 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
           slug: row.slug,
           price: row.price,
           rating: 5,
-          description: row.description ?? "",
-          manufacturer: row.manufacturer ?? "",
-          mainImage: row.mainImage ?? "",
+          description: row.description ?? '',
+          manufacturer: row.manufacturer ?? '',
+          mainImage: row.mainImage ?? '',
           categoryId: resolvedCategoryId, // Use resolved category ID
           inStock: row.inStock,
         },
@@ -131,7 +131,7 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
           mainImage: row.mainImage,
           categoryId: resolvedCategoryId, // Use resolved category ID
           inStock: row.inStock,
-          status: "CREATED",
+          status: 'CREATED',
           error: null,
         },
       });
@@ -148,8 +148,8 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
           mainImage: row.mainImage,
           categoryId: resolvedCategoryId || row.categoryId,
           inStock: row.inStock,
-          status: "ERROR",
-          error: e?.message || "Create failed",
+          status: 'ERROR',
+          error: e?.message || 'Create failed',
         },
       });
       failed++;
@@ -160,15 +160,15 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
     await tx.bulk_upload_item.create({
       data: {
         batchId,
-        title: "",
-        slug: "",
+        title: '',
+        slug: '',
         price: 0,
         manufacturer: null,
         description: null,
         mainImage: null,
-        categoryId: "",
+        categoryId: '',
         inStock: 0,
-        status: "ERROR",
+        status: 'ERROR',
         error: `Row ${err.index}: ${err.error}`,
       },
     });
@@ -181,13 +181,13 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
 async function getBatchSummary(prisma, batchId) {
   const total = await prisma.bulk_upload_item.count({ where: { batchId } });
   const errors = await prisma.bulk_upload_item.count({
-    where: { batchId, status: "ERROR" },
+    where: { batchId, status: 'ERROR' },
   });
   const created = await prisma.bulk_upload_item.count({
-    where: { batchId, status: "CREATED" },
+    where: { batchId, status: 'CREATED' },
   });
   const updated = await prisma.bulk_upload_item.count({
-    where: { batchId, status: "UPDATED" },
+    where: { batchId, status: 'UPDATED' },
   });
   return { total, errors, created, updated };
 }
@@ -214,7 +214,7 @@ async function canDeleteProductsForBatch(prisma, batchId) {
   if (blockedList.length > 0) {
     return {
       canDelete: false,
-      reason: "Some products are in orders",
+      reason: 'Some products are in orders',
       blockedProductIds: blockedList,
     };
   }
@@ -248,7 +248,7 @@ async function applyItemUpdates(tx, batchId, updates) {
 
     const updatedItem = await tx.bulk_upload_item.update({
       where: { id: upd.itemId },
-      data: { price, inStock, status: "UPDATED", error: null },
+      data: { price, inStock, status: 'UPDATED', error: null },
     });
     result.push(updatedItem);
   }

@@ -1,12 +1,12 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { asyncHandler, AppError } = require("../utills/errorHandler");
+const { asyncHandler, AppError } = require('../utills/errorHandler');
 
 const createCategory = asyncHandler(async (request, response) => {
   const { name } = request.body;
 
   if (!name || name.trim().length === 0) {
-    throw new AppError("Category name is required", 400);
+    throw new AppError('Category name is required', 400);
   }
 
   const category = await prisma.category.create({
@@ -22,11 +22,11 @@ const updateCategory = asyncHandler(async (request, response) => {
   const { name } = request.body;
 
   if (!id) {
-    throw new AppError("Category ID is required", 400);
+    throw new AppError('Category ID is required', 400);
   }
 
   if (!name || name.trim().length === 0) {
-    throw new AppError("Category name is required", 400);
+    throw new AppError('Category name is required', 400);
   }
 
   const existingCategory = await prisma.category.findUnique({
@@ -36,7 +36,7 @@ const updateCategory = asyncHandler(async (request, response) => {
   });
 
   if (!existingCategory) {
-    throw new AppError("Category not found", 404);
+    throw new AppError('Category not found', 404);
   }
 
   const updatedCategory = await prisma.category.update({
@@ -55,7 +55,7 @@ const deleteCategory = asyncHandler(async (request, response) => {
   const { id } = request.params;
 
   if (!id) {
-    throw new AppError("Category ID is required", 400);
+    throw new AppError('Category ID is required', 400);
   }
 
   const existingCategory = await prisma.category.findUnique({
@@ -65,7 +65,7 @@ const deleteCategory = asyncHandler(async (request, response) => {
   });
 
   if (!existingCategory) {
-    throw new AppError("Category not found", 404);
+    throw new AppError('Category not found', 404);
   }
 
   // Check if category has products
@@ -76,7 +76,7 @@ const deleteCategory = asyncHandler(async (request, response) => {
   });
 
   if (productsWithCategory) {
-    throw new AppError("Cannot delete category that has products", 400);
+    throw new AppError('Cannot delete category that has products', 400);
   }
 
   await prisma.category.delete({
@@ -91,7 +91,7 @@ const getCategory = asyncHandler(async (request, response) => {
   const { id } = request.params;
 
   if (!id) {
-    throw new AppError("Category ID is required", 400);
+    throw new AppError('Category ID is required', 400);
   }
 
   const category = await prisma.category.findUnique({
@@ -99,11 +99,11 @@ const getCategory = asyncHandler(async (request, response) => {
       id: id,
     },
   });
-  
+
   if (!category) {
-    throw new AppError("Category not found", 404);
+    throw new AppError('Category not found', 404);
   }
-  
+
   return response.status(200).json(category);
 });
 

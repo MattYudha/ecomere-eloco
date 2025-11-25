@@ -1,32 +1,32 @@
 // Test untuk menambahkan produk
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = 'http://localhost:3001';
 
 async function testCreateProduct(categoryId) {
-  console.log("🔍 Testing create product API...\n");
+  console.log('🔍 Testing create product API...\n');
 
   // Data produk test
   const productData = {
-    title: "Test Product dari API",
+    title: 'Test Product dari API',
     slug: `test-product-${Date.now()}`,
     price: 999,
-    manufacturer: "Test Manufacturer",
-    description: "This is a test product",
-    mainImage: "test-product.jpg",
+    manufacturer: 'Test Manufacturer',
+    description: 'This is a test product',
+    mainImage: 'test-product.jpg',
     categoryId: categoryId, // Menggunakan category ID yang valid
     inStock: 10,
   };
 
-  console.log("📦 Product data:");
+  console.log('📦 Product data:');
   console.log(JSON.stringify(productData, null, 2));
-  console.log("\n");
+  console.log('\n');
 
   try {
     console.log(`📤 Sending POST request to ${API_BASE_URL}/api/products...\n`);
 
     const res = await fetch(`${API_BASE_URL}/api/products`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(productData),
     });
@@ -44,25 +44,25 @@ async function testCreateProduct(categoryId) {
     }
 
     if (res.status === 201) {
-      console.log("\n✅ Product created successfully!");
+      console.log('\n✅ Product created successfully!');
     } else {
-      console.log("\n❌ Failed to create product");
+      console.log('\n❌ Failed to create product');
     }
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    console.error('❌ Error:', error.message);
     console.error(error.stack);
   }
 }
 
 // Pertama, ambil daftar kategori
 async function getCategories() {
-  console.log("📋 Getting categories first...\n");
+  console.log('📋 Getting categories first...\n');
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/categories`);
     const categories = await res.json();
 
-    console.log("Available categories:");
+    console.log('Available categories:');
     categories.forEach((cat) => {
       console.log(`  - ${cat.name} (ID: ${cat.id})`);
     });
@@ -74,7 +74,7 @@ async function getCategories() {
 
     return null;
   } catch (error) {
-    console.error("❌ Error getting categories:", error.message);
+    console.error('❌ Error getting categories:', error.message);
     return null;
   }
 }
@@ -85,12 +85,12 @@ async function getCategories() {
 
   if (!categoryId) {
     console.error(
-      "\n❌ No categories available. Please create a category first."
+      '\n❌ No categories available. Please create a category first.',
     );
     process.exit(1);
   }
 
   // Update data dengan category ID yang valid
-  console.log("\n" + "=".repeat(60) + "\n");
+  console.log('\n' + '='.repeat(60) + '\n');
   await testCreateProduct(categoryId);
 })();

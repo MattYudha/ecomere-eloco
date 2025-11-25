@@ -8,17 +8,17 @@
 // Output: bulk upload page for admin dashboard
 // *********************
 
-"use client";
-import { DashboardSidebar } from "@/components";
-import BulkUploadHistory from "@/components/BulkUploadHistory";
-import React, { useState, useRef } from "react";
-import toast from "react-hot-toast";
+'use client';
+import { DashboardSidebar } from '@/components';
+import BulkUploadHistory from '@/components/BulkUploadHistory';
+import React, { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import {
   FaFileUpload,
   FaDownload,
   FaCheckCircle,
   FaTimesCircle,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 
 interface UploadResult {
   success: boolean;
@@ -41,9 +41,9 @@ const BulkUploadPage = () => {
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
@@ -56,13 +56,13 @@ const BulkUploadPage = () => {
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (
-        droppedFile.type === "text/csv" ||
-        droppedFile.name.endsWith(".csv")
+        droppedFile.type === 'text/csv' ||
+        droppedFile.name.endsWith('.csv')
       ) {
         setFile(droppedFile);
         setUploadResult(null);
       } else {
-        toast.error("Please upload a CSV file");
+        toast.error('Please upload a CSV file');
       }
     }
   };
@@ -71,20 +71,20 @@ const BulkUploadPage = () => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       if (
-        selectedFile.type === "text/csv" ||
-        selectedFile.name.endsWith(".csv")
+        selectedFile.type === 'text/csv' ||
+        selectedFile.name.endsWith('.csv')
       ) {
         setFile(selectedFile);
         setUploadResult(null);
       } else {
-        toast.error("Please upload a CSV file");
+        toast.error('Please upload a CSV file');
       }
     }
   };
 
   const handleUpload = async () => {
     if (!file) {
-      toast.error("Please select a CSV file first");
+      toast.error('Please select a CSV file first');
       return;
     }
 
@@ -93,10 +93,10 @@ const BulkUploadPage = () => {
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
 
-      const response = await fetch("http://localhost:3001/api/bulk-upload", {
-        method: "POST",
+      const response = await fetch('http://localhost:3001/api/bulk-upload', {
+        method: 'POST',
         body: formData,
       });
 
@@ -105,29 +105,29 @@ const BulkUploadPage = () => {
       if (response.ok) {
         setUploadResult({
           success: true,
-          message: data.message || "Products uploaded successfully!",
+          message: data.message || 'Products uploaded successfully!',
           details: data.details,
         });
-        toast.success("Bulk upload completed!");
+        toast.success('Bulk upload completed!');
         setFile(null);
         if (fileInputRef.current) {
-          fileInputRef.current.value = "";
+          fileInputRef.current.value = '';
         }
       } else {
         setUploadResult({
           success: false,
-          message: data.error || "Upload failed",
+          message: data.error || 'Upload failed',
           details: data.details,
         });
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error || 'Upload failed');
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       setUploadResult({
         success: false,
-        message: "Network error occurred during upload",
+        message: 'Network error occurred during upload',
       });
-      toast.error("Network error occurred");
+      toast.error('Network error occurred');
     } finally {
       setUploading(false);
     }
@@ -138,28 +138,32 @@ const BulkUploadPage = () => {
 Sample Product,99.99,Sample Manufacturer,10,https://example.com/image.jpg,Sample description,sample-product,category-uuid
 Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Another description,another-product,category-uuid`;
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = "product-template.csv";
+    a.download = 'product-template.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    toast.success("Template downloaded!");
+    toast.success('Template downloaded!');
   };
 
   return (
     <div className="flex xl:flex-row flex-col justify-start items-start relative z-10">
       <DashboardSidebar />
       <div className="w-full xl:p-14 p-4">
-        <h1 className="text-4xl font-bold mb-8 text-white">Bulk Upload Products</h1>
+        <h1 className="text-4xl font-bold mb-8 text-white">
+          Bulk Upload Products
+        </h1>
 
         {/* Instructions */}
-        <div className="p-4 mb-6 rounded-lg
+        <div
+          className="p-4 mb-6 rounded-lg
                     bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                    dark:bg-black/20 dark:border-gray-700">
+                    dark:bg-black/20 dark:border-gray-700"
+        >
           <h2 className="text-lg font-semibold mb-2 text-white">
             📋 Instructions
           </h2>
@@ -192,10 +196,10 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors
               bg-white/10 backdrop-blur-md border-white/30 shadow-lg text-white
               dark:bg-black/20 dark:border-gray-700 ${
-              dragActive
-                ? "border-blue-500 bg-white/20"
-                : "hover:border-white/50"
-            }`}
+                dragActive
+                  ? 'border-blue-500 bg-white/20'
+                  : 'hover:border-white/50'
+              }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -208,7 +212,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
                   Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
                 </span>
               ) : (
-                "Drag and drop CSV file here, or click to select"
+                'Drag and drop CSV file here, or click to select'
               )}
             </p>
             <input
@@ -239,11 +243,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
               className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-colors
                 bg-white/20 backdrop-blur-md border border-white/30 shadow-lg text-white
                 hover:bg-white/30 hover:border-white/50
-                ${
-                uploading
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
+                ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {uploading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -270,7 +270,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
                   Uploading...
                 </span>
               ) : (
-                "Upload Products"
+                'Upload Products'
               )}
             </button>
           </div>
@@ -282,10 +282,8 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
             className={`border-l-4 p-6 rounded-lg
               bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
               dark:bg-black/20 dark:border-gray-700 ${
-              uploadResult.success
-                ? "border-green-500"
-                : "border-red-500"
-            }`}
+                uploadResult.success ? 'border-green-500' : 'border-red-500'
+              }`}
           >
             <div className="flex items-start gap-3">
               {uploadResult.success ? (
@@ -296,16 +294,16 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
               <div className="flex-1">
                 <h3
                   className={`text-xl font-bold mb-2 ${
-                    uploadResult.success ? "text-green-400" : "text-red-400"
+                    uploadResult.success ? 'text-green-400' : 'text-red-400'
                   }`}
                 >
                   {uploadResult.success
-                    ? "✅ Upload Successful!"
-                    : "❌ Upload Failed"}
+                    ? '✅ Upload Successful!'
+                    : '❌ Upload Failed'}
                 </h3>
                 <p
                   className={`mb-3 ${
-                    uploadResult.success ? "text-green-200" : "text-red-200"
+                    uploadResult.success ? 'text-green-200' : 'text-red-200'
                   }`}
                 >
                   {uploadResult.message}
@@ -313,7 +311,9 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
 
                 {uploadResult.details && (
                   <div className="bg-white/10 rounded p-4 space-y-2 border border-white/20">
-                    <p className="font-semibold text-white">Upload Statistics:</p>
+                    <p className="font-semibold text-white">
+                      Upload Statistics:
+                    </p>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-blue-300">
@@ -356,10 +356,14 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
         )}
 
         {/* CSV Format Guide */}
-        <div className="mt-8 p-6 rounded-lg
+        <div
+          className="mt-8 p-6 rounded-lg
                     bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                    dark:bg-black/20 dark:border-gray-700">
-          <h2 className="text-2xl font-bold mb-4 text-white">📝 CSV Format Guide</h2>
+                    dark:bg-black/20 dark:border-gray-700"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-white">
+            📝 CSV Format Guide
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-transparent border border-white/20 text-sm text-white">
               <thead>

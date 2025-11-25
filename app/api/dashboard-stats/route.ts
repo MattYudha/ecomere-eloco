@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/db";
+import { NextResponse } from 'next/server';
+import prisma from '@/utils/db';
 
 // Helper function to calculate percentage change
 const calculatePercentageChange = (current: number, previous: number) => {
@@ -37,7 +37,7 @@ export async function GET() {
           gte: today,
           lt: tomorrow,
         },
-        status: "DELIVERED",
+        status: 'DELIVERED',
       },
     });
 
@@ -79,7 +79,7 @@ export async function GET() {
           gte: yesterday,
           lt: today,
         },
-        status: "DELIVERED",
+        status: 'DELIVERED',
       },
     });
 
@@ -133,7 +133,7 @@ export async function GET() {
             gte: day,
             lt: nextDay,
           },
-          status: "DELIVERED",
+          status: 'DELIVERED',
         },
       });
       weeklyRevenuePromises.push(promise);
@@ -198,7 +198,7 @@ export async function GET() {
 
     return NextResponse.json(stats);
   } catch (error) {
-    console.error("[DASHBOARD_STATS_GET]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error('[DASHBOARD_STATS_GET]', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

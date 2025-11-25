@@ -291,8 +291,12 @@ const LoginPage = () => {
                     textSize="lg"
                     className="relative overflow-hidden group bg-yellow-500/30 dark:bg-yellow-700/30 backdrop-blur-md border border-yellow-400/50 dark:border-yellow-600/50 text-white hover:bg-yellow-500/50 dark:hover:bg-yellow-700/50 transition-all duration-300 rounded-full"
                   >
-                    <span className="text-yellow-500 group-hover:text-white transition-colors duration-300">Sign</span>{' '}
-                    <span className="text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors duration-300">In</span>
+                    <span className="text-yellow-500 group-hover:text-white transition-colors duration-300">
+                      Sign
+                    </span>{' '}
+                    <span className="text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors duration-300">
+                      In
+                    </span>
                   </CustomButton>
                 </div>
               </form>

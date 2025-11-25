@@ -14,7 +14,7 @@ const getUserNotifications = async (req, res) => {
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
     } = req.query;
 
     // Build filter conditions
@@ -25,9 +25,9 @@ const getUserNotifications = async (req, res) => {
       ...(search && {
         OR: [
           { title: { contains: search } },
-          { message: { contains: search } }
-        ]
-      })
+          { message: { contains: search } },
+        ],
+      }),
     };
 
     // Calculate pagination
@@ -53,8 +53,8 @@ const getUserNotifications = async (req, res) => {
       }),
       prisma.notification.count({ where }),
       prisma.notification.count({
-        where: { userId, isRead: false }
-      })
+        where: { userId, isRead: false },
+      }),
     ]);
 
     const totalPages = Math.ceil(total / take);
@@ -64,7 +64,7 @@ const getUserNotifications = async (req, res) => {
       total,
       page: parseInt(page),
       totalPages,
-      unreadCount
+      unreadCount,
     });
   } catch (error) {
     console.error('Error fetching notifications:', error);
@@ -77,17 +77,29 @@ const getUserNotifications = async (req, res) => {
  */
 const createNotification = async (req, res) => {
   try {
-    const { userId, title, message, type, priority = 'NORMAL', metadata } = req.body;
+    const {
+      userId,
+      title,
+      message,
+      type,
+      priority = 'NORMAL',
+      metadata,
+    } = req.body;
 
     // Validate required fields
     if (!userId || !title || !message || !type) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: userId, title, message, type' 
+      return res.status(400).json({
+        error: 'Missing required fields: userId, title, message, type',
       });
     }
 
     // Validate enum values
-    const validTypes = ['ORDER_UPDATE', 'PAYMENT_STATUS', 'PROMOTION', 'SYSTEM_ALERT'];
+    const validTypes = [
+      'ORDER_UPDATE',
+      'PAYMENT_STATUS',
+      'PROMOTION',
+      'SYSTEM_ALERT',
+    ];
     const validPriorities = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
 
     if (!validTypes.includes(type)) {
@@ -100,7 +112,7 @@ const createNotification = async (req, res) => {
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!user) {
@@ -114,8 +126,8 @@ const createNotification = async (req, res) => {
         message,
         type,
         priority,
-        metadata
-      }
+        metadata,
+      },
     });
 
     res.status(201).json(notification);
@@ -139,7 +151,7 @@ const updateNotification = async (req, res) => {
 
     const notification = await prisma.notification.update({
       where: { id },
-      data: { isRead }
+      data: { isRead },
     });
 
     res.json(notification);
@@ -160,7 +172,9 @@ const bulkMarkAsRead = async (req, res) => {
     const { notificationIds, userId } = req.body;
 
     if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
-      return res.status(400).json({ error: 'notificationIds must be a non-empty array' });
+      return res
+        .status(400)
+        .json({ error: 'notificationIds must be a non-empty array' });
     }
 
     if (!userId) {
@@ -170,14 +184,14 @@ const bulkMarkAsRead = async (req, res) => {
     const updateResult = await prisma.notification.updateMany({
       where: {
         id: { in: notificationIds },
-        userId: userId // Ensure user can only update their own notifications
+        userId: userId, // Ensure user can only update their own notifications
       },
-      data: { isRead: true }
+      data: { isRead: true },
     });
 
-    res.json({ 
+    res.json({
       message: `${updateResult.count} notifications marked as read`,
-      updatedCount: updateResult.count
+      updatedCount: updateResult.count,
     });
   } catch (error) {
     console.error('Error bulk marking notifications as read:', error);
@@ -195,7 +209,7 @@ const deleteNotification = async (req, res) => {
 
     // Ensure user can only delete their own notifications
     const notification = await prisma.notification.findFirst({
-      where: { id, userId }
+      where: { id, userId },
     });
 
     if (!notification) {
@@ -203,7 +217,7 @@ const deleteNotification = async (req, res) => {
     }
 
     await prisma.notification.delete({
-      where: { id }
+      where: { id },
     });
 
     res.json({ message: 'Notification deleted successfully' });
@@ -221,7 +235,9 @@ const bulkDeleteNotifications = async (req, res) => {
     const { notificationIds, userId } = req.body;
 
     if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
-      return res.status(400).json({ error: 'notificationIds must be a non-empty array' });
+      return res
+        .status(400)
+        .json({ error: 'notificationIds must be a non-empty array' });
     }
 
     if (!userId) {
@@ -231,13 +247,13 @@ const bulkDeleteNotifications = async (req, res) => {
     const deleteResult = await prisma.notification.deleteMany({
       where: {
         id: { in: notificationIds },
-        userId: userId // Ensure user can only delete their own notifications
-      }
+        userId: userId, // Ensure user can only delete their own notifications
+      },
     });
 
-    res.json({ 
+    res.json({
       message: `${deleteResult.count} notifications deleted`,
-      deletedCount: deleteResult.count
+      deletedCount: deleteResult.count,
     });
   } catch (error) {
     console.error('Error bulk deleting notifications:', error);
@@ -253,7 +269,7 @@ const getUnreadCount = async (req, res) => {
     const { userId } = req.params;
 
     const unreadCount = await prisma.notification.count({
-      where: { userId, isRead: false }
+      where: { userId, isRead: false },
     });
 
     res.json({ unreadCount });
@@ -270,5 +286,5 @@ module.exports = {
   bulkMarkAsRead,
   deleteNotification,
   bulkDeleteNotifications,
-  getUnreadCount
+  getUnreadCount,
 };

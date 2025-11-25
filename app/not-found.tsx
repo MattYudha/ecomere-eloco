@@ -6,7 +6,6 @@ export default function NotFound() {
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white p-4">
       <div className="relative w-full max-w-lg p-8 sm:p-12 rounded-3xl backdrop-blur-md bg-white/10 dark:bg-gray-800/30 shadow-2xl border border-white/20 dark:border-gray-700/50 text-center overflow-hidden">
-        
         {/* Icon background */}
         <div className="absolute -top-10 -left-10 text-gray-300/10 dark:text-gray-500/10 transform rotate-12">
           <TbError404 size={250} />
@@ -28,7 +27,8 @@ export default function NotFound() {
 
           {/* Message */}
           <p className="mt-4 text-base sm:text-lg text-gray-600 dark:text-gray-300">
-            Oops! The page you are looking for does not exist. It might have been moved or deleted.
+            Oops! The page you are looking for does not exist. It might have
+            been moved or deleted.
           </p>
 
           {/* Home Button */}

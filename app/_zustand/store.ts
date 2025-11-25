@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type ProductInCart = {
   id: string;
@@ -47,7 +47,7 @@ export const useProductStore = create<State & Actions>()(
       addToCart: (newProduct) => {
         set((state) => {
           const cartItem = state.products.find(
-            (item) => item.id === newProduct.id
+            (item) => item.id === newProduct.id,
           );
           if (!cartItem) {
             return { products: [...state.products, newProduct] };
@@ -63,7 +63,6 @@ export const useProductStore = create<State & Actions>()(
       },
       clearCart: () => {
         set((state: any) => {
-          
           return {
             products: [],
             allQuantity: 0,
@@ -74,7 +73,7 @@ export const useProductStore = create<State & Actions>()(
       removeFromCart: (id) => {
         set((state) => {
           state.products = state.products.filter(
-            (product: ProductInCart) => product.id !== id
+            (product: ProductInCart) => product.id !== id,
           );
           return { products: state.products };
         });
@@ -122,7 +121,9 @@ export const useProductStore = create<State & Actions>()(
       },
       removeFromWishlistLocal: (productId) => {
         set((state) => ({
-          wishlist: state.wishlist.filter((product) => product.id !== productId),
+          wishlist: state.wishlist.filter(
+            (product) => product.id !== productId,
+          ),
         }));
       },
       isProductInWishlist: (productId) => {
@@ -131,8 +132,8 @@ export const useProductStore = create<State & Actions>()(
       clearWishlist: () => set({ wishlist: [] }),
     }),
     {
-      name: "products-storage", // name of the item in the storage (must be unique)
+      name: 'products-storage', // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
-    }
-  )
+    },
+  ),
 );

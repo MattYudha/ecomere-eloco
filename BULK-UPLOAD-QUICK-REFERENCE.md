@@ -243,17 +243,14 @@ curl -X DELETE "http://localhost:3001/api/bulk-upload/BATCH_ID?deleteProducts=tr
 ### ✅ DO:
 
 1. **Review before delete**
-
    - Check how many products will be deleted
    - Check if batch status is FAILED/PARTIAL
 
 2. **Use "Delete Batch Only" for audit trail**
-
    - Keep history for compliance
    - Products already in production
 
 3. **Use "Delete Batch + Products" for cleanup**
-
    - Test uploads
    - Duplicate data
    - Invalid imports

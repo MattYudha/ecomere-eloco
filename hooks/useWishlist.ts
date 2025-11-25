@@ -37,8 +37,8 @@ export const useWishlist = (): UseWishlist => {
         }
       }
     } catch (err) {
-      console.error("Failed to load wishlist from localStorage", err);
-      setError("Failed to load wishlist.");
+      console.error('Failed to load wishlist from localStorage', err);
+      setError('Failed to load wishlist.');
     } finally {
       setLoading(false);
     }
@@ -66,12 +66,17 @@ export const useWishlist = (): UseWishlist => {
   }, []);
 
   const removeFromWishlist = useCallback((id: string) => {
-    setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== id));
+    setWishlist((prevWishlist) =>
+      prevWishlist.filter((item) => item.id !== id),
+    );
   }, []);
 
-  const isInWishlist = useCallback((id: string): boolean => {
-    return wishlist.some((item) => item.id === id);
-  }, [wishlist]);
+  const isInWishlist = useCallback(
+    (id: string): boolean => {
+      return wishlist.some((item) => item.id === id);
+    },
+    [wishlist],
+  );
 
   return {
     wishlist,

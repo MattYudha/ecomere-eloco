@@ -1,13 +1,13 @@
-"use client";
-import { SectionTitle } from "@/components";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
-import apiClient from "@/lib/api";
-import Image from "next/image";
-import Link from "next/link";
-import { Heart, ShoppingCart } from "lucide-react";
-import toast from "react-hot-toast";
-import { useProductStore } from "../_zustand/store";
+'use client';
+import { SectionTitle } from '@/components';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import apiClient from '@/lib/api';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, ShoppingCart } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useProductStore } from '../_zustand/store';
 
 interface WishlistedProduct {
   id: string;
@@ -26,7 +26,7 @@ const WishlistPage = () => {
 
   useEffect(() => {
     const fetchWishlist = async () => {
-      if (status === "loading") return; // Wait for session to load
+      if (status === 'loading') return; // Wait for session to load
       if (!session) {
         setLoading(false);
         return; // No session, no wishlist to fetch
@@ -34,15 +34,15 @@ const WishlistPage = () => {
 
       try {
         setLoading(true);
-        const response = await apiClient.get("/api/wishlist");
+        const response = await apiClient.get('/api/wishlist');
         if (!response.ok) {
-          throw new Error("Failed to fetch wishlist");
+          throw new Error('Failed to fetch wishlist');
         }
         const data: WishlistedProduct[] = await response.json();
         setWishlist(data);
       } catch (error) {
-        console.error("[FETCH_WISHLIST_ERROR]", error);
-        toast.error("Failed to load wishlist.");
+        console.error('[FETCH_WISHLIST_ERROR]', error);
+        toast.error('Failed to load wishlist.');
       } finally {
         setLoading(false);
       }
@@ -53,22 +53,22 @@ const WishlistPage = () => {
 
   const handleRemoveFromWishlist = async (productId: string) => {
     if (!session) {
-      toast.error("You must be logged in to remove items from your wishlist.");
+      toast.error('You must be logged in to remove items from your wishlist.');
       return;
     }
 
     try {
       const response = await apiClient.delete(`/api/wishlist/${productId}`);
       if (!response.ok) {
-        throw new Error("Failed to remove item from wishlist");
+        throw new Error('Failed to remove item from wishlist');
       }
       setWishlist((prevWishlist) =>
-        prevWishlist.filter((item) => item.id !== productId)
+        prevWishlist.filter((item) => item.id !== productId),
       );
-      toast.success("Item removed from wishlist!");
+      toast.success('Item removed from wishlist!');
     } catch (error) {
-      console.error("[REMOVE_FROM_WISHLIST_ERROR]", error);
-      toast.error("Failed to remove item from wishlist.");
+      console.error('[REMOVE_FROM_WISHLIST_ERROR]', error);
+      toast.error('Failed to remove item from wishlist.');
     }
   };
 
@@ -102,7 +102,10 @@ const WishlistPage = () => {
         <div className="container mx-auto p-4 text-center mt-10">
           <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
           <p>Please log in to view your wishlist.</p>
-          <Link href="/login" className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+          <Link
+            href="/login"
+            className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+          >
             Log In
           </Link>
         </div>
@@ -118,9 +121,16 @@ const WishlistPage = () => {
 
         {wishlist.length === 0 ? (
           <div className="text-center p-10 border rounded-lg bg-white dark:bg-gray-800">
-            <p className="text-xl text-gray-600 dark:text-gray-400">Your wishlist is empty.</p>
-            <p className="mt-2 text-gray-500">Start adding your favorite products!</p>
-            <Link href="/" className="mt-5 inline-block px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Your wishlist is empty.
+            </p>
+            <p className="mt-2 text-gray-500">
+              Start adding your favorite products!
+            </p>
+            <Link
+              href="/"
+              className="mt-5 inline-block px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+            >
               Continue Shopping
             </Link>
           </div>
@@ -140,7 +150,11 @@ const WishlistPage = () => {
                 </button>
                 <Link href={`/product/${product.slug}`} className="block">
                   <Image
-                    src={product.mainImage ? `/${product.mainImage.replace(/^\//, '')}` : "/product_placeholder.jpg"}
+                    src={
+                      product.mainImage
+                        ? `/${product.mainImage.replace(/^\//, '')}`
+                        : '/product_placeholder.jpg'
+                    }
                     alt={product.title}
                     width={300}
                     height={200}
@@ -149,11 +163,16 @@ const WishlistPage = () => {
                 </Link>
                 <div className="p-4 flex-grow flex flex-col justify-between">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                    <Link href={`/product/${product.slug}`} className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    <Link
+                      href={`/product/${product.slug}`}
+                      className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    >
                       {product.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-xl font-bold mb-4">${product.price.toFixed(2)}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-xl font-bold mb-4">
+                    ${product.price.toFixed(2)}
+                  </p>
                   <button
                     onClick={() => handleAddToCart(product)}
                     className="flex items-center justify-center w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors"

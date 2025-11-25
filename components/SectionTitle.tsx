@@ -17,17 +17,17 @@ const SectionTitle = ({ title, path }: { title: string; path: string }) => {
   return (
     <div className="relative h-[200px] pt-16 mb-8 max-sm:h-[150px] max-sm:pt-12 overflow-hidden">
       {/* Animated gradient background with depth */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-cream via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950"></div>
 
       {/* Animated mesh gradient overlay for dynamic effect */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-300 dark:bg-indigo-700 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-grilli-gold/50 dark:bg-grilli-gold/70 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
         <div
-          className="absolute top-0 right-1/4 w-96 h-96 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
+          className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-300/50 dark:bg-yellow-500/70 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
           style={{ animationDelay: '1s' }}
         ></div>
         <div
-          className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-300 dark:bg-pink-700 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
+          className="absolute bottom-0 left-1/2 w-96 h-96 bg-grilli-gold/50 dark:bg-grilli-gold/70 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
           style={{ animationDelay: '2s' }}
         ></div>
       </div>
@@ -45,12 +45,12 @@ const SectionTitle = ({ title, path }: { title: string; path: string }) => {
       ></div>
 
       {/* Elegant top border with gradient */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-300 dark:via-indigo-700 to-transparent"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-grilli-gold dark:via-grilli-gold to-transparent"></div>
 
       {/* Floating decorative elements */}
-      <div className="absolute top-8 left-8 w-32 h-32 border border-indigo-200 dark:border-indigo-700 rounded-full animate-pulse"></div>
+      <div className="absolute top-8 left-8 w-32 h-32 border border-grilli-gold/50 dark:border-grilli-gold/70 rounded-full animate-pulse"></div>
       <div
-        className="absolute bottom-8 right-8 w-24 h-24 border border-purple-200 dark:border-purple-700 rounded-full animate-pulse"
+        className="absolute bottom-8 right-8 w-24 h-24 border border-yellow-300/50 dark:border-yellow-500/70 rounded-full animate-pulse"
         style={{ animationDelay: '1s' }}
       ></div>
 
@@ -60,12 +60,12 @@ const SectionTitle = ({ title, path }: { title: string; path: string }) => {
         <div className="flex items-center gap-2 mb-4 max-sm:mb-2">
           {pathParts.map((part, index) => (
             <React.Fragment key={index}>
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 px-4 py-2 rounded-full border border-white/50 dark:border-gray-600/50 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white/70 dark:hover:bg-gray-700/70 cursor-pointer max-sm:text-[10px] max-sm:px-3 max-sm:py-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 hover:text-grilli-gold dark:hover:text-grilli-gold transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 px-4 py-2 rounded-full border border-white/50 dark:border-gray-600/50 hover:border-grilli-gold dark:hover:border-grilli-gold hover:bg-white/70 dark:hover:bg-gray-700/70 cursor-pointer max-sm:text-[10px] max-sm:px-3 max-sm:py-1.5">
                 {part}
               </span>
               {index < pathParts.length - 1 && (
                 <svg
-                  className="w-4 h-4 text-indigo-400 dark:text-indigo-600 max-sm:w-3 max-sm:h-3"
+                  className="w-4 h-4 text-grilli-gold dark:text-grilli-gold max-sm:w-3 max-sm:h-3"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -86,7 +86,7 @@ const SectionTitle = ({ title, path }: { title: string; path: string }) => {
         <div className="relative">
           {/* Glow effect behind text */}
           <div className="absolute inset-0 blur-xl opacity-30">
-            <h1 className="text-6xl font-bold text-center max-md:text-5xl max-sm:text-3xl text-indigo-600 dark:text-indigo-400">
+            <h1 className="text-6xl font-bold text-center max-md:text-5xl max-sm:text-3xl text-grilli-gold dark:text-grilli-gold">
               {title}
             </h1>
           </div>
@@ -108,9 +108,9 @@ const SectionTitle = ({ title, path }: { title: string; path: string }) => {
 
         {/* Decorative underline with animation */}
         <div className="mt-4 flex items-center gap-2 max-sm:mt-2">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-indigo-400 dark:to-indigo-600 max-sm:w-6"></div>
-          <div className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-600 animate-pulse"></div>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-indigo-400 dark:to-indigo-600 max-sm:w-6"></div>
+          <div className="h-px w-10 bg-gradient-to-r from-transparent to-grilli-gold dark:to-grilli-gold max-sm:w-6"></div>
+          <div className="w-2 h-2 rounded-full bg-grilli-gold dark:bg-grilli-gold animate-pulse"></div>
+          <div className="h-px w-10 bg-gradient-to-l from-transparent to-grilli-gold dark:to-grilli-gold max-sm:w-6"></div>
         </div>
       </div>
 

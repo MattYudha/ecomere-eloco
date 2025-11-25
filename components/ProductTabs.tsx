@@ -81,9 +81,7 @@ const ProductTabs = ({ product }: { product: Product }) => {
 
               <div className="space-y-4">
                 {/* Manufacturer Row */}
-                <div
-                  className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60"
-                >
+                <div className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60">
                   <span className="font-semibold text-gray-800 dark:text-gray-200">
                     Manufacturer
                   </span>
@@ -93,9 +91,7 @@ const ProductTabs = ({ product }: { product: Product }) => {
                 </div>
 
                 {/* Category Row */}
-                <div
-                  className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60"
-                >
+                <div className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60">
                   <span className="font-semibold text-gray-800 dark:text-gray-200">
                     Category
                   </span>
@@ -107,9 +103,7 @@ const ProductTabs = ({ product }: { product: Product }) => {
                 </div>
 
                 {/* Color Row */}
-                <div
-                  className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60"
-                >
+                <div className="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/60">
                   <span className="font-semibold text-gray-800 dark:text-gray-200">
                     Color
                   </span>

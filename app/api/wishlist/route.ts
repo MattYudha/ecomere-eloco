@@ -1,8 +1,8 @@
-import { getServerSession } from "next-auth/next"; // Corrected import
-import { NextResponse } from "next/server";
-import { authOptions } from "@/utils/authOptions";
-import prisma from "@/utils/db";
-import { Session } from "next-auth"; // Import Session type
+import { getServerSession } from 'next-auth/next'; // Corrected import
+import { NextResponse } from 'next/server';
+import { authOptions } from '@/utils/authOptions';
+import prisma from '@/utils/db';
+import { Session } from 'next-auth'; // Import Session type
 
 // Interface for the POST request body
 interface AddToWishlistRequestBody {
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const session: Session | null = await getServerSession(authOptions); // Explicitly type session
 
     if (!session || !session.user || !session.user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse('Unauthorized', { status: 401 });
     }
 
     const wishlistItems = await prisma.wishlist.findMany({
@@ -35,8 +35,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error("[WISHLIST_GET]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error('[WISHLIST_GET]', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
 
@@ -46,14 +46,14 @@ export async function POST(request: Request) {
     const session: Session | null = await getServerSession(authOptions); // Explicitly type session
 
     if (!session || !session.user || !session.user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse('Unauthorized', { status: 401 });
     }
 
     const body: AddToWishlistRequestBody = await request.json(); // Explicitly type body
     const { productId } = body;
 
     if (!productId) {
-      return new NextResponse("Product ID is required", { status: 400 });
+      return new NextResponse('Product ID is required', { status: 400 });
     }
 
     // Check if the product already exists in the wishlist
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     });
 
     if (existingWishlistItem) {
-      return new NextResponse("Product already in wishlist", { status: 409 });
+      return new NextResponse('Product already in wishlist', { status: 409 });
     }
 
     const newWishlistItem = await prisma.wishlist.create({
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newWishlistItem.product, { status: 201 });
   } catch (error) {
-    console.error("[WISHLIST_POST]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error('[WISHLIST_POST]', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

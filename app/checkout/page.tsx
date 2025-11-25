@@ -1,29 +1,29 @@
-"use client";
-import { SectionTitle } from "@/components";
-import { useProductStore } from "../_zustand/store";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import apiClient from "@/lib/api";
+'use client';
+import { SectionTitle } from '@/components';
+import { useProductStore } from '../_zustand/store';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api';
 
 const CheckoutPage = () => {
   const { data: session } = useSession();
   const [checkoutForm, setCheckoutForm] = useState({
-    name: "",
-    lastname: "",
-    phone: "",
-    email: "",
-    company: "",
-    adress: "",
-    apartment: "",
-    city: "",
-    country: "",
-    postalCode: "",
-    orderNotice: "",
+    name: '',
+    lastname: '',
+    phone: '',
+    email: '',
+    company: '',
+    adress: '',
+    apartment: '',
+    city: '',
+    country: '',
+    postalCode: '',
+    orderNotice: '',
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { products, total, clearCart } = useProductStore();
   const router = useRouter();
@@ -31,59 +31,78 @@ const CheckoutPage = () => {
   // Add validation functions that match server requirements
   const validateForm = () => {
     const errors: string[] = [];
-    
+
     // Name validation
     if (!checkoutForm.name.trim() || checkoutForm.name.trim().length < 2) {
-      errors.push("Name must be at least 2 characters");
+      errors.push('Name must be at least 2 characters');
     }
-    
+
     // Lastname validation
-    if (!checkoutForm.lastname.trim() || checkoutForm.lastname.trim().length < 2) {
-      errors.push("Lastname must be at least 2 characters");
+    if (
+      !checkoutForm.lastname.trim() ||
+      checkoutForm.lastname.trim().length < 2
+    ) {
+      errors.push('Lastname must be at least 2 characters');
     }
-    
+
     // Email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    if (!checkoutForm.email.trim() || !emailRegex.test(checkoutForm.email.trim())) {
-      errors.push("Please enter a valid email address");
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (
+      !checkoutForm.email.trim() ||
+      !emailRegex.test(checkoutForm.email.trim())
+    ) {
+      errors.push('Please enter a valid email address');
     }
-    
+
     // Phone validation (must be at least 10 digits)
     const phoneDigits = checkoutForm.phone.replace(/[^0-9]/g, '');
     if (!checkoutForm.phone.trim() || phoneDigits.length < 10) {
-      errors.push("Phone number must be at least 10 digits");
+      errors.push('Phone number must be at least 10 digits');
     }
-    
+
     // Company validation
-    if (!checkoutForm.company.trim() || checkoutForm.company.trim().length < 5) {
-      errors.push("Company must be at least 5 characters");
+    if (
+      !checkoutForm.company.trim() ||
+      checkoutForm.company.trim().length < 5
+    ) {
+      errors.push('Company must be at least 5 characters');
     }
-    
+
     // Address validation
     if (!checkoutForm.adress.trim() || checkoutForm.adress.trim().length < 5) {
-      errors.push("Address must be at least 5 characters");
+      errors.push('Address must be at least 5 characters');
     }
-    
+
     // Apartment validation (updated to 1 character minimum)
-    if (!checkoutForm.apartment.trim() || checkoutForm.apartment.trim().length < 1) {
-      errors.push("Apartment is required");
+    if (
+      !checkoutForm.apartment.trim() ||
+      checkoutForm.apartment.trim().length < 1
+    ) {
+      errors.push('Apartment is required');
     }
-    
+
     // City validation
     if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 5) {
-      errors.push("City must be at least 5 characters");
+      errors.push('City must be at least 5 characters');
     }
-    
+
     // Country validation
-    if (!checkoutForm.country.trim() || checkoutForm.country.trim().length < 5) {
-      errors.push("Country must be at least 5 characters");
+    if (
+      !checkoutForm.country.trim() ||
+      checkoutForm.country.trim().length < 5
+    ) {
+      errors.push('Country must be at least 5 characters');
     }
-    
+
     // Postal code validation
-    if (!checkoutForm.postalCode.trim() || checkoutForm.postalCode.trim().length < 3) {
-      errors.push("Postal code must be at least 3 characters");
+    if (
+      !checkoutForm.postalCode.trim() ||
+      checkoutForm.postalCode.trim().length < 3
+    ) {
+      errors.push('Postal code must be at least 3 characters');
     }
-    
+
     return errors;
   };
 
@@ -91,7 +110,7 @@ const CheckoutPage = () => {
     // Client-side validation first
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
-      validationErrors.forEach(error => {
+      validationErrors.forEach((error) => {
         toast.error(error);
       });
       return;
@@ -99,52 +118,68 @@ const CheckoutPage = () => {
 
     // Basic client-side checks for required fields (UX only)
     const requiredFields = [
-      'name', 'lastname', 'phone', 'email', 'company', 
-      'adress', 'apartment', 'city', 'country', 'postalCode'
+      'name',
+      'lastname',
+      'phone',
+      'email',
+      'company',
+      'adress',
+      'apartment',
+      'city',
+      'country',
+      'postalCode',
     ];
-    
-    const missingFields = requiredFields.filter(field => 
-      !checkoutForm[field as keyof typeof checkoutForm]?.trim()
+
+    const missingFields = requiredFields.filter(
+      (field) => !checkoutForm[field as keyof typeof checkoutForm]?.trim(),
     );
 
     if (missingFields.length > 0) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
 
     if (products.length === 0) {
-      toast.error("Your cart is empty");
+      toast.error('Your cart is empty');
       return;
     }
 
     if (total <= 0) {
-      toast.error("Invalid order total");
+      toast.error('Invalid order total');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      console.log("🚀 Starting order creation...");
-      
+      console.log('🚀 Starting order creation...');
+
       // Get user ID if logged in
       let userId = null;
       if (session?.user?.email) {
         try {
-          console.log("🔍 Getting user ID for logged-in user:", session.user.email);
-          const userResponse = await apiClient.get(`/api/users/email/${session.user.email}`);
+          console.log(
+            '🔍 Getting user ID for logged-in user:',
+            session.user.email,
+          );
+          const userResponse = await apiClient.get(
+            `/api/users/email/${session.user.email}`,
+          );
           if (userResponse.ok) {
             const userData = await userResponse.json();
             userId = userData.id;
-            console.log("✅ Found user ID:", userId);
+            console.log('✅ Found user ID:', userId);
           } else {
-            console.log("❌ Could not find user with email:", session.user.email);
+            console.log(
+              '❌ Could not find user with email:',
+              session.user.email,
+            );
           }
         } catch (userError) {
-          console.log("⚠️  Error getting user ID:", userError);
+          console.log('⚠️  Error getting user ID:', userError);
         }
       }
-      
+
       // Prepare the order data
       const orderData = {
         name: checkoutForm.name.trim(),
@@ -155,48 +190,55 @@ const CheckoutPage = () => {
         adress: checkoutForm.adress.trim(),
         apartment: checkoutForm.apartment.trim(),
         postalCode: checkoutForm.postalCode.trim(),
-        status: "pending",
+        status: 'pending',
         total: total,
         city: checkoutForm.city.trim(),
         country: checkoutForm.country.trim(),
         orderNotice: checkoutForm.orderNotice.trim(),
-        userId: userId // Add user ID for notifications
+        userId: userId, // Add user ID for notifications
       };
 
-      console.log("📋 Order data being sent:", orderData);
+      console.log('📋 Order data being sent:', orderData);
 
       // Send order data to server for validation and processing
-      const response = await apiClient.post("/api/orders", orderData);
+      const response = await apiClient.post('/api/orders', orderData);
 
-      console.log("📡 API Response received:");
-      console.log("  Status:", response.status);
-      console.log("  Status Text:", response.statusText);
-      console.log("  Response OK:", response.ok);
-      
+      console.log('📡 API Response received:');
+      console.log('  Status:', response.status);
+      console.log('  Status Text:', response.statusText);
+      console.log('  Response OK:', response.ok);
+
       // Check if response is ok before parsing
       if (!response.ok) {
-        console.error("❌ Response not OK:", response.status, response.statusText);
-        
+        console.error(
+          '❌ Response not OK:',
+          response.status,
+          response.statusText,
+        );
+
         // --- START DEBUGGING BLOCK ---
         // Clone the response to be able to read it twice
         const clonedResponse = response.clone();
         try {
-            const rawErrorText = await clonedResponse.text();
-            console.log("📄 RAW SERVER ERROR RESPONSE:", rawErrorText);
+          const rawErrorText = await clonedResponse.text();
+          console.log('📄 RAW SERVER ERROR RESPONSE:', rawErrorText);
         } catch (e) {
-            console.error("Could not get raw text from error response.");
+          console.error('Could not get raw text from error response.');
         }
         // --- END DEBUGGING BLOCK ---
 
-        let errorData = { error: "Order creation failed", details: "Please try again." };
+        let errorData = {
+          error: 'Order creation failed',
+          details: 'Please try again.',
+        };
         try {
           // Try to get detailed error information from the server
           errorData = await response.json();
         } catch (jsonError) {
-          console.error("Could not parse error as JSON:", jsonError);
+          console.error('Could not parse error as JSON:', jsonError);
         }
 
-        console.error("Parsed error data:", errorData);
+        console.error('Parsed error data:', errorData);
 
         // Handle different error types
         if (response.status === 409) {
@@ -206,55 +248,57 @@ const CheckoutPage = () => {
             toast.error(`${detail.field}: ${detail.message}`);
           });
         } else {
-          toast.error(errorData.error || "An unexpected error occurred.");
+          toast.error(errorData.error || 'An unexpected error occurred.');
         }
         return; // Stop execution
       }
 
       const data = await response.json();
-      console.log("✅ Parsed response data:", data);
-      
+      console.log('✅ Parsed response data:', data);
+
       const orderId: string = data.id;
-      console.log("🆔 Extracted order ID:", orderId);
+      console.log('🆔 Extracted order ID:', orderId);
 
       if (!orderId) {
-        console.error("❌ Order ID is missing or falsy!");
-        console.error("Full response data:", JSON.stringify(data, null, 2));
-        throw new Error("Order ID not received from server");
+        console.error('❌ Order ID is missing or falsy!');
+        console.error('Full response data:', JSON.stringify(data, null, 2));
+        throw new Error('Order ID not received from server');
       }
 
-      console.log("✅ Order ID validation passed, proceeding with product addition...");
+      console.log(
+        '✅ Order ID validation passed, proceeding with product addition...',
+      );
 
       // Add products to order
       for (let i = 0; i < products.length; i++) {
         console.log(`🛍️ Adding product ${i + 1}/${products.length}:`, {
           orderId,
           productId: products[i].id,
-          quantity: products[i].amount
+          quantity: products[i].amount,
         });
-        
+
         await addOrderProduct(orderId, products[i].id, products[i].amount);
         console.log(`✅ Product ${i + 1} added successfully`);
       }
 
-      console.log(" All products added successfully!");
+      console.log(' All products added successfully!');
 
       // Clear form and cart
       setCheckoutForm({
-        name: "",
-        lastname: "",
-        phone: "",
-        email: "",
-        company: "",
-        adress: "",
-        apartment: "",
-        city: "",
-        country: "",
-        postalCode: "",
-        orderNotice: "",
+        name: '',
+        lastname: '',
+        phone: '',
+        email: '',
+        company: '',
+        adress: '',
+        apartment: '',
+        city: '',
+        country: '',
+        postalCode: '',
+        orderNotice: '',
       });
       clearCart();
-      
+
       // Refresh notification count if user is logged in
       try {
         // This will trigger a refresh of notifications in the background
@@ -262,37 +306,41 @@ const CheckoutPage = () => {
       } catch (error) {
         console.log('Note: Could not trigger notification refresh');
       }
-      
-      toast.success("Order created successfully! You will be contacted for payment.");
+
+      toast.success(
+        'Order created successfully! You will be contacted for payment.',
+      );
       setTimeout(() => {
-        router.push("/");
+        router.push('/');
       }, 1000);
     } catch (error: any) {
-      console.error("💥 Error in makePurchase:", error);
-      
+      console.error('💥 Error in makePurchase:', error);
+
       // Handle server validation errors
       if (error.response?.status === 400) {
-        console.log(" Handling 400 error...");
+        console.log(' Handling 400 error...');
         try {
           const errorData = await error.response.json();
-          console.log("Error data:", errorData);
+          console.log('Error data:', errorData);
           if (errorData.details && Array.isArray(errorData.details)) {
             // Show specific validation errors
             errorData.details.forEach((detail: any) => {
               toast.error(`${detail.field}: ${detail.message}`);
             });
           } else {
-            toast.error(errorData.error || "Validation failed");
+            toast.error(errorData.error || 'Validation failed');
           }
         } catch (parseError) {
-          console.error("Failed to parse error response:", parseError);
-          toast.error("Validation failed");
+          console.error('Failed to parse error response:', parseError);
+          toast.error('Validation failed');
         }
       } else if (error.response?.status === 409) {
-        toast.error("Duplicate order detected. Please wait before creating another order.");
+        toast.error(
+          'Duplicate order detected. Please wait before creating another order.',
+        );
       } else {
-        console.log("🔍 Handling generic error...");
-        toast.error("Failed to create order. Please try again.");
+        console.log('🔍 Handling generic error...');
+        toast.error('Failed to create order. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -302,34 +350,33 @@ const CheckoutPage = () => {
   const addOrderProduct = async (
     orderId: string,
     productId: string,
-    productQuantity: number
+    productQuantity: number,
   ) => {
     try {
-      console.log("️ Adding product to order:", {
+      console.log('️ Adding product to order:', {
         customerOrderId: orderId,
         productId,
-        quantity: productQuantity
+        quantity: productQuantity,
       });
-      
-      const response = await apiClient.post("/api/order-product", {
+
+      const response = await apiClient.post('/api/order-product', {
         customerOrderId: orderId,
         productId: productId,
         quantity: productQuantity,
       });
 
-      console.log("📡 Product order response:", response);
-      
+      console.log('📡 Product order response:', response);
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Product order failed:", response.status, errorText);
+        console.error('❌ Product order failed:', response.status, errorText);
         throw new Error(`Product order failed: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("✅ Product order successful:", data);
-      
+      console.log('✅ Product order successful:', data);
     } catch (error) {
-      console.error("💥 Error creating product order:", error);
+      console.error('💥 Error creating product order:', error);
       throw error;
     }
   };
@@ -337,7 +384,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (products.length === 0) {
       toast.error("You don't have items in your cart");
-      router.push("/cart");
+      router.push('/cart');
     }
   }, [products.length, router]);
 
@@ -357,7 +404,7 @@ const CheckoutPage = () => {
       </div>
 
       <SectionTitle title="Checkout" path="Home | Cart | Checkout" />
-      
+
       <main className="relative z-10 mx-auto max-w-screen-2xl grid grid-cols-1 lg:grid-cols-2 gap-x-16 lg:px-8 xl:gap-x-48 py-12 sm:py-16">
         <h1 className="sr-only">Order information</h1>
 
@@ -370,7 +417,10 @@ const CheckoutPage = () => {
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/50 dark:from-gray-700/50 to-transparent pointer-events-none rounded-3xl"></div>
             <div className="relative z-10">
-              <h2 id="summary-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2
+                id="summary-heading"
+                className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
+              >
                 Order Summary
               </h2>
 
@@ -379,17 +429,28 @@ const CheckoutPage = () => {
                 className="divide-y divide-gray-200 dark:divide-gray-700 text-sm font-medium text-gray-900 dark:text-white"
               >
                 {products.map((product) => (
-                  <li key={product?.id} className="flex items-start space-x-4 py-4">
+                  <li
+                    key={product?.id}
+                    className="flex items-start space-x-4 py-4"
+                  >
                     <Image
-                      src={product?.image ? `/${product.image.replace(/^\//, '')}` : "/product_placeholder.jpg"}
+                      src={
+                        product?.image
+                          ? `/${product.image.replace(/^\//, '')}`
+                          : '/product_placeholder.jpg'
+                      }
                       alt={product?.title}
                       width={80}
                       height={80}
                       className="h-20 w-20 flex-none rounded-md object-cover object-center border border-gray-200 dark:border-gray-600"
                     />
                     <div className="flex-auto space-y-1">
-                      <h3 className="text-base font-semibold">{product?.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-400">Quantity: {product?.amount}</p>
+                      <h3 className="text-base font-semibold">
+                        {product?.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Quantity: {product?.amount}
+                      </p>
                     </div>
                     <p className="flex-none text-base font-bold">
                       ${product?.price}
@@ -553,8 +614,16 @@ const CheckoutPage = () => {
                 <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-indigo-400 dark:text-indigo-300" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-indigo-400 dark:text-indigo-300"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
@@ -562,7 +631,10 @@ const CheckoutPage = () => {
                         Payment Information
                       </h3>
                       <div className="mt-2 text-sm text-indigo-700 dark:text-indigo-400">
-                        <p>Payment will be processed after order confirmation. You will be contacted for payment details.</p>
+                        <p>
+                          Payment will be processed after order confirmation.
+                          You will be contacted for payment details.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -774,7 +846,7 @@ const CheckoutPage = () => {
                   disabled={isSubmitting}
                   className="w-full rounded-md border border-transparent bg-indigo-600 px-20 py-3 text-lg font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
                 >
-                  {isSubmitting ? "Processing Order..." : "Place Order"}
+                  {isSubmitting ? 'Processing Order...' : 'Place Order'}
                 </button>
               </div>
             </div>

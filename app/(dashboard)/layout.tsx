@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/utils/adminAuth";
+import { requireAdmin } from '@/utils/adminAuth';
 
 export default async function Layout({
   children,

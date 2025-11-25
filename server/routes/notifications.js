@@ -7,7 +7,7 @@ const {
   bulkMarkAsRead,
   deleteNotification,
   bulkDeleteNotifications,
-  getUnreadCount
+  getUnreadCount,
 } = require('../controllers/notificationController');
 
 // GET /api/notifications/:userId/unread-count - Get unread notification count

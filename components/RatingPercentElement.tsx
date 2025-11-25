@@ -4,7 +4,9 @@ interface RatingPercentElementProps {
   percentage: number;
 }
 
-const RatingPercentElement: React.FC<RatingPercentElementProps> = ({ percentage }) => {
+const RatingPercentElement: React.FC<RatingPercentElementProps> = ({
+  percentage,
+}) => {
   return (
     <div className="rating-percent-element-placeholder">
       <p>{percentage}%</p>

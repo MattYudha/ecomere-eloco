@@ -1,10 +1,10 @@
-"use client";
-import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Link from "next/link";
-import Image from "next/image";
+'use client';
+import React from 'react';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface SimpleSliderProps {
   children: React.ReactNode;
@@ -38,10 +38,10 @@ function SimpleSlider(props: SimpleSliderProps) {
     nextArrow: props.nextArrow,
   };
   return (
-    <div className="w-screen min-h-screen overflow-hidden"> {/* Full width and height, hide overflow */}
-      <Slider {...settings}>
-        {props.children}
-      </Slider>
+    <div className="w-screen min-h-screen overflow-hidden">
+      {' '}
+      {/* Full width and height, hide overflow */}
+      <Slider {...settings}>{props.children}</Slider>
     </div>
   );
 }

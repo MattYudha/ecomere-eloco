@@ -22,45 +22,50 @@ const generateId = async () => {
 /**
  * Create an order update notification
  */
-const createOrderUpdateNotification = async (userId, orderStatus, orderId, totalAmount = null) => {
+const createOrderUpdateNotification = async (
+  userId,
+  orderStatus,
+  orderId,
+  totalAmount = null,
+) => {
   try {
     const statusMessages = {
-      'pending': {
+      pending: {
         title: 'Order Received',
         message: `Thank you! Your order #${orderId} has been received and is being processed.`,
-        priority: 'NORMAL'
+        priority: 'NORMAL',
       },
-      'confirmed': {
+      confirmed: {
         title: 'Order Confirmed',
         message: `Pesanan Anda dengan nomor #${orderId} telah berhasil dikonfirmasi. Kami akan segera menghubungi Anda untuk proses selanjutnya dan mempersiapkan pengiriman.`,
-        priority: 'HIGH'
+        priority: 'HIGH',
       },
-      'processing': {
+      processing: {
         title: 'Order Processing',
         message: `Your order #${orderId} is currently being processed and will ship soon.`,
-        priority: 'NORMAL'
+        priority: 'NORMAL',
       },
-      'shipped': {
+      shipped: {
         title: 'Order Shipped',
         message: `Excellent! Your order #${orderId} has been shipped and is on its way to you.`,
-        priority: 'HIGH'
+        priority: 'HIGH',
       },
-      'delivered': {
+      delivered: {
         title: 'Order Delivered',
         message: `Your order #${orderId} has been successfully delivered. We hope you love your new items!`,
-        priority: 'HIGH'
+        priority: 'HIGH',
       },
-      'cancelled': {
+      cancelled: {
         title: 'Order Cancelled',
         message: `Your order #${orderId} has been cancelled. If you have any questions, please contact our support.`,
-        priority: 'URGENT'
-      }
+        priority: 'URGENT',
+      },
     };
 
     const statusInfo = statusMessages[orderStatus.toLowerCase()] || {
       title: 'Order Update',
       message: `Your order #${orderId} status has been updated to: ${orderStatus}`,
-      priority: 'NORMAL'
+      priority: 'NORMAL',
     };
 
     const notificationId = await generateId();
@@ -77,9 +82,9 @@ const createOrderUpdateNotification = async (userId, orderStatus, orderId, total
         metadata: {
           orderId: orderId,
           status: orderStatus,
-          ...(totalAmount && { totalAmount: totalAmount })
-        }
-      }
+          ...(totalAmount && { totalAmount: totalAmount }),
+        },
+      },
     });
 
     // If order is delivered, send a professional email
@@ -90,14 +95,25 @@ const createOrderUpdateNotification = async (userId, orderStatus, orderId, total
         });
 
         if (user && user.email) {
-          const emailTemplatePath = path.join(__dirname, '..', 'templates', 'orderDelivered.html');
+          const emailTemplatePath = path.join(
+            __dirname,
+            '..',
+            'templates',
+            'orderDelivered.html',
+          );
           let htmlContent = await fs.readFile(emailTemplatePath, 'utf-8');
 
           htmlContent = htmlContent
             .replace('{{userName}}', user.name || 'Valued Customer')
             .replace('{{orderId}}', orderId)
-            .replace('{{totalAmount}}', totalAmount ? totalAmount.toFixed(2) : 'N/A')
-            .replace('{{shopUrl}}', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+            .replace(
+              '{{totalAmount}}',
+              totalAmount ? totalAmount.toFixed(2) : 'N/A',
+            )
+            .replace(
+              '{{shopUrl}}',
+              process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+            )
             .replace('{{currentYear}}', new Date().getFullYear());
 
           await sendMail({
@@ -113,7 +129,9 @@ const createOrderUpdateNotification = async (userId, orderStatus, orderId, total
       }
     }
 
-    console.log(`✅ Notification created for user ${userId}: ${statusInfo.title}`);
+    console.log(
+      `✅ Notification created for user ${userId}: ${statusInfo.title}`,
+    );
     return notification;
   } catch (error) {
     console.error('❌ Error creating order notification:', error);
@@ -124,30 +142,35 @@ const createOrderUpdateNotification = async (userId, orderStatus, orderId, total
 /**
  * Create a payment status notification
  */
-const createPaymentNotification = async (userId, paymentStatus, amount, orderId) => {
+const createPaymentNotification = async (
+  userId,
+  paymentStatus,
+  amount,
+  orderId,
+) => {
   try {
     const statusMessages = {
-      'success': {
+      success: {
         title: 'Payment Successful',
         message: `Your payment of $${amount} has been successfully processed for order #${orderId}.`,
-        priority: 'HIGH'
+        priority: 'HIGH',
       },
-      'failed': {
+      failed: {
         title: 'Payment Failed',
         message: `Unfortunately, your payment of $${amount} for order #${orderId} could not be processed. Please try again.`,
-        priority: 'URGENT'
+        priority: 'URGENT',
       },
-      'pending': {
+      pending: {
         title: 'Payment Pending',
         message: `Your payment of $${amount} for order #${orderId} is currently being processed.`,
-        priority: 'NORMAL'
-      }
+        priority: 'NORMAL',
+      },
     };
 
     const statusInfo = statusMessages[paymentStatus.toLowerCase()] || {
       title: 'Payment Update',
       message: `Your payment status for order #${orderId} has been updated.`,
-      priority: 'NORMAL'
+      priority: 'NORMAL',
     };
 
     const notificationId = await generateId();
@@ -164,12 +187,14 @@ const createPaymentNotification = async (userId, paymentStatus, amount, orderId)
         metadata: {
           orderId: orderId,
           paymentStatus: paymentStatus,
-          amount: amount
-        }
-      }
+          amount: amount,
+        },
+      },
     });
 
-    console.log(`✅ Payment notification created for user ${userId}: ${statusInfo.title}`);
+    console.log(
+      `✅ Payment notification created for user ${userId}: ${statusInfo.title}`,
+    );
     return notification;
   } catch (error) {
     console.error('❌ Error creating payment notification:', error);
@@ -180,7 +205,13 @@ const createPaymentNotification = async (userId, paymentStatus, amount, orderId)
 /**
  * Create a promotional notification
  */
-const createPromotionNotification = async (userId, title, message, promoCode = null, discount = null) => {
+const createPromotionNotification = async (
+  userId,
+  title,
+  message,
+  promoCode = null,
+  discount = null,
+) => {
   try {
     const notificationId = await generateId();
 
@@ -195,12 +226,14 @@ const createPromotionNotification = async (userId, title, message, promoCode = n
         isRead: false,
         metadata: {
           ...(promoCode && { promoCode: promoCode }),
-          ...(discount && { discount: discount })
-        }
-      }
+          ...(discount && { discount: discount }),
+        },
+      },
     });
 
-    console.log(`✅ Promotion notification created for user ${userId}: ${title}`);
+    console.log(
+      `✅ Promotion notification created for user ${userId}: ${title}`,
+    );
     return notification;
   } catch (error) {
     console.error('❌ Error creating promotion notification:', error);
@@ -211,7 +244,12 @@ const createPromotionNotification = async (userId, title, message, promoCode = n
 /**
  * Create a system alert notification
  */
-const createSystemAlertNotification = async (userId, title, message, priority = 'HIGH') => {
+const createSystemAlertNotification = async (
+  userId,
+  title,
+  message,
+  priority = 'HIGH',
+) => {
   try {
     const notificationId = await generateId();
 
@@ -225,12 +263,14 @@ const createSystemAlertNotification = async (userId, title, message, priority = 
         priority: priority,
         isRead: false,
         metadata: {
-          alertType: 'system'
-        }
-      }
+          alertType: 'system',
+        },
+      },
     });
 
-    console.log(`✅ System alert notification created for user ${userId}: ${title}`);
+    console.log(
+      `✅ System alert notification created for user ${userId}: ${title}`,
+    );
     return notification;
   } catch (error) {
     console.error('❌ Error creating system alert notification:', error);
@@ -241,7 +281,14 @@ const createSystemAlertNotification = async (userId, title, message, priority = 
 /**
  * Bulk create notifications for multiple users
  */
-const createBulkNotifications = async (userIds, title, message, type = 'SYSTEM_ALERT', priority = 'NORMAL', metadata = {}) => {
+const createBulkNotifications = async (
+  userIds,
+  title,
+  message,
+  type = 'SYSTEM_ALERT',
+  priority = 'NORMAL',
+  metadata = {},
+) => {
   try {
     // Generate all IDs first
     const notificationData = await Promise.all(
@@ -255,16 +302,18 @@ const createBulkNotifications = async (userIds, title, message, type = 'SYSTEM_A
           type: type,
           priority: priority,
           isRead: false,
-          metadata: metadata
+          metadata: metadata,
         };
-      })
+      }),
     );
 
     await prisma.notification.createMany({
-      data: notificationData
+      data: notificationData,
     });
 
-    console.log(`✅ Bulk notifications created for ${userIds.length} users: ${title}`);
+    console.log(
+      `✅ Bulk notifications created for ${userIds.length} users: ${title}`,
+    );
     return notificationData.length;
   } catch (error) {
     console.error('❌ Error creating bulk notifications:', error);
@@ -277,5 +326,5 @@ module.exports = {
   createPaymentNotification,
   createPromotionNotification,
   createSystemAlertNotification,
-  createBulkNotifications
+  createBulkNotifications,
 };

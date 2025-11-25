@@ -1,149 +1,157 @@
 'use client';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import Slider from 'react-slick'; // Import Slider
 
-// *********************
-// Role of the component: Category wrapper (UI IMPROVED)
-// Name of the component: CategoryMenu.tsx
-// Developer: [Your Name] & AI Improvement
-// Version: 2.1 (Fix multi-line string error)
-// Component call: <CategoryMenu />
-// Input parameters: no input parameters
-// Output: section title and new category cards
-// *********************
-
-import React from "react";
-import Link from "next/link";
-// Hapus import CategoryItem dan categoryMenuList
-// Hapus import Image
-
-// --- DAFTAR KATEGORI BARU ---
 const newCategories = [
   {
     id: 1,
-    title: "Keripik Usus",
-    href: "/shop/usus", // Pastikan link ini sesuai
-    icon: "🐔", // Contoh ikon
-    description: "Renyah, gurih, dan otentik"
+    title: 'Keripik Usus',
+    href: '/shop/usus',
+    icon: '🐔',
+    description: 'Renyah, gurih, dan otentik',
   },
   {
     id: 2,
-    title: "Makaroni",
-    href: "/shop/makaroni",
-    icon: "🍝",
-    description: "Bumbu premium, bikin nagih"
+    title: 'Makaroni',
+    href: '/shop/makaroni',
+    icon: '🍝',
+    description: 'Bumbu premium, bikin nagih',
   },
   {
     id: 3,
-    title: "Seblak Lewu",
-    href: "/shop/lewu",
-    icon: "🌶️",
-    description: "Pedas mantap, kuah kental"
+    title: 'Seblak Lewu',
+    href: '/shop/lewu',
+    icon: '🌶️',
+    description: 'Pedas mantap, kuah kental',
   },
   {
     id: 4,
-    title: "Keripik Singkong",
-    href: "/shop/singkong",
-    icon: "🍠",
-    description: "Irisan tipis, rasa klasik"
+    title: 'Keripik Singkong',
+    href: '/shop/singkong',
+    icon: '🍠',
+    description: 'Irisan tipis, rasa klasik',
   },
   {
     id: 5,
-    title: "Cookies",
-    href: "/shop/cookies",
-    icon: "🍪",
-    description: "Manis sempurna, lumer di mulut"
+    title: 'Cookies',
+    href: '/shop/cookies',
+    icon: '🍪',
+    description: 'Manis sempurna, lumer di mulut',
+  },
+  {
+    id: 6,
+    title: 'Minuman',
+    href: '/shop/minuman',
+    icon: '🍹',
+    description: 'Segar dan melegakan dahaga',
   },
 ];
 
 const CategoryMenu = () => {
+  const sliderSettings = {
+    dots: false, // Default to no dots for larger screens
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4, // Show 4 slides on desktop by default
+    slidesToScroll: 4, // Scroll 4 slides at a time
+    arrows: true, // Enable arrows for desktop by default
+    responsive: [
+      {
+        breakpoint: 1024, // For screens smaller than 1024px (laptops/large tablets)
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: false,
+          arrows: true,
+          dots: false,
+        },
+      },
+      {
+        breakpoint: 768, // For screens smaller than 768px (tables/mobile)
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          infinite: false,
+          arrows: true,
+          dots: false,
+        },
+      },
+      {
+        breakpoint: 480, // For extra small screens (mobile)
+        settings: {
+          slidesToShow: 1.2, // Show a bit of the next slide
+          slidesToScroll: 1,
+          infinite: false,
+          arrows: false, // Optionally hide arrows on very small screens to save space
+          dots: true, // Re-enable dots for very small screens
+          centerMode: true,
+          centerPadding: '20px',
+        },
+      },
+    ],
+  };
+
   return (
-    <div
-      className="relative py-32 bg-cover bg-center overflow-hidden min-h-[90vh]"
-      style={{ backgroundImage: "url('/footer-bg.jpg')" }}
-    >
-      {/* 1. Overlay Gradient (Seperti IntroducingSection) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/70 to-black/80"></div>
-      <div className="absolute top-20 left-10 w-96 h-96 bg-[#cb6112]/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(203,97,18,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(203,97,18,0.1)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
-      <div className="absolute top-0 left-0 w-40 h-40 border-t-2 border-l-2 border-[#cb6112]/30"></div>
-      <div className="absolute bottom-0 right-0 w-40 h-40 border-b-2 border-r-2 border-[#cb6112]/30"></div>
-
-      <div className="relative z-10 max-w-screen-xl mx-auto px-6 pt-20">
-        
-        {/* 3. Judul yang Di-improve (Seperti IntroducingSection) */}
-        <h2 className="text-white text-5xl md:text-7xl font-extrabold text-center mb-16 font-forum leading-tight animate-slide-up">
-          JELAJAHI VARIAN{' '}
-          <span className="relative inline-block">
-            <span className="text-[#cb6112] relative z-10 animate-glow-new">RASA KAMI</span>
-            <span className="absolute inset-0 blur-2xl bg-[#cb6112]/50 animate-pulse"></span>
-          </span>
+    <div className="py-20 bg-white dark:bg-dark-bg">
+      <div className="max-w-screen-xl mx-auto px-6">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 text-gray-800 dark:text-white">
+          Jelajahi Varian Rasa
         </h2>
-        
-        {/* 4. Grid Kategori yang Baru dan Responsif */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          
-          {/* 5. Looping Kategori Baru & Desain Kartu Kaca */}
-          {newCategories.map((item, index) => (
-            <Link
-              href={item.href}
-              key={item.id}
-              // --- PERBAIKAN 1: className INI DIJADIKAN SATU BARIS ---
-              className="relative group h-full p-6 text-center bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 flex flex-col justify-between"
-              style={{ animation: `fade-in 1s ease-out ${index * 150}ms both` }}
-            >
-              <div className="relative z-10">
-                {/* Efek Glow di belakang kartu (Seperti IntroducingSection) */}
-                {/* --- PERBAIKAN 2: className INI DIJADIKAN SATU BARIS --- */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-[#cb6112] to-yellow-400 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-500">
-                </div>
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+          Dari gurihnya keripik hingga manisnya cookies, temukan rasa favoritmu
+          yang dibuat dengan bahan-bahan berkualitas.
+        </p>
 
-                {/* Konten Kartu */}
-                <div className="relative">
-                  <span className="text-6xl mb-4 block" role="img" aria-label={item.title}>
+        <Slider {...sliderSettings}>
+          {newCategories.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{
+                delay: index * 0.1,
+                duration: 0.6,
+                ease: 'easeOut',
+              }}
+            >
+              <Link href={item.href}>
+                <motion.div
+                  className="group h-full p-4 text-center rounded-2xl shadow-xl cursor-pointer
+                               bg-white/60 dark:bg-slate-800/40 
+                               backdrop-blur-lg 
+                               border border-white/40 dark:border-brand/20"
+                  whileHover={{
+                    scale: 1.05,
+                    y: -5,
+                    boxShadow: '0 25px 50px -12px rgba(203, 97, 18, 0.25)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  <span
+                    className="text-5xl mb-3 block"
+                    role="img"
+                    aria-label={item.title}
+                  >
                     {item.icon}
                   </span>
-                  <h3 className="text-white font-bold text-xl mb-2 font-dm-sans">
+                  <h3 className="text-gray-800 dark:text-white font-bold text-xl mb-2 font-dm-sans transition-colors group-hover:text-brand">
                     {item.title}
                   </h3>
-                  <p className="text-gray-300 text-sm font-dm-sans mb-4">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm font-dm-sans mb-4">
                     {item.description}
                   </p>
-                </div>
-              </div>
-              
-              <span className="relative z-10 mt-4 text-xs text-[#cb6112] font-semibold uppercase tracking-wider group-hover:text-yellow-400 transition-colors">
-                Lihat Koleksi →
-              </span>
-            </Link>
+                  <span className="mt-4 text-xs text-brand font-semibold uppercase tracking-wider transition-colors">
+                    Lihat Koleksi →
+                  </span>
+                </motion.div>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </Slider>
       </div>
-
-      {/* 6. Menambahkan Keyframes Animasi (diperlukan untuk 'animate-glow-new') */}
-      <style jsx>{`
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes glow-new {
-          0%, 100% {
-            text-shadow: 0 0 20px rgba(203, 97, 18, 0.5),
-                         0 0 40px rgba(203, 97, 18, 0.3);
-          }
-          50% {
-            text-shadow: 0 0 30px rgba(203, 97, 18, 0.8),
-                         0 0 60px rgba(203, 97, 18, 0.5);
-          }
-        }
-        .animate-slide-up { animation: slide-up 0.8s ease-out; }
-        .animate-glow-new { animation: glow-new 2s ease-in-out infinite; }
-      `}</style>
-      {/* Smooth transition gradient to the next section */}
-      <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent z-20"></div>
     </div>
   );
 };

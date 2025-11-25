@@ -19,7 +19,7 @@ interface Merchant {
   description: string;
   phone: string;
   address: string;
-  status: "active" | "inactive";
+  status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -69,7 +69,7 @@ interface Order {
   name: string;
   phone: string;
   postalCode: string;
-  status: "processing" | "canceled" | "delivered";
+  status: 'processing' | 'canceled' | 'delivered';
   city: string;
   country: string;
   orderNotice: string?;
@@ -80,7 +80,6 @@ interface SingleProductBtnProps {
   product: Product;
   quantityCount: number;
 }
-
 
 interface Category {
   id: string;
@@ -94,8 +93,7 @@ interface WishListItem {
   product: Product;
 }
 
-
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
       id: string;
@@ -112,7 +110,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: string;

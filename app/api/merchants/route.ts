@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/db";
+import { NextResponse } from 'next/server';
+import prisma from '@/utils/db';
 
 export async function GET() {
   try {
@@ -10,14 +10,14 @@ export async function GET() {
     });
     return NextResponse.json(merchants);
   } catch (error) {
-    console.error("Error fetching merchants:", error);
-    let errorMessage = "An unknown error occurred";
+    console.error('Error fetching merchants:', error);
+    let errorMessage = 'An unknown error occurred';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
     return NextResponse.json(
-      { message: "Failed to fetch merchants", error: errorMessage },
-      { status: 500 }
+      { message: 'Failed to fetch merchants', error: errorMessage },
+      { status: 500 },
     );
   }
 }
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     // Basic validation
     if (!name || !email) {
       return NextResponse.json(
-        { message: "Name and email are required" },
-        { status: 400 }
+        { message: 'Name and email are required' },
+        { status: 400 },
       );
     }
 
@@ -48,15 +48,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newMerchant, { status: 201 });
   } catch (error) {
-    console.error("Error creating merchant:", error);
-    let errorMessage = "An unknown error occurred";
+    console.error('Error creating merchant:', error);
+    let errorMessage = 'An unknown error occurred';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
     return NextResponse.json(
-      { message: "Failed to create merchant", error: errorMessage },
-      { status: 500 }
+      { message: 'Failed to create merchant', error: errorMessage },
+      { status: 500 },
     );
   }
 }
-

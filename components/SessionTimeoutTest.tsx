@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 
 export default function SessionTimeoutTest() {
   const { data: session, status } = useSession();
@@ -9,10 +9,10 @@ export default function SessionTimeoutTest() {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated" && session) {
+    if (status === 'authenticated' && session) {
       setIsActive(true);
       setTimeLeft(30); // 30 seconds to match the hook
-      
+
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -30,8 +30,8 @@ export default function SessionTimeoutTest() {
     }
   }, [session, status]);
 
-  if (status === "loading") return <div>Loading...</div>;
-  if (status === "unauthenticated") return <div>Not logged in</div>;
+  if (status === 'loading') return <div>Loading...</div>;
+  if (status === 'unauthenticated') return <div>Not logged in</div>;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -45,9 +45,7 @@ export default function SessionTimeoutTest() {
       <div className="text-xs">
         {isActive ? `Time left: ${formatTime(timeLeft)}` : 'Session inactive'}
       </div>
-      <div className="text-xs">
-        Status: {status}
-      </div>
+      <div className="text-xs">Status: {status}</div>
     </div>
   );
 }

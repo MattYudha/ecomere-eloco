@@ -1,7 +1,16 @@
-"use client";
+'use client';
 
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface SalesChartProps {
   data?: { name: string; revenue: number }[];
@@ -11,9 +20,11 @@ interface SalesChartProps {
 const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
   if (loading) {
     return (
-      <div className="w-full h-96 flex flex-col justify-center items-center gap-y-2
+      <div
+        className="w-full h-96 flex flex-col justify-center items-center gap-y-2
                       bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
-                      dark:bg-black/20 dark:border-gray-700 mt-4">
+                      dark:bg-black/20 dark:border-gray-700 mt-4"
+      >
         <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
         <p>Loading chart...</p>
       </div>
@@ -21,9 +32,11 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
   }
 
   return (
-    <div className="w-full h-96 flex flex-col justify-center items-center gap-y-2
+    <div
+      className="w-full h-96 flex flex-col justify-center items-center gap-y-2
                     bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
-                    dark:bg-black/20 dark:border-gray-700 mt-4">
+                    dark:bg-black/20 dark:border-gray-700 mt-4"
+    >
       <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
@@ -35,18 +48,26 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
             bottom: 5,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.2)" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgba(255, 255, 255, 0.2)"
+          />
           <XAxis dataKey="name" stroke="rgba(255, 255, 255, 0.7)" />
           <YAxis stroke="rgba(255, 255, 255, 0.7)" />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
               borderColor: 'rgba(255, 255, 255, 0.2)',
-              borderRadius: '0.5rem'
-            }} 
+              borderRadius: '0.5rem',
+            }}
           />
           <Legend wrapperStyle={{ color: 'white' }} />
-          <Line type="monotone" dataKey="revenue" stroke="#DCCA87" activeDot={{ r: 8 }} />
+          <Line
+            type="monotone"
+            dataKey="revenue"
+            stroke="#DCCA87"
+            activeDot={{ r: 8 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

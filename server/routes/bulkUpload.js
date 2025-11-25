@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
 const {
@@ -7,13 +7,12 @@ const {
   getBatchDetail,
   updateBatchItems,
   deleteBatch,
-} = require("../controllers/bulkUpload");
+} = require('../controllers/bulkUpload');
 
-router.route("/")
-  .post(uploadCsvAndCreateBatch)
-  .get(listBatches);
+router.route('/').post(uploadCsvAndCreateBatch).get(listBatches);
 
-router.route("/:batchId")
+router
+  .route('/:batchId')
   .get(getBatchDetail)
   .put(updateBatchItems)
   .delete(deleteBatch);

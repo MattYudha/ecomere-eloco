@@ -1,10 +1,10 @@
-"use client";
-import React, { useEffect, useState, use, useCallback } from "react";
-import DashboardSidebar from "@/components/DashboardSidebar";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import apiClient from "@/lib/api";
-import { toast } from "react-hot-toast";
+'use client';
+import React, { useEffect, useState, use, useCallback } from 'react';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api';
+import { toast } from 'react-hot-toast';
 
 interface Product {
   id: string;
@@ -34,16 +34,16 @@ export default function MerchantDetailPage({
   // Unwrap params using React.use()
   const resolvedParams = use(params);
   const id = resolvedParams.id;
-  
+
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    description: "",
-    status: "ACTIVE",
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    description: '',
+    status: 'ACTIVE',
   });
 
   const router = useRouter();
@@ -52,28 +52,28 @@ export default function MerchantDetailPage({
     try {
       setLoading(true);
       const response = await apiClient.get(`/api/merchants/${id}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
-          router.push("/admin/merchant");
+          router.push('/admin/merchant');
           return;
         }
-        throw new Error("Failed to fetch merchant");
+        throw new Error('Failed to fetch merchant');
       }
-      
+
       const data = await response.json();
       setMerchant(data);
       setFormData({
-        name: data.name || "",
-        email: data.email || "",
-        phone: data.phone || "",
-        address: data.address || "",
-        description: data.description || "",
-        status: data.status || "ACTIVE",
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        address: data.address || '',
+        description: data.description || '',
+        status: data.status || 'ACTIVE',
       });
     } catch (error) {
-      console.error("Error fetching merchant:", error);
-      toast.error("Failed to load merchant details");
+      console.error('Error fetching merchant:', error);
+      toast.error('Failed to load merchant details');
     } finally {
       setLoading(false);
     }
@@ -81,57 +81,58 @@ export default function MerchantDetailPage({
 
   useEffect(() => {
     fetchMerchant();
-  }, [fetchMerchant]); 
+  }, [fetchMerchant]);
 
-const handleInputChange = (
+  const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    // This is the correct way to use apiClient.put
-    // It should just take the URL and the data object
-    const response = await apiClient.put(`/api/merchants/${id}`, formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // This is the correct way to use apiClient.put
+      // It should just take the URL and the data object
+      const response = await apiClient.put(`/api/merchants/${id}`, formData);
 
-    if (!response.ok) {
-      throw new Error("Failed to update merchant");
+      if (!response.ok) {
+        throw new Error('Failed to update merchant');
+      }
+
+      toast.success('Merchant updated successfully');
+      fetchMerchant(); // Refresh data
+    } catch (error) {
+      console.error('Error updating merchant:', error);
+      toast.error('Failed to update merchant');
     }
-
-    toast.success("Merchant updated successfully");
-    fetchMerchant(); // Refresh data
-  } catch (error) {
-    console.error("Error updating merchant:", error);
-    toast.error("Failed to update merchant");
-  }
-};
+  };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this merchant?")) {
+    if (!confirm('Are you sure you want to delete this merchant?')) {
       return;
     }
-    
+
     try {
       const response = await apiClient.delete(`/api/merchants/${id}`);
-      
+
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete merchant");
+        throw new Error(data.error || 'Failed to delete merchant');
       }
-      
-      toast.success("Merchant deleted successfully");
-      router.push("/admin/merchant");
+
+      toast.success('Merchant deleted successfully');
+      router.push('/admin/merchant');
     } catch (error) {
-      console.error("Error deleting merchant:", error);
+      console.error('Error deleting merchant:', error);
       toast.error(
-        typeof error === "object" && error !== null && "message" in error
-          ? (error as { message?: string }).message || "Failed to delete merchant"
-          : "Failed to delete merchant"
+        typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message?: string }).message ||
+              'Failed to delete merchant'
+          : 'Failed to delete merchant',
       );
     }
   };
@@ -181,9 +182,14 @@ const handleInputChange = (
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Name</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Name
+              </label>
               <input
                 type="text"
                 name="name"
@@ -194,7 +200,9 @@ const handleInputChange = (
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Email</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
@@ -204,7 +212,9 @@ const handleInputChange = (
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Phone</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Phone
+              </label>
               <input
                 type="text"
                 name="phone"
@@ -214,7 +224,9 @@ const handleInputChange = (
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Status</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Status
+              </label>
               <select
                 name="status"
                 value={formData.status}
@@ -226,7 +238,9 @@ const handleInputChange = (
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Address</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address
+              </label>
               <input
                 type="text"
                 name="address"
@@ -236,7 +250,9 @@ const handleInputChange = (
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Description</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Description
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -245,7 +261,7 @@ const handleInputChange = (
               ></textarea>
             </div>
             <div className="md:col-span-2">
-              <button 
+              <button
                 type="submit"
                 className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
               >

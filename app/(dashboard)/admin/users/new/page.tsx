@@ -1,10 +1,10 @@
-"use client";
-import { DashboardSidebar } from "@/components";
-import { isValidEmailAddressFormat } from "@/lib/utils";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
-import { sanitizeFormData } from "@/lib/form-sanitize";
-import apiClient from "@/lib/api"; // Added apiClient import
+'use client';
+import { DashboardSidebar } from '@/components';
+import { isValidEmailAddressFormat } from '@/lib/utils';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { sanitizeFormData } from '@/lib/form-sanitize';
+import apiClient from '@/lib/api'; // Added apiClient import
 
 const DashboardCreateNewUser = () => {
   const [userInput, setUserInput] = useState<{
@@ -12,21 +12,21 @@ const DashboardCreateNewUser = () => {
     password: string;
     role: string;
   }>({
-    email: "",
-    password: "",
-    role: "user",
+    email: '',
+    password: '',
+    role: 'user',
   });
 
   const addNewUser = async () => {
     // Simplified validation checks
-    if (userInput.email === "" || userInput.password === "") {
-      return toast.error("You must enter all input values to add a user");
+    if (userInput.email === '' || userInput.password === '') {
+      return toast.error('You must enter all input values to add a user');
     }
     if (!isValidEmailAddressFormat(userInput.email)) {
-      return toast.error("You entered invalid email address format");
+      return toast.error('You entered invalid email address format');
     }
     if (userInput.password.length <= 7) {
-      return toast.error("Password must be longer than 7 characters");
+      return toast.error('Password must be longer than 7 characters');
     }
 
     try {
@@ -37,20 +37,22 @@ const DashboardCreateNewUser = () => {
 
       if (response.status === 201) {
         await response.json();
-        toast.success("User added successfully");
+        toast.success('User added successfully');
         setUserInput({
-          email: "",
-          password: "",
-          role: "user",
+          email: '',
+          password: '',
+          role: 'user',
         });
       } else {
         // Throw an error to be caught by the catch block
         const errorData = await response.json().catch(() => null); // Try to get error details
-        throw new Error(errorData?.error || "Error while creating user");
+        throw new Error(errorData?.error || 'Error while creating user');
       }
     } catch (error) {
-      console.error("Error creating user:", error);
-      toast.error(error instanceof Error ? error.message : "An unknown error occurred");
+      console.error('Error creating user:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      );
     }
   };
 

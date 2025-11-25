@@ -11,7 +11,6 @@
    ```
 
 2. **Scroll ke bawah ke "Upload History"**
-
    - Anda akan melihat semua batch upload yang pernah dilakukan
    - Setiap batch memiliki informasi:
      - File name
@@ -20,21 +19,18 @@
      - Statistics (Total/Success/Failed/Rate)
 
 3. **Klik tombol 🗑️ (Trash Icon)** di kanan atas setiap batch
-
    - Tombol trash berwarna merah
    - Berada di sebelah status badge
 
 4. **Modal Konfirmasi akan muncul** dengan 2 pilihan:
 
    **Pilihan A: Delete Batch Only (Default)**
-
    - ☐ Checkbox TIDAK dicentang
    - Hanya menghapus record batch dari history
    - **Produk TETAP ADA** di catalog
    - Produk masih bisa dibeli di shop
 
    **Pilihan B: Delete Batch + Products**
-
    - ✅ Centang checkbox "Also delete all products created from this batch"
    - Menghapus batch DAN semua produk yang dibuat
    - **Produk HILANG** dari catalog
@@ -112,13 +108,11 @@ curl -X DELETE "http://localhost:3001/api/bulk-upload/{batchId}?deleteProducts=t
 ### 🛡️ Safety Features:
 
 1. **Order Protection**
-
    - Produk yang sudah ada di `customer_order_product` **TIDAK BISA dihapus**
    - Error akan muncul dengan list produk yang terblokir
    - Ini mencegah data order jadi corrupt
 
 2. **Cascade Delete**
-
    - Ketika batch dihapus, semua `bulk_upload_item` otomatis terhapus
    - Database constraint: `ON DELETE CASCADE`
 
@@ -273,12 +267,10 @@ Dari screenshot yang Anda kirim:
 ### ✅ DO:
 
 1. **Review batch sebelum delete**
-
    - Cek berapa produk yang akan terhapus
    - Cek status batch (FAILED/PARTIAL/COMPLETED)
 
 2. **Use "Delete Batch Only" untuk audit**
-
    - Keep history untuk tracking
    - Berguna untuk compliance
 
@@ -290,11 +282,9 @@ Dari screenshot yang Anda kirim:
 ### ❌ DON'T:
 
 1. **Jangan delete batch dengan produk yang sudah di-order**
-
    - System akan block, tapi lebih baik check manual dulu
 
 2. **Jangan delete batch production tanpa backup**
-
    - Export products to CSV dulu sebelum delete
 
 3. **Jangan spam delete**

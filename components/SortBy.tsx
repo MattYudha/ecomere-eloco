@@ -8,9 +8,9 @@
 // Output: select input with options for sorting by a-z, z-a, price low, price high
 // *********************
 
-"use client";
-import React from "react";
-import { useSortStore } from "@/app/_zustand/sortStore";
+'use client';
+import React from 'react';
+import { useSortStore } from '@/app/_zustand/sortStore';
 
 const SortBy = () => {
   // getting values from Zustand sort store
@@ -18,7 +18,8 @@ const SortBy = () => {
 
   return (
     <div className="flex items-center gap-x-5 max-lg:flex-col max-lg:w-full max-lg:items-start">
-      <h3 className="text-xl text-gray-900 dark:text-white">Sort by:</h3> {/* Added dark mode text color */}
+      <h3 className="text-xl text-gray-900 dark:text-white">Sort by:</h3>{' '}
+      {/* Added dark mode text color */}
       <select
         defaultValue={sortBy}
         onChange={(e) => changeSortBy(e.target.value)}

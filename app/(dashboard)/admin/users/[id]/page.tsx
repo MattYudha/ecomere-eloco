@@ -1,10 +1,10 @@
-"use client";
-import { DashboardSidebar } from "@/components";
-import React, { useEffect, useState, use } from "react";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { isValidEmailAddressFormat } from "@/lib/utils";
-import apiClient from "@/lib/api";
+'use client';
+import { DashboardSidebar } from '@/components';
+import React, { useEffect, useState, use } from 'react';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import { isValidEmailAddressFormat } from '@/lib/utils';
+import apiClient from '@/lib/api';
 
 interface DashboardUserDetailsProps {
   params: Promise<{ id: string }>;
@@ -19,28 +19,28 @@ const DashboardSingleUserPage = ({ params }: DashboardUserDetailsProps) => {
     newPassword: string;
     role: string;
   }>({
-    email: "",
-    newPassword: "",
-    role: "",
+    email: '',
+    newPassword: '',
+    role: '',
   });
   const router = useRouter();
 
   const deleteUser = async () => {
     const requestOptions = {
-      method: "DELETE",
+      method: 'DELETE',
     };
     apiClient
       .delete(`/api/users/${id}`, requestOptions)
       .then((response) => {
         if (response.status === 204) {
-          toast.success("User deleted successfully");
-          router.push("/admin/users");
+          toast.success('User deleted successfully');
+          router.push('/admin/users');
         } else {
-          throw Error("There was an error while deleting user");
+          throw Error('There was an error while deleting user');
         }
       })
       .catch((error) => {
-        toast.error("There was an error while deleting user");
+        toast.error('There was an error while deleting user');
       });
   };
 
@@ -51,7 +51,7 @@ const DashboardSingleUserPage = ({ params }: DashboardUserDetailsProps) => {
       userInput.newPassword.length > 0
     ) {
       if (!isValidEmailAddressFormat(userInput.email)) {
-        toast.error("You entered invalid email address format");
+        toast.error('You entered invalid email address format');
         return;
       }
 
@@ -65,21 +65,21 @@ const DashboardSingleUserPage = ({ params }: DashboardUserDetailsProps) => {
 
           if (response.status === 200) {
             await response.json();
-            toast.success("User successfully updated");
+            toast.success('User successfully updated');
           } else {
             const errorData = await response.json();
-            toast.error(errorData.error || "Error while updating user");
+            toast.error(errorData.error || 'Error while updating user');
           }
         } catch (error) {
-          console.error("Error updating user:", error);
-          toast.error("There was an error while updating user");
+          console.error('Error updating user:', error);
+          toast.error('There was an error while updating user');
         }
       } else {
-        toast.error("Password must be longer than 7 characters");
+        toast.error('Password must be longer than 7 characters');
         return;
       }
     } else {
-      toast.error("For updating a user you must enter all values");
+      toast.error('For updating a user you must enter all values');
       return;
     }
   };
@@ -94,7 +94,7 @@ const DashboardSingleUserPage = ({ params }: DashboardUserDetailsProps) => {
       .then((data) => {
         setUserInput({
           email: data?.email,
-          newPassword: "",
+          newPassword: '',
           role: data?.role,
         });
       });

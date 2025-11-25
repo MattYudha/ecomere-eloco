@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import DashboardSidebar from "@/components/DashboardSidebar";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import apiClient from "@/lib/api";
-import { toast } from "react-hot-toast";
+import React, { useState } from 'react';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api';
+import { toast } from 'react-hot-toast';
 
 export default function NewMerchantPage() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    description: "",
-    status: "ACTIVE",
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    description: '',
+    status: 'ACTIVE',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +26,7 @@ export default function NewMerchantPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -39,25 +39,25 @@ export default function NewMerchantPage() {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toast.error("Merchant name is required");
+      toast.error('Merchant name is required');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // ⚠️ FIX: axios tidak pakai method/body seperti fetch  
-      const response = await apiClient.post("/api/merchants", formData);
+      // ⚠️ FIX: axios tidak pakai method/body seperti fetch
+      const response = await apiClient.post('/api/merchants', formData);
 
-      toast.success("Merchant created successfully");
+      toast.success('Merchant created successfully');
 
       const newMerchant = await response.json();
 
       // Redirect ke halaman detail
       router.push(`/admin/merchant/${newMerchant.id}`);
     } catch (error) {
-      console.error("Error creating merchant:", error);
-      toast.error("Failed to create merchant");
+      console.error('Error creating merchant:', error);
+      toast.error('Failed to create merchant');
     } finally {
       setIsSubmitting(false);
     }
@@ -78,11 +78,15 @@ export default function NewMerchantPage() {
         </div>
 
         <div className="bg-white/80 rounded-lg shadow-xl p-6 backdrop-blur-lg border border-gray-200">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             {/* NAME */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Name</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Name
+              </label>
               <input
                 type="text"
                 name="name"
@@ -96,7 +100,9 @@ export default function NewMerchantPage() {
 
             {/* EMAIL */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Email</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
@@ -109,7 +115,9 @@ export default function NewMerchantPage() {
 
             {/* PHONE */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Phone</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Phone
+              </label>
               <input
                 type="text"
                 name="phone"
@@ -122,7 +130,9 @@ export default function NewMerchantPage() {
 
             {/* STATUS */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Status</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Status
+              </label>
               <select
                 name="status"
                 value={formData.status}
@@ -136,7 +146,9 @@ export default function NewMerchantPage() {
 
             {/* ADDRESS */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Address</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address
+              </label>
               <input
                 type="text"
                 name="address"
@@ -149,7 +161,9 @@ export default function NewMerchantPage() {
 
             {/* DESCRIPTION */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Description</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Description
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -165,13 +179,12 @@ export default function NewMerchantPage() {
                 type="submit"
                 disabled={isSubmitting}
                 className={`bg-blue-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 ${
-                  isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
-                {isSubmitting ? "Creating..." : "Create Merchant"}
+                {isSubmitting ? 'Creating...' : 'Create Merchant'}
               </button>
             </div>
-
           </form>
         </div>
       </div>

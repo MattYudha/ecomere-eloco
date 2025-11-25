@@ -1,20 +1,20 @@
-"use client";
-import { DashboardSidebar, CustomButton } from "@/components";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
-import apiClient from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { FaArrowLeft, FaPlus } from "react-icons/fa";
-import Link from "next/link";
+'use client';
+import { DashboardSidebar, CustomButton } from '@/components';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import apiClient from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import { FaArrowLeft, FaPlus } from 'react-icons/fa';
+import Link from 'next/link';
 
 const DashboardNewCategoryPage = () => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const addNewCategory = async () => {
     if (name.trim().length === 0) {
-      toast.error("Category name cannot be empty.");
+      toast.error('Category name cannot be empty.');
       return;
     }
 
@@ -24,12 +24,13 @@ const DashboardNewCategoryPage = () => {
         name: name, // Send the raw name
       });
 
-      if (response.ok) { // Check if the response was successful (2xx status)
-        toast.success("Category added successfully!");
-        setName("");
-        router.push("/admin/categories");
+      if (response.ok) {
+        // Check if the response was successful (2xx status)
+        toast.success('Category added successfully!');
+        setName('');
+        router.push('/admin/categories');
       } else {
-        let errorBody = "There was an error creating the category.";
+        let errorBody = 'There was an error creating the category.';
         try {
           const errorData = await response.json();
           // Prioritize 'message' from our API response, fallback to 'error' or a generic message
@@ -37,14 +38,14 @@ const DashboardNewCategoryPage = () => {
         } catch (jsonError) {
           // If response.json() fails, it means the body was not valid JSON
           // We can try to read it as text if needed for debugging, or stick to generic message
-          console.error("Failed to parse error response as JSON:", jsonError);
+          console.error('Failed to parse error response as JSON:', jsonError);
           // errorBody remains the generic message
         }
         toast.error(errorBody);
       }
     } catch (error) {
-      console.error("Error creating category:", error);
-      toast.error("An unexpected error occurred.");
+      console.error('Error creating category:', error);
+      toast.error('An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,6 @@ const DashboardNewCategoryPage = () => {
     <div className="bg-transparent flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
       <DashboardSidebar />
       <div className="p-8 rounded-3xl backdrop-blur-md bg-white/10 dark:bg-gray-800/10 shadow-xl border border-white/20 dark:border-gray-700/20 flex flex-col gap-y-7 w-full">
-        
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-gray-800 dark:text-white">
@@ -76,7 +76,9 @@ const DashboardNewCategoryPage = () => {
           <div>
             <label className="form-control w-full">
               <div className="label">
-                <span className="label-text text-gray-700 dark:text-gray-300">Category Name:</span>
+                <span className="label-text text-gray-700 dark:text-gray-300">
+                  Category Name:
+                </span>
               </div>
               <input
                 type="text"
@@ -97,7 +99,7 @@ const DashboardNewCategoryPage = () => {
               className="bg-grilli-gold/80 hover:bg-grilli-gold text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:scale-100"
             >
               <FaPlus />
-              {loading ? "Creating..." : "Create Category"}
+              {loading ? 'Creating...' : 'Create Category'}
             </CustomButton>
           </div>
         </div>

@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 
 export class AppError extends Error {
   public statusCode: number;
   public isOperational: boolean;
 
-  constructor(message: string, statusCode: number = 500, isOperational: boolean = true) {
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    isOperational: boolean = true,
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
@@ -26,17 +30,17 @@ export interface ErrorResponse {
 export const logError = (error: unknown, context?: string) => {
   const timestamp = new Date().toISOString();
   const contextStr = context ? ` [${context}]` : '';
-  
+
   if (error instanceof AppError) {
     console.error(`${timestamp}${contextStr} AppError:`, {
       message: error.message,
       statusCode: error.statusCode,
-      stack: error.stack
+      stack: error.stack,
     });
   } else if (error instanceof Error) {
     console.error(`${timestamp}${contextStr} Error:`, {
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   } else {
     console.error(`${timestamp}${contextStr} Unknown error:`, error);
@@ -47,94 +51,100 @@ export const logError = (error: unknown, context?: string) => {
 export const handlePrismaError = (error: any): ErrorResponse => {
   if (!error || typeof error !== 'object' || !('code' in error)) {
     return {
-      error: "Internal server error. Please try again later.",
-      timestamp: new Date().toISOString()
+      error: 'Internal server error. Please try again later.',
+      timestamp: new Date().toISOString(),
     };
   }
 
   const prismaError = error as any;
-  
+
   switch (prismaError.code) {
     case 'P2002':
       return {
-        error: "A record with this information already exists",
-        details: prismaError.meta?.target ? `Field: ${prismaError.meta.target.join(', ')}` : undefined,
-        timestamp: new Date().toISOString()
+        error: 'A record with this information already exists',
+        details: prismaError.meta?.target
+          ? `Field: ${prismaError.meta.target.join(', ')}`
+          : undefined,
+        timestamp: new Date().toISOString(),
       };
     case 'P2025':
       return {
-        error: "Record not found",
-        timestamp: new Date().toISOString()
+        error: 'Record not found',
+        timestamp: new Date().toISOString(),
       };
     case 'P2003':
       return {
-        error: "Foreign key constraint failed",
-        timestamp: new Date().toISOString()
+        error: 'Foreign key constraint failed',
+        timestamp: new Date().toISOString(),
       };
     case 'P2014':
       return {
-        error: "The change you are trying to make would violate the required relation",
-        timestamp: new Date().toISOString()
+        error:
+          'The change you are trying to make would violate the required relation',
+        timestamp: new Date().toISOString(),
       };
     case 'P2021':
       return {
-        error: "The table does not exist in the current database",
-        timestamp: new Date().toISOString()
+        error: 'The table does not exist in the current database',
+        timestamp: new Date().toISOString(),
       };
     case 'P2022':
       return {
-        error: "The column does not exist in the current database",
-        timestamp: new Date().toISOString()
+        error: 'The column does not exist in the current database',
+        timestamp: new Date().toISOString(),
       };
     default:
       return {
-        error: "Database operation failed",
+        error: 'Database operation failed',
         details: `Error code: ${prismaError.code}`,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
   }
 };
 
 // Enhanced API error handler for Next.js
-export const handleApiError = (error: unknown, requestId?: string): NextResponse => {
+export const handleApiError = (
+  error: unknown,
+  requestId?: string,
+): NextResponse => {
   const timestamp = new Date().toISOString();
-  
+
   // Log the error
   logError(error, 'API');
 
   // Zod validation errors
   if (error instanceof ZodError) {
-    const errors = error.errors.map(err => ({
+    const errors = error.errors.map((err) => ({
       field: err.path.join('.'),
-      message: err.message
+      message: err.message,
     }));
-    
+
     return new NextResponse(
-      JSON.stringify({ 
-        error: "Validation failed", 
+      JSON.stringify({
+        error: 'Validation failed',
         details: errors,
         requestId,
-        timestamp
+        timestamp,
       }),
-      { 
+      {
         status: 400,
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { 'Content-Type': 'application/json' },
+      },
     );
   }
 
   // Custom application errors
   if (error instanceof AppError) {
     return new NextResponse(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
         requestId,
-        timestamp
+        timestamp,
       }),
-      { 
+      {
         status: error.statusCode,
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { 'Content-Type': 'application/json' },
+      },
     );
   }
 
@@ -142,30 +152,30 @@ export const handleApiError = (error: unknown, requestId?: string): NextResponse
   if (error && typeof error === 'object' && 'code' in error) {
     const errorResponse = handlePrismaError(error);
     const statusCode = getStatusCodeFromPrismaError(error as any);
-    
+
     return new NextResponse(
-      JSON.stringify({ 
+      JSON.stringify({
         ...errorResponse,
-        requestId
+        requestId,
       }),
-      { 
+      {
         status: statusCode,
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { 'Content-Type': 'application/json' },
+      },
     );
   }
 
   // Generic server error
   return new NextResponse(
-    JSON.stringify({ 
-      error: "Internal server error. Please try again later.",
+    JSON.stringify({
+      error: 'Internal server error. Please try again later.',
       requestId,
-      timestamp
+      timestamp,
     }),
-    { 
+    {
       status: 500,
-      headers: { "Content-Type": "application/json" }
-    }
+      headers: { 'Content-Type': 'application/json' },
+    },
   );
 };
 
@@ -188,9 +198,13 @@ const getStatusCodeFromPrismaError = (error: any): number => {
 };
 
 // Server-side error handler for Express.js routes
-export const handleServerError = (error: unknown, res: any, context?: string): void => {
+export const handleServerError = (
+  error: unknown,
+  res: any,
+  context?: string,
+): void => {
   const timestamp = new Date().toISOString();
-  
+
   // Log the error
   logError(error, context);
 
@@ -198,7 +212,7 @@ export const handleServerError = (error: unknown, res: any, context?: string): v
   if (error instanceof AppError) {
     res.status(error.statusCode).json({
       error: error.message,
-      timestamp
+      timestamp,
     });
     return;
   }
@@ -207,15 +221,15 @@ export const handleServerError = (error: unknown, res: any, context?: string): v
   if (error && typeof error === 'object' && 'code' in error) {
     const errorResponse = handlePrismaError(error);
     const statusCode = getStatusCodeFromPrismaError(error as any);
-    
+
     res.status(statusCode).json(errorResponse);
     return;
   }
 
   // Generic server error
   res.status(500).json({
-    error: "Internal server error. Please try again later.",
-    timestamp
+    error: 'Internal server error. Please try again later.',
+    timestamp,
   });
 };
 
@@ -234,9 +248,10 @@ export const asyncApiHandler = (fn: Function) => {
     try {
       return await fn(req, context);
     } catch (error) {
-      const requestId = req.headers.get('x-request-id') || 
-                       req.headers.get('x-forwarded-for') || 
-                       'unknown';
+      const requestId =
+        req.headers.get('x-request-id') ||
+        req.headers.get('x-forwarded-for') ||
+        'unknown';
       return handleApiError(error, requestId);
     }
   };

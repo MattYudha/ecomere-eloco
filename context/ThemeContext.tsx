@@ -1,7 +1,13 @@
 // C:\Users\ACER\gemini-cli\Electronics-eCommerce-Shop-With-Admin-Dashboard-NextJS-NodeJS\context\ThemeContext.tsx
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -20,7 +26,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) {
       setTheme(savedTheme);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    } else if (
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
       // Check system preference if no theme is saved
       setTheme('dark');
     }

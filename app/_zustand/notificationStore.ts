@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { Notification, NotificationFilters, NotificationResponse } from '@/types/notification';
+import {
+  Notification,
+  NotificationFilters,
+  NotificationResponse,
+} from '@/types/notification';
 
 interface NotificationState {
   notifications: Notification[];
@@ -11,7 +15,7 @@ interface NotificationState {
   error: string | null;
   filters: NotificationFilters;
   selectedIds: string[];
-  
+
   // Actions
   setNotifications: (response: NotificationResponse) => void;
   addNotification: (notification: Notification) => void;
@@ -41,12 +45,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     page: 1,
     limit: 10,
     sortBy: 'createdAt',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   },
   selectedIds: [],
 
   // Actions
-  setNotifications: (response: NotificationResponse) => 
+  setNotifications: (response: NotificationResponse) =>
     set({
       notifications: response.notifications,
       unreadCount: response.unreadCount,
@@ -54,74 +58,76 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       page: response.page,
       totalPages: response.totalPages,
       loading: false,
-      error: null
+      error: null,
     }),
 
   addNotification: (notification: Notification) =>
-    set(state => ({
+    set((state) => ({
       notifications: [notification, ...state.notifications],
-      unreadCount: notification.isRead ? state.unreadCount : state.unreadCount + 1,
-      total: state.total + 1
+      unreadCount: notification.isRead
+        ? state.unreadCount
+        : state.unreadCount + 1,
+      total: state.total + 1,
     })),
 
   markAsRead: (id: string) =>
-    set(state => ({
-      notifications: state.notifications.map(n =>
-        n.id === id ? { ...n, isRead: true } : n
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === id ? { ...n, isRead: true } : n,
       ),
-      unreadCount: Math.max(0, state.unreadCount - 1)
+      unreadCount: Math.max(0, state.unreadCount - 1),
     })),
 
   markAsUnread: (id: string) =>
-    set(state => ({
-      notifications: state.notifications.map(n =>
-        n.id === id ? { ...n, isRead: false } : n
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === id ? { ...n, isRead: false } : n,
       ),
-      unreadCount: state.unreadCount + 1
+      unreadCount: state.unreadCount + 1,
     })),
 
   deleteNotification: (id: string) =>
-    set(state => {
-      const notification = state.notifications.find(n => n.id === id);
+    set((state) => {
+      const notification = state.notifications.find((n) => n.id === id);
       const wasUnread = notification && !notification.isRead;
-      
+
       return {
-        notifications: state.notifications.filter(n => n.id !== id),
-        unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount,
+        notifications: state.notifications.filter((n) => n.id !== id),
+        unreadCount: wasUnread
+          ? Math.max(0, state.unreadCount - 1)
+          : state.unreadCount,
         total: Math.max(0, state.total - 1),
-        selectedIds: state.selectedIds.filter(selectedId => selectedId !== id)
+        selectedIds: state.selectedIds.filter(
+          (selectedId) => selectedId !== id,
+        ),
       };
     }),
 
   setFilters: (newFilters: Partial<NotificationFilters>) =>
-    set(state => ({
+    set((state) => ({
       filters: { ...state.filters, ...newFilters },
-      selectedIds: [] // Clear selection when filters change
+      selectedIds: [], // Clear selection when filters change
     })),
 
   toggleSelection: (id: string) =>
-    set(state => ({
+    set((state) => ({
       selectedIds: state.selectedIds.includes(id)
-        ? state.selectedIds.filter(selectedId => selectedId !== id)
-        : [...state.selectedIds, id]
+        ? state.selectedIds.filter((selectedId) => selectedId !== id)
+        : [...state.selectedIds, id],
     })),
 
   selectAll: () =>
-    set(state => ({
-      selectedIds: state.notifications.map(n => n.id)
+    set((state) => ({
+      selectedIds: state.notifications.map((n) => n.id),
     })),
 
-  clearSelection: () =>
-    set({ selectedIds: [] }),
+  clearSelection: () => set({ selectedIds: [] }),
 
-  setLoading: (loading: boolean) =>
-    set({ loading }),
+  setLoading: (loading: boolean) => set({ loading }),
 
-  setError: (error: string | null) =>
-    set({ error, loading: false }),
+  setError: (error: string | null) => set({ error, loading: false }),
 
-  setUnreadCount: (unreadCount: number) =>
-    set({ unreadCount }),
+  setUnreadCount: (unreadCount: number) => set({ unreadCount }),
 
   clearNotifications: () =>
     set({
@@ -130,6 +136,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       total: 0,
       page: 1,
       totalPages: 0,
-      selectedIds: []
-    })
+      selectedIds: [],
+    }),
 }));

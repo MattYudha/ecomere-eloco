@@ -1,10 +1,26 @@
-const prisma = require("../utills/db"); // ✅ Use shared connection with SSL
-const { asyncHandler, handleServerError, AppError } = require("../utills/errorHandler");
+const prisma = require('../utills/db'); // ✅ Use shared connection with SSL
+const {
+  asyncHandler,
+  handleServerError,
+  AppError,
+} = require('../utills/errorHandler');
 
 // Security: Define whitelists for allowed filter types and operators
-const ALLOWED_FILTER_TYPES = ['price', 'rating', 'category', 'inStock', 'outOfStock'];
+const ALLOWED_FILTER_TYPES = [
+  'price',
+  'rating',
+  'category',
+  'inStock',
+  'outOfStock',
+];
 const ALLOWED_OPERATORS = ['gte', 'lte', 'gt', 'lt', 'equals', 'contains'];
-const ALLOWED_SORT_VALUES = ['defaultSort', 'titleAsc', 'titleDesc', 'lowPrice', 'highPrice'];
+const ALLOWED_SORT_VALUES = [
+  'defaultSort',
+  'titleAsc',
+  'titleDesc',
+  'lowPrice',
+  'highPrice',
+];
 
 // Security: Input validation functions
 function validateFilterType(filterType) {
@@ -28,8 +44,8 @@ function validateAndSanitizeFilterValue(filterType, filterValue) {
       const numValue = parseInt(filterValue);
       return isNaN(numValue) ? null : numValue;
     case 'category':
-      return typeof filterValue === 'string' && filterValue.trim().length > 0 
-        ? filterValue.trim() 
+      return typeof filterValue === 'string' && filterValue.trim().length > 0
+        ? filterValue.trim()
         : null;
     default:
       return null;
@@ -39,57 +55,62 @@ function validateAndSanitizeFilterValue(filterType, filterValue) {
 // Security: Safe filter object builder
 function buildSafeFilterObject(filterArray) {
   const filterObj = {};
-  
+
   for (const item of filterArray) {
     // Validate filter type
     if (!validateFilterType(item.filterType)) {
       console.warn(`Invalid filter type: ${item.filterType}`);
       continue;
     }
-    
+
     // Validate operator
     if (!validateOperator(item.filterOperator)) {
       console.warn(`Invalid operator: ${item.filterOperator}`);
       continue;
     }
-    
+
     // Validate and sanitize filter value
-    const sanitizedValue = validateAndSanitizeFilterValue(item.filterType, item.filterValue);
+    const sanitizedValue = validateAndSanitizeFilterValue(
+      item.filterType,
+      item.filterValue,
+    );
     if (sanitizedValue === null) {
-      console.warn(`Invalid filter value for ${item.filterType}: ${item.filterValue}`);
+      console.warn(
+        `Invalid filter value for ${item.filterType}: ${item.filterValue}`,
+      );
       continue;
     }
-    
+
     // Build safe filter object
     filterObj[item.filterType] = {
       [item.filterOperator]: sanitizedValue,
     };
   }
-  
+
   return filterObj;
 }
 
 const getAllProducts = asyncHandler(async (request, response) => {
-  const mode = request.query.mode || "";
-  
+  const mode = request.query.mode || '';
+
   // checking if we are on the admin products page because we don't want to have filtering, sorting and pagination there
-  if(mode === "admin"){
+  if (mode === 'admin') {
     const adminProducts = await prisma.product.findMany({});
     return response.json(adminProducts);
   } else {
-    const dividerLocation = request.url.indexOf("?");
+    const dividerLocation = request.url.indexOf('?');
     let filterObj = {};
     let sortObj = {};
-    let sortByValue = "defaultSort";
+    let sortByValue = 'defaultSort';
 
     // getting current page with validation
     const page = Number(request.query.page);
-    const validatedPage = (page && page > 0) ? page : 1;
+    const validatedPage = page && page > 0 ? page : 1;
 
     if (dividerLocation !== -1) {
       const queryArray = request.url
         .substring(dividerLocation + 1, request.url.length)
-        .split("&");
+        .split('&');
 
       let filterType;
       let filterArray = [];
@@ -97,64 +118,71 @@ const getAllProducts = asyncHandler(async (request, response) => {
       for (let i = 0; i < queryArray.length; i++) {
         // Security: Use more robust parsing with validation
         const queryParam = queryArray[i];
-        
+
         // Extract filter type safely
-        if (queryParam.includes("filters")) {
-          if (queryParam.includes("price")) {
-            filterType = "price";
-          } else if (queryParam.includes("rating")) {
-            filterType = "rating";
-          } else if (queryParam.includes("category")) {
-            filterType = "category";
-          } else if (queryParam.includes("inStock")) {
-            filterType = "inStock";
-          } else if (queryParam.includes("outOfStock")) {
-            filterType = "outOfStock";
+        if (queryParam.includes('filters')) {
+          if (queryParam.includes('price')) {
+            filterType = 'price';
+          } else if (queryParam.includes('rating')) {
+            filterType = 'rating';
+          } else if (queryParam.includes('category')) {
+            filterType = 'category';
+          } else if (queryParam.includes('inStock')) {
+            filterType = 'inStock';
+          } else if (queryParam.includes('outOfStock')) {
+            filterType = 'outOfStock';
           } else {
             // Skip unknown filter types
             continue;
           }
         }
 
-        if (queryParam.includes("sort")) {
+        if (queryParam.includes('sort')) {
           // Security: Validate sort value
-          const extractedSortValue = queryParam.substring(queryParam.indexOf("=") + 1);
+          const extractedSortValue = queryParam.substring(
+            queryParam.indexOf('=') + 1,
+          );
           if (validateSortValue(extractedSortValue)) {
             sortByValue = extractedSortValue;
           }
         }
 
         // Security: Extract filter parameters safely
-        if (queryParam.includes("filters") && filterType) {
+        if (queryParam.includes('filters') && filterType) {
           let filterValue;
-          
+
           // Extract filter value based on type
-          if (filterType === "category") {
-            filterValue = queryParam.substring(queryParam.indexOf("=") + 1);
+          if (filterType === 'category') {
+            filterValue = queryParam.substring(queryParam.indexOf('=') + 1);
           } else {
-            const numValue = parseInt(queryParam.substring(queryParam.indexOf("=") + 1));
+            const numValue = parseInt(
+              queryParam.substring(queryParam.indexOf('=') + 1),
+            );
             filterValue = isNaN(numValue) ? null : numValue;
           }
 
           // Extract operator safely
-          const operatorStart = queryParam.indexOf("$") + 1;
-          const operatorEnd = queryParam.indexOf("=") - 1;
-          
+          const operatorStart = queryParam.indexOf('$') + 1;
+          const operatorEnd = queryParam.indexOf('=') - 1;
+
           if (operatorStart > 0 && operatorEnd > operatorStart) {
-            const filterOperator = queryParam.substring(operatorStart, operatorEnd);
-            
+            const filterOperator = queryParam.substring(
+              operatorStart,
+              operatorEnd,
+            );
+
             // Only add to filter array if all values are valid
             if (filterValue !== null && filterOperator) {
-              filterArray.push({ 
-                filterType, 
-                filterOperator, 
-                filterValue 
+              filterArray.push({
+                filterType,
+                filterOperator,
+                filterValue,
               });
             }
           }
         }
       }
-      
+
       // Security: Build filter object using safe function
       filterObj = buildSafeFilterObject(filterArray);
     }
@@ -168,20 +196,20 @@ const getAllProducts = asyncHandler(async (request, response) => {
 
     // Security: Build sort object safely
     switch (sortByValue) {
-      case "defaultSort":
+      case 'defaultSort':
         sortObj = {};
         break;
-      case "titleAsc":
-        sortObj = { title: "asc" };
+      case 'titleAsc':
+        sortObj = { title: 'asc' };
         break;
-      case "titleDesc":
-        sortObj = { title: "desc" };
+      case 'titleDesc':
+        sortObj = { title: 'desc' };
         break;
-      case "lowPrice":
-        sortObj = { price: "asc" };
+      case 'lowPrice':
+        sortObj = { price: 'asc' };
         break;
-      case "highPrice":
-        sortObj = { price: "desc" };
+      case 'highPrice':
+        sortObj = { price: 'desc' };
         break;
       default:
         sortObj = {};
@@ -273,24 +301,24 @@ const createProduct = asyncHandler(async (request, response) => {
   } = request.body;
 
   if (!title) {
-    throw new AppError("Missing required field: title", 400);
+    throw new AppError('Missing required field: title', 400);
   }
-  
+
   // Basic validation
   if (!merchantId) {
-    throw new AppError("Missing required field: merchantId", 400);
+    throw new AppError('Missing required field: merchantId', 400);
   }
-  
+
   if (!slug) {
-    throw new AppError("Missing required field: slug", 400);
+    throw new AppError('Missing required field: slug', 400);
   }
 
   if (!price) {
-    throw new AppError("Missing required field: price", 400);
+    throw new AppError('Missing required field: price', 400);
   }
 
   if (!categoryId) {
-    throw new AppError("Missing required field: categoryId", 400);
+    throw new AppError('Missing required field: categoryId', 400);
   }
 
   const product = await prisma.product.create({
@@ -328,7 +356,7 @@ const updateProduct = asyncHandler(async (request, response) => {
 
   // Basic validation
   if (!id) {
-    throw new AppError("Product ID is required", 400);
+    throw new AppError('Product ID is required', 400);
   }
 
   // Finding a product by id
@@ -339,7 +367,7 @@ const updateProduct = asyncHandler(async (request, response) => {
   });
 
   if (!existingProduct) {
-    throw new AppError("Product not found", 404);
+    throw new AppError('Product not found', 404);
   }
 
   // Updating found product
@@ -369,7 +397,7 @@ const deleteProduct = asyncHandler(async (request, response) => {
   const { id } = request.params;
 
   if (!id) {
-    throw new AppError("Product ID is required", 400);
+    throw new AppError('Product ID is required', 400);
   }
 
   await prisma.product.delete({
@@ -382,9 +410,9 @@ const deleteProduct = asyncHandler(async (request, response) => {
 
 const searchProducts = asyncHandler(async (request, response) => {
   const { query } = request.query;
-  
+
   if (!query) {
-    throw new AppError("Query parameter is required", 400);
+    throw new AppError('Query parameter is required', 400);
   }
 
   const products = await prisma.product.findMany({
@@ -409,9 +437,9 @@ const searchProducts = asyncHandler(async (request, response) => {
 
 const getProductById = asyncHandler(async (request, response) => {
   const { id } = request.params;
-  
+
   if (!id) {
-    throw new AppError("Product ID is required", 400);
+    throw new AppError('Product ID is required', 400);
   }
 
   const product = await prisma.product.findUnique({
@@ -422,11 +450,11 @@ const getProductById = asyncHandler(async (request, response) => {
       category: true,
     },
   });
-  
+
   if (!product) {
-    throw new AppError("Product not found", 404);
+    throw new AppError('Product not found', 404);
   }
-  
+
   return response.status(200).json(product);
 });
 

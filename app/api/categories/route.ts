@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/db";
+import { NextResponse } from 'next/server';
+import prisma from '@/utils/db';
 
 export async function GET() {
   try {
     const categories = await prisma.category.findMany();
     return NextResponse.json(categories);
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    let errorMessage = "An unknown error occurred";
+    console.error('Error fetching categories:', error);
+    let errorMessage = 'An unknown error occurred';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
     return NextResponse.json(
-      { message: "Failed to fetch categories", error: errorMessage },
-      { status: 500 }
+      { message: 'Failed to fetch categories', error: errorMessage },
+      { status: 500 },
     );
   }
 }
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
 
     if (!name) {
       return NextResponse.json(
-        { message: "Category name is required" },
-        { status: 400 }
+        { message: 'Category name is required' },
+        { status: 400 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     if (existingCategory) {
       return NextResponse.json(
         { message: `Category with name '${name}' already exists` },
-        { status: 409 } // 409 Conflict
+        { status: 409 }, // 409 Conflict
       );
     }
 
@@ -53,14 +53,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error) {
-    console.error("Error creating category:", error);
-    let errorMessage = "An unknown error occurred";
+    console.error('Error creating category:', error);
+    let errorMessage = 'An unknown error occurred';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
     return NextResponse.json(
-      { message: "Failed to create category", error: errorMessage },
-      { status: 500 }
+      { message: 'Failed to create category', error: errorMessage },
+      { status: 500 },
     );
   }
 }

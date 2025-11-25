@@ -1,11 +1,11 @@
-"use client";
-import { DashboardSidebar } from "@/components";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState, use } from "react";
-import toast from "react-hot-toast";
-import { formatCategoryName } from "../../../../../utils/categoryFormating";
-import { convertCategoryNameToURLFriendly } from "../../../../../utils/categoryFormating";
-import apiClient from "@/lib/api";
+'use client';
+import { DashboardSidebar } from '@/components';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, use } from 'react';
+import toast from 'react-hot-toast';
+import { formatCategoryName } from '../../../../../utils/categoryFormating';
+import { convertCategoryNameToURLFriendly } from '../../../../../utils/categoryFormating';
+import apiClient from '@/lib/api';
 
 interface DashboardSingleCategoryProps {
   params: Promise<{ id: string }>;
@@ -16,27 +16,27 @@ const DashboardSingleCategory = ({ params }: DashboardSingleCategoryProps) => {
   const id = resolvedParams.id;
 
   const [categoryInput, setCategoryInput] = useState<{ name: string }>({
-    name: "",
+    name: '',
   });
   const router = useRouter();
 
   const deleteCategory = async () => {
     const requestOptions = {
-      method: "DELETE",
+      method: 'DELETE',
     };
     // sending API request for deleting a category
     apiClient
       .delete(`/api/categories/${id}`, requestOptions)
       .then((response) => {
         if (response.status === 204) {
-          toast.success("Category deleted successfully");
-          router.push("/admin/categories");
+          toast.success('Category deleted successfully');
+          router.push('/admin/categories');
         } else {
-          throw Error("There was an error deleting a category");
+          throw Error('There was an error deleting a category');
         }
       })
       .catch((error) => {
-        toast.error("There was an error deleting category");
+        toast.error('There was an error deleting category');
       });
   };
 
@@ -49,17 +49,17 @@ const DashboardSingleCategory = ({ params }: DashboardSingleCategoryProps) => {
 
         if (response.status === 200) {
           await response.json();
-          toast.success("Category successfully updated");
+          toast.success('Category successfully updated');
         } else {
           const errorData = await response.json();
-          toast.error(errorData.error || "Error updating a category");
+          toast.error(errorData.error || 'Error updating a category');
         }
       } catch (error) {
-        console.error("Error updating category:", error);
-        toast.error("There was an error while updating a category");
+        console.error('Error updating category:', error);
+        toast.error('There was an error while updating a category');
       }
     } else {
-      toast.error("For updating a category you must enter all values");
+      toast.error('For updating a category you must enter all values');
       return;
     }
   };

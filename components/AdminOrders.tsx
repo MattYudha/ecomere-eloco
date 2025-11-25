@@ -49,7 +49,7 @@ const AdminOrders = () => {
         const data = await response.json();
         setOrders(data?.orders || []);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error('Error fetching orders:', error);
         setOrders([]); // Set to empty array on error
       }
     };
@@ -94,30 +94,29 @@ const AdminOrders = () => {
   });
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="w-full min-h-screen bg-gray-50 dark:bg-dark-bg p-4 md:p-8">
       {/* Main Container */}
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
-          <div className="relative backdrop-blur-xl bg-white/70 rounded-3xl border border-gray-200 p-8 shadow-lg">
+          <div className="relative backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 rounded-3xl border border-gray-200 dark:border-slate-700 p-8 shadow-lg">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-slate-800 to-purple-800 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 bg-gradient-to-r from-slate-800 to-purple-800 bg-clip-text text-transparent">
                   Order Management
                 </h1>
-                <p className="text-gray-500 text-sm md:text-base">
+                <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base">
                   Track and manage all customer orders in real-time
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="backdrop-blur-md bg-white/50 rounded-2xl px-6 py-3 border border-gray-200">
-                  <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
-                    Total Orders
-                  </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {orders.length}
-                  </p>
-                </div>
+                                  <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
+                                    Total Orders
+                                  </p>
+                                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                    {orders.length}
+                                  </p>                </div>
               </div>
             </div>
           </div>
@@ -125,7 +124,7 @@ const AdminOrders = () => {
 
         {/* Filters and Search Section */}
         <div className="mb-6">
-          <div className="backdrop-blur-xl bg-white/70 rounded-2xl border border-gray-200 p-6 shadow-lg">
+          <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 rounded-2xl border border-gray-200 dark:border-slate-700 p-6 shadow-lg">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search Bar */}
               <div className="flex-1 relative">
@@ -135,7 +134,7 @@ const AdminOrders = () => {
                   placeholder="Search by order ID or customer name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:bg-white transition-all"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 transition-all"
                 />
               </div>
 
@@ -145,7 +144,7 @@ const AdminOrders = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="pl-12 pr-10 py-3 rounded-xl bg-white/50 border border-gray-200 text-gray-800 focus:outline-none focus:border-purple-400 focus:bg-white transition-all appearance-none cursor-pointer min-w-[180px]"
+                  className="pl-12 pr-10 py-3 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 transition-all appearance-none cursor-pointer min-w-[180px]"
                 >
                   <option value="all">All Status</option>
                   <option value="Delivered">Delivered</option>
@@ -161,7 +160,7 @@ const AdminOrders = () => {
 
         {/* Table Container with Liquid Glass */}
         <div className="relative">
-          <div className="relative backdrop-blur-xl bg-white/70 rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
+          <div className="relative backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-xl overflow-hidden">
             {/* Table Wrapper for Responsive Scroll */}
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -176,37 +175,37 @@ const AdminOrders = () => {
                           orders.length > 0
                         }
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-5 h-5 rounded-lg bg-gray-200/50 border-2 border-gray-300 checked:bg-purple-600 checked:border-purple-600 cursor-pointer transition-all"
+                        className="w-5 h-5 rounded-lg bg-gray-200/50 dark:bg-slate-700/50 border-2 border-gray-300 dark:border-slate-600 checked:bg-purple-600 dark:checked:bg-purple-500 checked:border-purple-600 dark:checked:border-purple-500 cursor-pointer transition-all"
                       />
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
                         <Package className="w-4 h-4" />
                         Order ID
                       </div>
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4" />
                         Customer
                       </div>
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4" />
                         Amount
                       </div>
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Date
                       </div>
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
@@ -227,7 +226,7 @@ const AdminOrders = () => {
                             onChange={(e) =>
                               handleSelectOrder(order?.id, e.target.checked)
                             }
-                            className="w-5 h-5 rounded-lg bg-gray-200/50 border-2 border-gray-300 checked:bg-purple-600 checked:border-purple-600 cursor-pointer transition-all"
+                            className="w-5 h-5 rounded-lg bg-gray-200/50 dark:bg-slate-700/50 border-2 border-gray-300 dark:border-slate-600 checked:bg-purple-600 dark:checked:bg-purple-500 checked:border-purple-600 dark:checked:border-purple-500 cursor-pointer transition-all"
                           />
                         </td>
                         <td className="px-6 py-5">
@@ -301,7 +300,7 @@ const AdminOrders = () => {
 
             {/* Table Footer with Summary */}
             {filteredOrders.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 backdrop-blur-sm bg-white/50">
+              <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 backdrop-blur-sm bg-white/50 dark:bg-slate-800/50">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-500">
                   <span>
                     Showing{' '}

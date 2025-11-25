@@ -1,273 +1,411 @@
-"use client";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { CiShoppingBasket, CiUser, CiLocationOn, CiTimer, CiPhone, CiMail } from "react-icons/ci";
-import { IoIosLogOut } from "react-icons/io";
-import { LuLayoutDashboard } from "react-icons/lu";
-import { Menu, X } from "lucide-react"; // Import Menu and X icons
-import { useCart } from "@/hooks/useCart";
-import { useWishlist } from "@/hooks/useWishlist";
-import SearchInput from "./SearchInput";
-import HeartElement from "./HeartElement";
-import { user } from "@prisma/client";
-import NotificationBell from "./NotificationBell";
-import ThemeToggle from "./ThemeToggle"; // Added import for ThemeToggle
-import { useRef } from "react"; // Import useRef
-import { Session } from "next-auth"; // Import Session type
+'use client';
 
-interface HeaderProps {}
+import { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+} from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
+import { CiShoppingBasket, CiUser } from 'react-icons/ci';
+import { IoIosLogOut } from 'react-icons/io';
+import { LuLayoutDashboard } from 'react-icons/lu';
+import { Menu, X } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/hooks/useWishlist';
+import SearchInput from './SearchInput';
+import HeartElement from './HeartElement';
+import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
+import { Session } from 'next-auth';
 
-const HEADER_TOP_HEIGHT = 0; // Approximate height of the top bar in pixels
-
-const Header = ({}: HeaderProps) => {
+const Header = () => {
   const { data: session } = useSession() as { data: Session | null };
-  const router = useRouter();
   const pathname = usePathname();
   const { cart } = useCart();
   const { wishlist } = useWishlist();
-  const [isSticky, setIsSticky] = useState(false);
+  const { theme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // --- 1. Fix Hydration Error ---
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    setMounted(true);
   }, []);
 
+  // --- 2. Scroll Detection Logic ---
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const isScrolling = latest > 50; // Trigger sedikit lebih bawah agar transisi lebih kerasa
+    if (isScrolled !== isScrolling) {
+      setIsScrolled(isScrolling);
+    }
+  });
+
+  // --- 3. Click Outside Dropdown ---
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
-
-  // Close mobile menu when route changes
+  // --- 4. Close Mobile Menu on Route Change ---
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  if (!mounted) return null;
+
+  // --- 5. ULTRA-MODERN FLOATING CAPSULE VARIANTS ---
+  const headerVariants = {
+    top: {
+      width: '100%', // Lebar penuh
+      maxWidth: '100%',
+      top: 0,
+      y: 0,
+      borderRadius: '0px', // Sudut tajam
+      backgroundColor: 'rgba(255, 255, 255, 0)',
+      height: '90px',
+      boxShadow: 'none',
+      border: '1px solid transparent',
+      backdropFilter: 'blur(8px) saturate(180%)', // Added liquid glass blur
+    },
+    scrolled: {
+      width: '90%', // Mengecil (Floating effect)
+      maxWidth: '1280px', // Batas lebar maksimal agar rapi di layar ultra-wide
+      top: 15, // Turun sedikit dari atas
+      y: 0,
+      borderRadius: '24px', // Sudut membulat (Pill/Capsule shape)
+      backgroundColor:
+        theme === 'dark'
+          ? 'rgba(15, 23, 42, 0.3)' // Dark Blue Glass (lebih transparan)
+          : 'rgba(255, 255, 255, 0.3)', // White Glass (lebih transparan)
+      height: '70px',
+      boxShadow: 'none', // Menghilangkan shadow
+      border: '1px solid transparent', // Menghilangkan border
+      backdropFilter: 'blur(16px) saturate(180%)',
+    },
+  };
+
   return (
-    <header className="w-full z-50 fixed top-0 transition-all duration-300">
-      {/* Main Header Section */}
-      <div className={`w-full transition-all duration-300 ${isSticky ? 'bg-black/80 shadow-lg py-2 backdrop-blur-md' : 'bg-transparent py-4'}`}
-           style={{ top: '0px' }}>
-        <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/assets/logo.png" alt="Logo" width={64} height={64} className="h-16 w-16 mb-1" />
-            <h1 className="text-3xl font-bold text-white font-['Forum'] mb-1">
-              <span className="text-yellow-500">ELOQO</span>
-              <span className="text-white">.CO</span>
+    <>
+      <motion.header
+        className="fixed z-50 left-1/2" // Penting: left-1/2 untuk centering saat width mengecil
+        style={{ x: '-50%' }} // Centering technique
+        variants={headerVariants}
+        initial="top"
+        animate={isScrolled ? 'scrolled' : 'top'}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} // Soft spring animation
+      >
+        <div className="w-full h-full px-6 flex items-center justify-between">
+          {/* Logo Section */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 flex-shrink-0 group"
+          >
+            <Image
+              src="/assets/logo.png"
+              alt="Logo"
+              width={56}
+              height={56}
+              className={`transition-all duration-500 ease-out ${isScrolled ? 'h-9 w-9' : 'h-12 w-12'}`}
+            />
+            <h1
+              className={`font-bold font-['Forum'] transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'} text-slate-900 dark:text-white`}
+            >
+              <span className="text-[#cb6112]">ELOQO</span>
+              <span>.CO</span>
             </h1>
           </Link>
 
-          {/* E-commerce Actions */}
-          <div className="flex items-center gap-6">
-            {/* Search Input - Desktop */}
-            <div className="hidden md:block">
+          {/* Desktop Actions */}
+          <div className="flex items-center gap-3 md:gap-5">
+            <div
+              className={`hidden md:block transition-all duration-500 origin-right ${isScrolled ? 'scale-90 opacity-0 w-0 overflow-hidden' : 'scale-100 opacity-100 w-auto'}`}
+            >
+              {/* Search Input hidden on scroll to save space for cleaner look, or remove this condition if you want it always */}
               <SearchInput />
             </div>
 
-            {/* Admin Dashboard Link - Desktop */}
-            {session?.user?.role === "ADMIN" && (
-              <Link href="/admin" className="hidden md:block text-white hover:text-yellow-500 transition-colors duration-200">
-                <LuLayoutDashboard size={24} />
+            {/* Admin Link */}
+            {session?.user?.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                className="hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-2 rounded-full hover:bg-orange-50 dark:hover:bg-slate-800"
+              >
+                <LuLayoutDashboard size={20} />
               </Link>
             )}
-            {/* Notification Bell - Desktop */}
+
             <NotificationBell />
 
-            {/* User Dropdown / Login-Register - Desktop */}
+            {/* User Dropdown */}
             {session?.user ? (
               <div className="relative hidden md:block" ref={dropdownRef}>
-                <div
-                  className="flex items-center gap-2 cursor-pointer text-white hover:text-yellow-500"
+                <button
+                  className="flex items-center gap-2 cursor-pointer text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <CiUser size={24} />
-                  <span className="hidden lg:block">{session.user.name}</span>
-                </div>
-                <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dark:bg-gray-800 ${isDropdownOpen ? 'block' : 'hidden'}`}>
-                  {session?.user?.role === "ADMIN" && (
-                    <Link
-                      href="/admin"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <LuLayoutDashboard />
-                      Admin
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setIsDropdownOpen(false);
-                    }}
-                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                  {/* Nama user disembunyikan saat scroll agar lebih compact */}
+                  <span
+                    className={`hidden lg:block font-medium text-sm transition-all duration-300 ${isScrolled ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}
                   >
-                    <IoIosLogOut />
-                    Logout
-                  </button>
-                </div>
+                    {session.user.name?.split(' ')[0]}
+                  </span>
+                </button>
+
+                {/* Dropdown Menu Glass */}
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-6 w-56 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700 py-2 z-20 overflow-hidden"
+                    >
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 mb-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
+                          Account
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                          {session.user.email}
+                        </p>
+                      </div>
+
+                      {session?.user?.role === 'ADMIN' && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-[#cb6112] transition-all"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <LuLayoutDashboard size={18} /> Admin Dashboard
+                        </Link>
+                      )}
+
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setIsDropdownOpen(false);
+                        }}
+                        className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                      >
+                        <IoIosLogOut size={18} /> Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="flex items-center gap-2 cursor-pointer text-white hover:text-yellow-500 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full px-4 py-2"
+                  className="px-4 py-1.5 rounded-full border border-[#cb6112]/50 text-[#cb6112] hover:border-[#cb6112] hover:bg-[#cb6112] hover:text-white transition-all text-sm font-medium"
                 >
-                  <CiUser size={24} />
-                  <span className="hidden lg:block">Login</span>
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex items-center gap-2 cursor-pointer text-white hover:text-yellow-500 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full px-4 py-2"
-                >
-                  <span className="hidden lg:block">Register</span>
+                  Login
                 </Link>
               </div>
             )}
 
-            {/* Theme Toggle - Desktop */}
             <div className="hidden md:block">
               <ThemeToggle />
             </div>
-            {/* Wishlist - Desktop */}
-            <div className="hidden md:block">
+            <div
+              className={`hidden md:block hover:scale-110 transition-transform ${isScrolled ? 'text-slate-800 dark:text-white' : ''}`}
+            >
               <HeartElement wishQuantity={wishlist.length} />
             </div>
 
-            {/* Cart - Desktop */}
-            <Link href="/cart" className="relative hidden md:block text-white hover:text-yellow-500">
-              <CiShoppingBasket size={24} />
+            <Link
+              href="/cart"
+              className="relative hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-1"
+            >
+              <CiShoppingBasket size={26} />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-[#cb6112] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-sm">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            {/* Hamburger Menu Button - Mobile */}
+            {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-white hover:text-yellow-500 transition-colors duration-200"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle mobile menu"
+              className="md:hidden text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-1"
+              onClick={() => setIsMobileMenuOpen(true)}
             >
-              <Menu size={28} />
+              <Menu size={26} />
             </button>
           </div>
         </div>
-      </div>
+      </motion.header>
 
       {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 z-40 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}
-      >
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeMobileMenu}></div> {/* Overlay background */}
-        <div className="absolute right-0 top-0 w-64 h-full bg-white/10 backdrop-blur-xl border-l border-white/20 shadow-lg flex flex-col p-6 text-white">
-          {/* Close Button */}
-          <button
-            className="self-end text-white hover:text-yellow-500 transition-colors duration-200 mb-6"
-            onClick={closeMobileMenu}
-            aria-label="Close mobile menu"
-          >
-            <X size={28} />
-          </button>
-
-          {/* Mobile Menu Content */}
-          <div className="flex flex-col gap-6 flex-grow">
-            {/* Search Input - Mobile */}
-            <SearchInput />
-
-            {/* Admin Dashboard Link - Mobile */}
-            {session?.user?.role === "ADMIN" && (
-              <Link href="/admin" className="flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors duration-200" onClick={closeMobileMenu}>
-                <LuLayoutDashboard size={24} />
-                Admin Dashboard
-              </Link>
-            )}
-
-            {/* User Dropdown / Login-Register - Mobile */}
-            {session?.user ? (
-              <>
-                <div className="flex items-center gap-3 text-lg">
-                  <CiUser size={24} />
-                  <span>{session.user.name}</span>
-                </div>
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] md:hidden"
+              onClick={closeMobileMenu}
+            />
+            <motion.div
+              className="fixed right-0 top-0 w-[85%] max-w-sm h-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl shadow-2xl z-[70] flex flex-col overflow-hidden border-l border-white/20"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            >
+              {/* Mobile Menu Header */}
+              <div className="p-6 flex justify-between items-center border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-transparent to-[#cb6112]/5">
+                <h2 className="text-xl font-bold font-['Forum'] text-[#cb6112] tracking-widest">
+                  MENU
+                </h2>
                 <button
-                  onClick={() => {
-                    signOut();
-                    closeMobileMenu();
-                  }}
-                  className="flex items-center gap-3 text-lg text-left hover:text-yellow-500 transition-colors duration-200"
+                  className="text-gray-500 hover:text-[#cb6112] hover:rotate-90 transition-all duration-300"
+                  onClick={closeMobileMenu}
                 >
-                  <IoIosLogOut size={24} />
-                  Logout
+                  <X size={28} />
                 </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors duration-200" onClick={closeMobileMenu}>
-                  <CiUser size={24} />
-                  Login
-                </Link>
-                <Link href="/register" className="flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors duration-200" onClick={closeMobileMenu}>
-                  Register
-                </Link>
-              </>
-            )}
+              </div>
 
-            {/* Wishlist - Mobile */}
-            <Link href="/wishlist" className="flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors duration-200" onClick={closeMobileMenu}>
-              <HeartElement wishQuantity={wishlist.length} />
-              Wishlist
-            </Link>
+              {/* Mobile Menu Content */}
+              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
+                <SearchInput />
 
-            {/* Cart - Mobile */}
-            <Link href="/cart" className="relative flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors duration-200" onClick={closeMobileMenu}>
-              <CiShoppingBasket size={24} />
-              Cart
-              {totalItems > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-            
-            {/* Theme Toggle - Mobile */}
-            <div className="mt-auto pt-6 border-t border-white/20">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+                <div className="flex flex-col gap-2">
+                  {/* User Info Card */}
+                  {session?.user ? (
+                    <div className="bg-[#cb6112]/5 dark:bg-slate-800/50 p-4 rounded-2xl flex items-center gap-4 mb-4 border border-[#cb6112]/10">
+                      <div className="h-10 w-10 bg-gradient-to-br from-[#cb6112] to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                        {session.user.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 dark:text-white text-base">
+                          {session.user.name}
+                        </p>
+                        <p className="text-xs text-[#cb6112] font-medium tracking-wide">
+                          MEMBER
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-2">
+                    <Link
+                      href="/"
+                      onClick={closeMobileMenu}
+                      className="block p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      href="/shop"
+                      onClick={closeMobileMenu}
+                      className="block p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                    >
+                      Shop
+                    </Link>
+
+                    <Link
+                      href="/wishlist"
+                      onClick={closeMobileMenu}
+                      className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                    >
+                      <span>Wishlist</span>
+                      <span className="bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300">
+                        {wishlist.length}
+                      </span>
+                    </Link>
+
+                    <Link
+                      href="/cart"
+                      onClick={closeMobileMenu}
+                      className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                    >
+                      <span>Cart</span>
+                      <span className="bg-[#cb6112] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md shadow-orange-200 dark:shadow-none">
+                        {totalItems}
+                      </span>
+                    </Link>
+
+                    {session?.user?.role === 'ADMIN' && (
+                      <Link
+                        href="/admin"
+                        onClick={closeMobileMenu}
+                        className="block p-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 text-[#cb6112] font-bold mt-2"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-6">
+                  <div className="flex justify-between items-center px-2">
+                    <span className="text-gray-500 dark:text-gray-400 font-medium text-sm">
+                      App Appearance
+                    </span>
+                    <ThemeToggle />
+                  </div>
+
+                  {session?.user ? (
+                    <button
+                      onClick={() => {
+                        signOut();
+                        closeMobileMenu();
+                      }}
+                      className="w-full py-3.5 rounded-xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold hover:bg-red-100 dark:hover:bg-red-900/20 transition-all flex justify-center items-center gap-2"
+                    >
+                      <IoIosLogOut size={20} /> Log Out
+                    </button>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      <Link
+                        href="/login"
+                        onClick={closeMobileMenu}
+                        className="py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-center font-bold hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={closeMobileMenu}
+                        className="py-3.5 rounded-xl bg-[#cb6112] text-white text-center font-bold shadow-lg shadow-[#cb6112]/20 hover:shadow-[#cb6112]/40 transition-all"
+                      >
+                        Register
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

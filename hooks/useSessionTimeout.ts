@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useSession, signOut } from "next-auth/react";
-import { useEffect, useRef } from "react";
+import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useRef } from 'react';
 
 // Production timeout: 15 minutes
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
@@ -13,19 +13,19 @@ export function useSessionTimeout() {
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
-    
-    if (status === "authenticated" && session) {
+
+    if (status === 'authenticated' && session) {
       const startTimeout = () => {
         // Clear existing timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-        
+
         // Set new timeout
         timeoutRef.current = setTimeout(() => {
-          signOut({ 
-            callbackUrl: "/login?expired=true",
-            redirect: true 
+          signOut({
+            callbackUrl: '/login?expired=true',
+            redirect: true,
           });
         }, SESSION_TIMEOUT);
       };
@@ -39,8 +39,15 @@ export function useSessionTimeout() {
       };
 
       // Listen for user activity
-      const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-      events.forEach(event => {
+      const events = [
+        'mousedown',
+        'mousemove',
+        'keypress',
+        'scroll',
+        'touchstart',
+        'click',
+      ];
+      events.forEach((event) => {
         document.addEventListener(event, resetTimeout, true);
       });
 
@@ -48,7 +55,7 @@ export function useSessionTimeout() {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-        events.forEach(event => {
+        events.forEach((event) => {
           document.removeEventListener(event, resetTimeout, true);
         });
       };

@@ -2,21 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "~slick-carousel/slick/slick.css";
-@import "~slick-carousel/slick/slick-theme.css";
+@import '~slick-carousel/slick/slick.css';
+@import '~slick-carousel/slick/slick-theme.css';
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Base styles for light mode */
+/* 1. Set new base styles for light and dark modes */
 body {
-  @apply bg-white text-gray-900;
+  @apply bg-white text-eerie-black-2;
 }
 
-/* Dark mode styles */
 .dark body {
-  @apply bg-gray-900 text-white;
+  @apply bg-dark-bg text-white;
+}
+
+/* 2. Create global background utilities for the new design system */
+.background-gradient-light {
+  background-image: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0),
+    rgba(203, 97, 18, 0.05)
+  );
+}
+
+.background-gradient-dark {
+  background-image:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.15),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(255, 255, 255, 0.15),
+      transparent 30%
+    );
 }
 
 .range {
@@ -156,12 +178,23 @@ body {
 
 /* New animation for floating shapes */
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-15px) rotate(5deg); }
-  50% { transform: translateY(0) rotate(0deg); }
-  75% { transform: translateY(15px) rotate(-5deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotate(5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(15px) rotate(-5deg);
+  }
 }
-.animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
+.animate-float-slow {
+  animation: float-slow 10s ease-in-out infinite;
+}
 
 .section-subtitle::after {
   content: url('/images/separator.svg'); /* Assuming separator.svg is in public/images */
@@ -195,4 +228,47 @@ body {
 }
 .contact-number::after {
   bottom: -5px;
+}
+
+/* Button Shine Effect */
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.shine-effect:hover::after {
+  opacity: 1;
+  animation: shine 1s ease-out;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-75%) translateY(-75%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(75%) translateY(75%) rotate(45deg);
+  }
+}
+
+/* Custom scrollbar hiding for horizontal scroll */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

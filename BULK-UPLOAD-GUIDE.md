@@ -32,12 +32,10 @@ title,price,manufacturer,inStock,mainImage,description,slug,categoryId
 ### 1. Format Data
 
 - **Harga**: Gunakan titik (.) untuk desimal, bukan koma
-
   - ✅ Benar: `1299.99`
   - ❌ Salah: `1.299,99`
 
 - **Slug**: Harus URL-friendly (lowercase, no spaces)
-
   - ✅ Benar: `samsung-galaxy-s24`
   - ❌ Salah: `Samsung Galaxy S24`
 

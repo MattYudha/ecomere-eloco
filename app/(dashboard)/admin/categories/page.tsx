@@ -1,11 +1,11 @@
-"use client";
-import { CustomButton, DashboardSidebar } from "@/components";
-import { nanoid } from "nanoid";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { formatCategoryName } from "../../../../utils/categoryFormating";
-import apiClient from "@/lib/api";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa"; // Import icons
+'use client';
+import { CustomButton, DashboardSidebar } from '@/components';
+import { nanoid } from 'nanoid';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { formatCategoryName } from '../../../../utils/categoryFormating';
+import apiClient from '@/lib/api';
+import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa'; // Import icons
 
 interface Category {
   id: string;
@@ -18,14 +18,15 @@ const DashboardCategory = () => {
 
   const fetchCategories = () => {
     setLoading(true);
-    apiClient.get("/api/categories")
+    apiClient
+      .get('/api/categories')
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
         setLoading(false);
       })
       .catch(() => {
-        console.error("Failed to fetch categories");
+        console.error('Failed to fetch categories');
         setLoading(false);
       });
   };
@@ -35,18 +36,20 @@ const DashboardCategory = () => {
   }, []);
 
   const handleDelete = async (categoryId: string) => {
-    if (confirm("Are you sure you want to delete this category?")) {
+    if (confirm('Are you sure you want to delete this category?')) {
       try {
-        const response = await apiClient.delete(`/api/categories/${categoryId}`);
+        const response = await apiClient.delete(
+          `/api/categories/${categoryId}`,
+        );
         if (response.ok) {
-          alert("Category deleted successfully");
+          alert('Category deleted successfully');
           fetchCategories(); // Refresh categories list
         } else {
           const errorData = await response.json();
           alert(`Failed to delete category: ${errorData.message}`);
         }
       } catch (error) {
-        alert("An error occurred while deleting the category.");
+        alert('An error occurred while deleting the category.');
         console.error(error);
       }
     }
@@ -75,14 +78,21 @@ const DashboardCategory = () => {
           // Skeleton Loader
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-24 bg-white/5 dark:bg-gray-700/20 rounded-xl animate-pulse"></div>
+              <div
+                key={i}
+                className="h-24 bg-white/5 dark:bg-gray-700/20 rounded-xl animate-pulse"
+              ></div>
             ))}
           </div>
         ) : categories.length === 0 ? (
           // Empty State
           <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-400/30 dark:border-gray-600/30 rounded-xl">
-            <p className="text-xl font-semibold text-gray-500 dark:text-gray-400">No categories found.</p>
-            <p className="text-gray-400 dark:text-gray-500 mt-2">Get started by adding a new category.</p>
+            <p className="text-xl font-semibold text-gray-500 dark:text-gray-400">
+              No categories found.
+            </p>
+            <p className="text-gray-400 dark:text-gray-500 mt-2">
+              Get started by adding a new category.
+            </p>
           </div>
         ) : (
           // Categories Grid
@@ -101,7 +111,7 @@ const DashboardCategory = () => {
                       <FaEdit />
                     </button>
                   </Link>
-                  <button 
+                  <button
                     onClick={() => handleDelete(category.id)}
                     className="p-2 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-white transition-colors"
                   >

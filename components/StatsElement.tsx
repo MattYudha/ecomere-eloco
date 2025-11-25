@@ -1,5 +1,5 @@
-import React from "react";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
+import React from 'react';
+import { FaArrowUp, FaArrowDown } from 'react-icons/fa6';
 
 interface StatsElementProps {
   title: string;
@@ -10,15 +10,24 @@ interface StatsElementProps {
   loading: boolean;
 }
 
-const StatsElement: React.FC<StatsElementProps> = ({ title, value, change, isPositive, icon, loading }) => {
-  const changeColor = isPositive ? "text-green-400" : "text-red-400";
+const StatsElement: React.FC<StatsElementProps> = ({
+  title,
+  value,
+  change,
+  isPositive,
+  icon,
+  loading,
+}) => {
+  const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
   const ChangeIcon = isPositive ? FaArrowUp : FaArrowDown;
 
   if (loading) {
     return (
-      <div className="w-full h-32 flex flex-col justify-center items-center rounded-lg p-4
+      <div
+        className="w-full h-32 flex flex-col justify-center items-center rounded-lg p-4
                   bg-white/10 backdrop-blur-md border border-white/20 shadow-lg
-                  dark:bg-black/20 dark:border-gray-700 animate-pulse">
+                  dark:bg-black/20 dark:border-gray-700 animate-pulse"
+      >
         <div className="flex items-center gap-x-4 w-full">
           <div className="w-10 h-10 bg-gray-500/30 rounded-full"></div>
           <div className="flex flex-col items-start gap-y-2 flex-grow">
@@ -32,9 +41,11 @@ const StatsElement: React.FC<StatsElementProps> = ({ title, value, change, isPos
   }
 
   return (
-    <div className="w-full h-32 flex flex-col justify-center items-center rounded-lg p-4
+    <div
+      className="w-full h-32 flex flex-col justify-center items-center rounded-lg p-4
                 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                dark:bg-black/20 dark:border-gray-700">
+                dark:bg-black/20 dark:border-gray-700"
+    >
       <div className="flex items-center gap-x-4">
         <div className="text-3xl">{icon}</div>
         <div className="flex flex-col items-start">

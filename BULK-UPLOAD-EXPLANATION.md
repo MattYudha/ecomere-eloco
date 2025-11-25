@@ -215,7 +215,7 @@ if (existingProduct) {
     data: {
       batchId,
       productId: updatedProduct.id,
-      status: "UPDATED", // Bukan CREATED
+      status: 'UPDATED', // Bukan CREATED
       // ... field lainnya
     },
   });
@@ -261,7 +261,7 @@ async function canDeleteProductsForBatch(tx, batchId) {
   });
 
   if (orderedProducts.length > 0) {
-    return { canDelete: false, reason: "Some products are in orders" };
+    return { canDelete: false, reason: 'Some products are in orders' };
   }
 
   return { canDelete: true };
