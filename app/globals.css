@@ -272,3 +272,38 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* =============================================== */
+/* Custom styles for admin pages in light mode     */
+/* =============================================== */
+
+/* 1. Set a dark background for the entire page */
+body.admin-light-mode {
+  @apply bg-dark-bg;
+}
+
+/* 2. Target the semi-transparent white containers and make them a bit lighter than the background */
+body.admin-light-mode .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 3. Ensure text inside these containers is white or light gray */
+body.admin-light-mode .text-white {
+  color: #ffffff;
+}
+
+body.admin-light-mode .text-gray-300 {
+  color: #d1d5db; /* Tailwind's gray-300 */
+}
+
+/* 4. Handle other text colors that might be dark */
+body.admin-light-mode .text-gray-800 {
+  color: #ffffff;
+}
+
+/* 5. Override dark mode classes that might interfere */
+body.admin-light-mode .dark\:bg-black\/20,
+body.admin-light-mode .dark\:bg-gray-800\/10 {
+  background-color: transparent;
+}

@@ -2,12 +2,26 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 
 const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    const isAdminPage = pathname.startsWith('/admin');
+    if (isAdminPage && theme === 'light') {
+      document.body.classList.add('admin-light-mode');
+    } else {
+      document.body.classList.remove('admin-light-mode');
+    }
+
+    // Cleanup function to remove the class when the component unmounts or dependencies change
+    return () => {
+      document.body.classList.remove('admin-light-mode');
+    };
+  }, [pathname, theme]);
 
   return (
     <AnimatePresence mode="wait">

@@ -24,8 +24,8 @@ export const apiClient = {
 
     // Dynamically add Authorization header if session and access token exist
     const session = await getSession();
-    if (session && (session as any).jwt) { // Use session.jwt as the raw JWT string
-      defaultHeaders['Authorization'] = `Bearer ${(session as any).jwt}`;
+    if (session && (session as any).accessToken) {
+      defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken}`;
     }
 
     const defaultOptions: RequestInit = {

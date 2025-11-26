@@ -46,6 +46,7 @@ async function createCustomerOrder(request, response) {
     }
 
     // Check for duplicate orders (same email and total within last 1 minute) - less strict
+    // Using `dateTime` instead of `updatedAt` because `updatedAt` column does not exist in the database schema.
     const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000);
     const duplicateOrder = await prisma.customer_order.findFirst({
       where: {

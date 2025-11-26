@@ -6,6 +6,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import prisma from '@/utils/db';
+import jwt from 'jsonwebtoken';
 
 export const authOptions: any = {
   adapter: PrismaAdapter(prisma),
@@ -58,6 +59,18 @@ export const authOptions: any = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        const backendPayload = {
+          user: {
+            id: user.id,
+            role: user.role,
+            email: user.email,
+          },
+        };
+        token.accessToken = jwt.sign(
+          backendPayload,
+          process.env.JWT_SECRET!,
+          { expiresIn: '1d' },
+        );
       }
       return token;
     },
@@ -66,6 +79,7 @@ export const authOptions: any = {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
       }
+      (session as any).accessToken = token.accessToken;
       return session;
     },
   },

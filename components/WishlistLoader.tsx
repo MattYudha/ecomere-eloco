@@ -43,7 +43,7 @@ const WishlistLoader: React.FC<WishlistLoaderProps> = ({ children }) => {
           setWishlist(data); // Set wishlist in Zustand store
         } catch (error) {
           console.error('[WISHLIST_LOADER_ERROR]', error);
-          toast.error('Failed to load your wishlist.');
+          // toast.error('Failed to load your wishlist.');
           clearWishlist(); // Clear wishlist if fetching fails
         }
       } else {

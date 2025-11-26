@@ -28,49 +28,49 @@ const DashboardSidebar = () => {
                 dark:bg-black/20 dark:border-gray-700"
     >
       <Link href="/admin">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <MdDashboard className="text-2xl" />{' '}
           <span className="font-normal">Dashboard</span>
         </div>
       </Link>
       <Link href="/admin/orders">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaBagShopping className="text-2xl" />{' '}
           <span className="font-normal">Orders</span>
         </div>
       </Link>
       <Link href="/admin/products">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaTable className="text-2xl" />{' '}
           <span className="font-normal">Products</span>
         </div>
       </Link>
       <Link href="/admin/bulk-upload">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaFileUpload className="text-2xl" />{' '}
           <span className="font-normal">Bulk Upload</span>
         </div>
       </Link>
       <Link href="/admin/categories">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <MdCategory className="text-2xl" />{' '}
           <span className="font-normal">Categories</span>
         </div>
       </Link>
       <Link href="/admin/users">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaRegUser className="text-2xl" />{' '}
           <span className="font-normal">Users</span>
         </div>
       </Link>
       <Link href="/admin/merchant">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaStore className="text-2xl" />{' '}
           <span className="font-normal">Merchant</span>
         </div>
       </Link>
       <Link href="/admin/settings">
-        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-white rounded-md transition-colors duration-200">
+        <div className="flex gap-x-2 w-full hover:bg-white/20 cursor-pointer items-center py-4 pl-5 text-xl text-base-content rounded-md transition-colors duration-200">
           <FaGear className="text-2xl" />{' '}
           <span className="font-normal">Settings</span>
         </div>

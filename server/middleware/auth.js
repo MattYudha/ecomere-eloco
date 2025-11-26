@@ -19,7 +19,11 @@ const authMiddleware = (req, res, next) => {
 
     // Replace with your actual JWT secret from environment variables
     // For development, you might use a placeholder, but ensure it's secure in production.
-    const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret'; 
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not defined in environment variables.');
+      return res.status(500).json({ msg: 'Internal Server Error: JWT secret not configured.' });
+    } 
 
     const decoded = jwt.verify(tokenString, jwtSecret);
 
