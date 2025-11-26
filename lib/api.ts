@@ -17,15 +17,15 @@ export const apiClient = {
       url = `${this.baseUrl}${endpoint}`;
     }
 
-    const defaultHeaders: HeadersInit = {
+    const defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...(options.headers || ({} as Record<string, string>)),
+      ...(options.headers as Record<string, string> || {}),
     };
 
     // Dynamically add Authorization header if session and access token exist
     const session = await getSession();
-    if (session && (session as any).accessToken) { // Cast to 'any' to access accessToken
-      defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken}`;
+    if (session && (session as any).jwt) { // Use session.jwt as the raw JWT string
+      defaultHeaders['Authorization'] = `Bearer ${(session as any).jwt}`;
     }
 
     const defaultOptions: RequestInit = {

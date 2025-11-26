@@ -28,6 +28,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const imageUrl = product.mainImage
     ? `/${product.mainImage.replace(/^\//, '')}`
     : '/product_placeholder.jpg';
+  const { data: session } = useSession();
+  const router = useRouter();
   const { addToCart, addToWishlistLocal, removeFromWishlistLocal, isProductInWishlist } =
     useProductStore();
 
