@@ -4,12 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { sanitize } from '@/lib/sanitize';
-import { useCart } from '@/hooks/useCart';
+import { useProductStore, WishlistedProduct } from '../app/_zustand/store';
 import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { useProductStore, WishlistedProduct } from '../app/_zustand/store';
 import apiClient from '@/lib/api';
 
 export type Product = {
@@ -29,10 +28,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const imageUrl = product.mainImage
     ? `/${product.mainImage.replace(/^\//, '')}`
     : '/product_placeholder.jpg';
-  const { addToCart } = useCart();
-  const { data: session } = useSession();
-  const router = useRouter();
-  const { addToWishlistLocal, removeFromWishlistLocal, isProductInWishlist } =
+  const { addToCart, addToWishlistLocal, removeFromWishlistLocal, isProductInWishlist } =
     useProductStore();
 
   const handleToggleWishlist = async (e: React.MouseEvent) => {
@@ -73,11 +69,11 @@ const ProductItem = ({ product }: ProductItemProps) => {
     addToCart(
       {
         id: product.id,
-        name: product.title,
+        title: product.title,
         price: product.price,
-        image: product.mainImage || '/product_placeholder.jpg', // Use a default if mainImage is null
+        image: product.mainImage || '/product_placeholder.jpg',
+        amount: 1,
       },
-      1,
     );
     toast.success(`${product.title} added to cart!`);
   };
@@ -95,7 +91,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
           className="relative w-full rounded-2xl overflow-hidden shadow-xl 
                      bg-white/60 dark:bg-dark-bg/60 
                      backdrop-blur-lg 
-                     border border-white/40 dark:border-brand/20"
+                     border border-gray-300 dark:border-brand/20"
           whileHover={{ scale: 1.05, y: -5 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
         >

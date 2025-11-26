@@ -37,6 +37,7 @@ const {
   uploadLimiter,
   searchLimiter,
   orderLimiter,
+  wishlistLimiter,
 } = require('./middleware/rateLimiter');
 
 const { handleServerError } = require('./utills/errorHandler');

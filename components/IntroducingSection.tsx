@@ -38,7 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div
         className="relative h-full flex flex-col
                    bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl
-                   border border-white/60 dark:border-[#cb6112]/30
+                   border border-gray-300 dark:border-[#cb6112]/30
                    rounded-xl md:rounded-2xl p-3 md:p-6 
                    shadow-xl shadow-gray-200/50 dark:shadow-none
                    transform transition-all duration-500 group-hover:scale-[1.02]"

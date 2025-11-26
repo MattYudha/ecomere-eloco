@@ -66,6 +66,7 @@ export const authOptions: any = {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
       }
+      (session as any).accessToken = token.accessToken; // Add accessToken to session
       return session;
     },
   },

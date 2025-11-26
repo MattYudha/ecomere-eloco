@@ -230,11 +230,12 @@ const Header = () => {
             <div className="hidden md:block">
               <ThemeToggle />
             </div>
-            <div
+            <Link
+              href="/wishlist"
               className={`hidden md:block hover:scale-110 transition-transform ${isScrolled ? 'text-slate-800 dark:text-white' : ''}`}
             >
               <HeartElement wishQuantity={wishlist.length} />
-            </div>
+            </Link>
 
             <Link
               href="/cart"

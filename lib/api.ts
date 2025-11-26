@@ -1,4 +1,5 @@
 import config from './config';
+import { getSession } from 'next-auth/react'; // Import getSession
 
 export const apiClient = {
   baseUrl: config.apiBaseUrl,
@@ -16,11 +17,20 @@ export const apiClient = {
       url = `${this.baseUrl}${endpoint}`;
     }
 
+    const defaultHeaders: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(options.headers || ({} as Record<string, string>)),
+    };
+
+    // Dynamically add Authorization header if session and access token exist
+    const session = await getSession();
+    if (session && (session as any).accessToken) { // Cast to 'any' to access accessToken
+      defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken}`;
+    }
+
     const defaultOptions: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.headers || ({} as Record<string, string>)),
-      },
+      headers: defaultHeaders,
+      credentials: 'include', // Ensure cookies are sent with the request
     };
 
     return fetch(url, { ...defaultOptions, ...options });
