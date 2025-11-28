@@ -1,19 +1,15 @@
 import config from './config';
-import { getSession } from 'next-auth/react'; // Import getSession
 
 export const apiClient = {
   baseUrl: config.apiBaseUrl,
 
-  async request(endpoint: string, options: RequestInit = {}) {
+  async request(endpoint: string, options: RequestInit = {}, token?: string) {
     let url: string;
 
-    // Determine the full URL for the request
+    // Determine full URL
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-      // If the endpoint is already an absolute URL, use it directly
       url = endpoint;
     } else {
-      // For relative endpoints, prepend the base API URL
-      // This ensures all API calls through apiClient go to the configured backend
       url = `${this.baseUrl}${endpoint}`;
     }
 
@@ -22,40 +18,39 @@ export const apiClient = {
       ...(options.headers as Record<string, string> || {}),
     };
 
-    // Dynamically add Authorization header if session and access token exist
-    const session = await getSession();
-    if (session && (session as any).accessToken) {
-      defaultHeaders['Authorization'] = `Bearer ${(session as any).accessToken}`;
+    // Token ONLY applied if passed manually
+    if (token) {
+      defaultHeaders['Authorization'] = `Bearer ${token}`;
     }
 
     const defaultOptions: RequestInit = {
       headers: defaultHeaders,
-      credentials: 'include', // Ensure cookies are sent with the request
+      credentials: 'include',
     };
 
     return fetch(url, { ...defaultOptions, ...options });
   },
 
   // Convenience methods
-  get: (endpoint: string, options?: RequestInit) =>
-    apiClient.request(endpoint, { ...options, method: 'GET' }),
+  get: (endpoint: string, options?: RequestInit, token?: string) =>
+    apiClient.request(endpoint, { ...options, method: 'GET' }, token),
 
-  post: (endpoint: string, data?: any, options?: RequestInit) =>
-    apiClient.request(endpoint, {
-      ...options,
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    }),
+  post: (endpoint: string, data?: any, options?: RequestInit, token?: string) =>
+    apiClient.request(
+      endpoint,
+      { ...options, method: 'POST', body: data ? JSON.stringify(data) : undefined },
+      token
+    ),
 
-  put: (endpoint: string, data?: any, options?: RequestInit) =>
-    apiClient.request(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    }),
+  put: (endpoint: string, data?: any, options?: RequestInit, token?: string) =>
+    apiClient.request(
+      endpoint,
+      { ...options, method: 'PUT', body: data ? JSON.stringify(data) : undefined },
+      token
+    ),
 
-  delete: (endpoint: string, options?: RequestInit) =>
-    apiClient.request(endpoint, { ...options, method: 'DELETE' }),
+  delete: (endpoint: string, options?: RequestInit, token?: string) =>
+    apiClient.request(endpoint, { ...options, method: 'DELETE' }, token),
 };
 
 export default apiClient;

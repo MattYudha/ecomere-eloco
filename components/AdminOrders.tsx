@@ -23,6 +23,7 @@ import {
   ChevronDown,
   Filter,
 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface Order {
   id: string;
@@ -254,7 +255,7 @@ const AdminOrders = () => {
                         </td>
                         <td className="px-6 py-5">
                           <span className="font-bold text-gray-800 text-sm">
-                            ${order?.total.toFixed(2)}
+                            {formatPrice(order?.total)}
                           </span>
                         </td>
                         <td className="px-6 py-5">

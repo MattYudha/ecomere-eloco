@@ -67,11 +67,11 @@ const Filters = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white/30 dark:bg-black/20 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/40 dark:border-gray-700/50">
       <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
         Filters
       </h3>
-      <div className="divider my-4 bg-gray-300 h-px dark:bg-gray-700"></div>
+      <div className="divider my-4 bg-white/30 dark:bg-gray-700/30 h-px"></div>
       <div className="flex flex-col gap-y-3">
         <h3 className="text-xl font-medium mb-2 text-gray-800 dark:text-gray-200">
           Availability
@@ -125,7 +125,7 @@ const Filters = () => {
         </div>
       </div>
 
-      <div className="divider my-4 bg-gray-300 h-px dark:bg-gray-700"></div>
+      <div className="divider my-4 bg-white/30 dark:bg-gray-700/30 h-px"></div>
       <div className="flex flex-col gap-y-3">
         <h3 className="text-xl font-medium mb-2 text-gray-800 dark:text-gray-200">
           Price
@@ -185,13 +185,13 @@ const Filters = () => {
                   updateSearchParams('price', valueToApply);
                 }
               }}
-              className="input input-bordered w-24 bg-white text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="input input-bordered w-24 bg-white/40 dark:bg-black/30 border-white/30 dark:border-gray-600/50 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
         </div>
       </div>
 
-      <div className="divider my-4 bg-gray-300 h-px dark:bg-gray-700"></div>
+      <div className="divider my-4 bg-white/30 dark:bg-gray-700/30 h-px"></div>
 
       <div className="flex flex-col gap-y-3">
         <h3 className="text-xl font-medium mb-2 text-gray-800 dark:text-gray-200">

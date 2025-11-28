@@ -20,6 +20,7 @@ interface DashboardStats {
   customers: StatData;
   visitors: StatData;
   weeklySales: { name: string; revenue: number }[];
+  dailySales: { name: string; revenue: number }[]; // Added dailySales
 }
 
 const AdminDashboardPage = () => {
@@ -66,7 +67,7 @@ const AdminDashboardPage = () => {
       <DashboardSidebar />
       <div
         className="flex flex-col items-center ml-5 gap-y-4 w-full h-full max-xl:ml-0 max-xl:px-2 max-xl:mt-5
-                  p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-lg dark:bg-black/20 dark:border-gray-700"
+                  p-4 rounded-lg bg-white/70 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
       >
         {/* Grid untuk Kartu Statistik */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
@@ -111,7 +112,7 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Grafik Penjualan Mingguan */}
-        <SalesChart data={stats?.weeklySales} loading={loading} />
+        <SalesChart data={stats?.dailySales} loading={loading} />
       </div>
     </div>
   );

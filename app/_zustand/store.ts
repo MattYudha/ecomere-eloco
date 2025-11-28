@@ -13,7 +13,7 @@ export type WishlistedProduct = {
   id: string;
   slug: string;
   title: string;
-  mainImage: string; // Ensure this is always a string for wishlisted products
+  mainImage: string | null;
   price: number;
 };
 

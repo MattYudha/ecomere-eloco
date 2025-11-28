@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const { sendMail } = require('./mail.js');
 const fs = require('fs').promises;
 const path = require('path');
+const { formatPrice } = require('../../lib/utils.js');
 
 const prisma = new PrismaClient();
 
@@ -108,7 +109,7 @@ const createOrderUpdateNotification = async (
             .replace('{{orderId}}', orderId)
             .replace(
               '{{totalAmount}}',
-              totalAmount ? totalAmount.toFixed(2) : 'N/A',
+              totalAmount ? formatPrice(totalAmount) : 'N/A',
             )
             .replace(
               '{{shopUrl}}',
@@ -152,17 +153,17 @@ const createPaymentNotification = async (
     const statusMessages = {
       success: {
         title: 'Payment Successful',
-        message: `Your payment of $${amount} has been successfully processed for order #${orderId}.`,
+        message: `Your payment of ${formatPrice(amount)} has been successfully processed for order #${orderId}.`,
         priority: 'HIGH',
       },
       failed: {
         title: 'Payment Failed',
-        message: `Unfortunately, your payment of $${amount} for order #${orderId} could not be processed. Please try again.`,
+        message: `Unfortunately, your payment of ${formatPrice(amount)} for order #${orderId} could not be processed. Please try again.`,
         priority: 'URGENT',
       },
       pending: {
         title: 'Payment Pending',
-        message: `Your payment of $${amount} for order #${orderId} is currently being processed.`,
+        message: `Your payment of ${formatPrice(amount)} for order #${orderId} is currently being processed.`,
         priority: 'NORMAL',
       },
     };

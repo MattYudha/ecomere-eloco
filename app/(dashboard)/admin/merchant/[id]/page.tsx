@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api';
 import { toast } from 'react-hot-toast';
+import { formatPrice } from '@/lib/utils'; // Added import
 
 interface Product {
   id: string;
@@ -25,15 +26,14 @@ interface Merchant {
 }
 
 interface MerchantDetailPageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function MerchantDetailPage({
   params,
 }: MerchantDetailPageProps) {
   // Unwrap params using React.use()
-  const resolvedParams = use(params);
-  const id = resolvedParams.id;
+  const { id } = params;
 
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -287,7 +287,7 @@ export default function MerchantDetailPage({
                 {merchant.products.map((product) => (
                   <tr key={product.id} className="border-b hover:bg-gray-50">
                     <td className="py-4">{product.title}</td>
-                    <td className="py-4">${product.price / 100}</td>
+                    <td className="py-4">{formatPrice(product.price / 100)}</td>
                     <td className="py-4">{product.inStock}</td>
                     <td className="py-4">
                       <Link

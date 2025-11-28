@@ -1,6 +1,7 @@
 'use client';
 import apiClient from '@/lib/api';
 import { isValidEmailAddressFormat, isValidNameOrLastname } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -424,36 +425,28 @@ const AdminSingleOrder = () => {
                         {op.product?.title}
                       </Link>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {op.quantity} x ${op.product?.price.toFixed(2)}
+                        {op.quantity} x {formatPrice(op.product?.price)}
                       </p>
                     </div>
-                    <p className="font-semibold text-lg">
-                      ${(op.quantity * op.product?.price).toFixed(2)}
-                    </p>
+                    <p className="font-semibold text-lg">{formatPrice(op.quantity * op.product?.price)}</p>
                   </div>
                 ))}
               </div>
               <div className="p-6 border-t border-gray-200 dark:border-white/10 flex flex-col gap-2 text-right">
                 <div className="text-lg">
                   Subtotal:{' '}
-                  <span className="font-semibold">
-                    ${order?.total.toFixed(2)}
-                  </span>
+                  <span className="font-semibold">{formatPrice(order?.total)}</span>
                 </div>
                 <div className="text-lg">
                   Tax (20%):{' '}
-                  <span className="font-semibold">
-                    ${(order?.total / 5).toFixed(2)}
-                  </span>
+                  <span className="font-semibold">{formatPrice(order?.total / 5)}</span>
                 </div>
                 <div className="text-lg">
-                  Shipping: <span className="font-semibold">$5.00</span>
+                  Shipping: <span className="font-semibold">{formatPrice(5)}</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">
                   Total:{' '}
-                  <span className="text-purple-700 dark:text-purple-400">
-                    ${(order?.total + order?.total / 5 + 5).toFixed(2)}
-                  </span>
+                  <span className="text-purple-700 dark:text-purple-400">{formatPrice(order?.total + order?.total / 5 + 5)}</span>
                 </div>
               </div>
             </GlassPanel>

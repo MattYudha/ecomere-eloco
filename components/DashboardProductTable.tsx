@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import CustomButton from './CustomButton';
 import apiClient from '@/lib/api';
 import { sanitize } from '@/lib/sanitize';
+import { formatPrice } from '@/lib/utils'; // Import formatPrice from utils
 
 const DashboardProductTable = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -39,9 +40,9 @@ const DashboardProductTable = () => {
   if (loading) {
     return (
       <div className="w-full p-8">
-        <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/40 border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-12">
+        <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white dark:bg-black/20 border border-gray-200 dark:border-gray-700 shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-12">
           <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-200/50 dark:via-white/30 to-transparent animate-shimmer"
             style={{
               backgroundSize: '200% 100%',
               animation: 'shimmer 2s infinite',
@@ -50,15 +51,15 @@ const DashboardProductTable = () => {
 
           <div className="relative z-10 flex flex-col items-center justify-center space-y-6">
             <div className="relative w-20 h-20">
-              <div className="absolute inset-0 rounded-full border-4 border-slate-200/60"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-slate-800 animate-spin"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-gray-300 dark:border-gray-600"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-gray-800 dark:border-t-white animate-spin"></div>
             </div>
 
             <div className="text-center space-y-2">
-              <p className="text-xl font-semibold text-slate-800 tracking-tight">
+              <p className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">
                 Loading Products
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Fetching your inventory...
               </p>
             </div>
@@ -268,7 +269,7 @@ const DashboardProductTable = () => {
                     {/* Price */}
                     <td className="px-6 py-5">
                       <span className="text-slate-900 font-semibold text-base">
-                        ${product?.price?.toFixed(2)}
+                        {formatPrice(product?.price)}
                       </span>
                     </td>
 

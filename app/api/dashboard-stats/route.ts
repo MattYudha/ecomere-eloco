@@ -20,10 +20,10 @@ async function getDashboardStats() {
   const twoDaysAgo = new Date(today);
   twoDaysAgo.setDate(today.getDate() - 2);
   
-  const sevenDaysAgo = new Date(today);
+  const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
 
-  // 2. Define all data fetching promises
   const revenuePromise = prisma.customer_order.findMany({
     where: {
       updatedAt: { gte: twoDaysAgo },
@@ -63,7 +63,7 @@ async function getDashboardStats() {
     },
   });
 
-  const weeklyRevenuePromise = prisma.customer_order.findMany({
+  const dailyRevenuePromise = prisma.customer_order.findMany({
     where: {
       updatedAt: { gte: sevenDaysAgo },
       status: 'DELIVERED',
@@ -80,16 +80,17 @@ async function getDashboardStats() {
     ordersData,
     customersData,
     visitorsData,
-    weeklyOrders,
+    dailyOrders,
   ] = await Promise.all([
     revenuePromise,
     ordersPromise,
     customersPromise,
     visitorsPromise,
-    weeklyRevenuePromise,
+    dailyRevenuePromise,
   ]);
 
   // 4. Process results in JS
+  // ... (revenue, orders, customers, visitors processing)
   const todayRevenue = revenueData.filter(o => o.updatedAt >= today).reduce((sum, o) => sum + o.total, 0);
   const yesterdayRevenue = revenueData.filter(o => o.updatedAt >= yesterday && o.updatedAt < today).reduce((sum, o) => sum + o.total, 0);
 
@@ -102,13 +103,29 @@ async function getDashboardStats() {
   const todayVisitors = new Set(visitorsData.filter(v => v.createdAt >= today).map(v => v.ipHash)).size;
   const yesterdayVisitors = new Set(visitorsData.filter(v => v.createdAt >= yesterday && v.createdAt < today).map(v => v.ipHash)).size;
 
-  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const weeklySalesData = dayLabels.map((day) => ({ name: day, revenue: 0 }));
 
-  weeklyOrders.forEach((order) => {
-    const dayIndex = order.updatedAt.getDay();
-    weeklySalesData[dayIndex].revenue += order.total;
+  const salesByDate = new Map();
+
+  // Initialize map for the last 7 days
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const dateString = `${d.getMonth() + 1}/${d.getDate()}`;
+    salesByDate.set(dateString, 0);
+  }
+
+  dailyOrders.forEach((order) => {
+    const orderDate = new Date(order.updatedAt);
+    const dateString = `${orderDate.getMonth() + 1}/${orderDate.getDate()}`;
+    if (salesByDate.has(dateString)) {
+      salesByDate.set(dateString, (salesByDate.get(dateString) || 0) + order.total);
+    }
   });
+
+  const dailySalesData = Array.from(salesByDate.entries()).map(([name, revenue]) => ({
+    name,
+    revenue,
+  })).reverse();
 
   // 5. Format the final stats object
   const stats = {
@@ -128,9 +145,9 @@ async function getDashboardStats() {
       value: todayVisitors,
       change: calculatePercentageChange(todayVisitors, yesterdayVisitors),
     },
-    weeklySales: weeklySalesData,
+    dailySales: dailySalesData,
   };
-
+  
   return stats;
 }
 

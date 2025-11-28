@@ -21,14 +21,14 @@ const slides = [
     id: 2,
     bgImage: '/assets/eloqo.png',
     subtitle: 'Gurih yang Menggugah Selera',
-    title: 'Cara Baru <br/> Menikmati Makaroni',
-    text: 'Temukan makaroni khas ELOQO dengan cita rasa berani dan tekstur sempurna, dirancang untuk memanjakan setiap momen.',
+    title: 'Upgrade mood <br/> Cilok & varian baru kita.',
+    text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
     buttonText: 'Jelajahi Makaroni',
     buttonLink: '/shop',
   },
   {
     id: 3,
-    bgImage: '/assets/eloqo.png',
+    bgImage: '/uploads/5.jpg',
     subtitle: 'Manis, Lembut, & Memikat',
     title: 'Setiap Gigitan <br/> Membawa Kebahagiaan',
     text: 'Rasakan kukis premium lembut di dalam, renyah di luar—diciptakan untuk menghadirkan kehangatan di setiap hari.',
@@ -37,9 +37,9 @@ const slides = [
   },
   {
     id: 4,
-    bgImage: '/assets/eloqo.png',
+    bgImage: '/uploads/seragam.png',
     subtitle: 'Kualitas Terbaik, Rasa Juara',
-    title: 'Semua Snack Favoritmu <br/> Ada di Sini',
+    title: 'PKKMB season?  <br/> Tenang, kebutuhan kamu lengkap di sini!',
     text: 'Jelajahi dunia rasa ELOQO, tempat setiap produk dibuat dengan bahan-bahan pilihan untuk kepuasan maksimal.',
     buttonText: 'Belanja Semua Produk',
     buttonLink: '/shop',
@@ -126,17 +126,6 @@ const Hero = () => {
                       quality={90}
                     />
 
-                    {/* === UPDATE BAGIAN INI UNTUK MENGURANGI KETEBALAN BLUR === */}
-
-                    {/* 1. Gradient Vertikal (Bawah ke Atas) */}
-                    {/* Opacity dikurangi signifikan: from-orange-50/90 dan via-orange-50/20 */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-orange-50/90 via-orange-50/20 to-transparent dark:from-[#0f172a] dark:via-[#0f172a]/60 transition-colors duration-500" />
-
-                    {/* 2. Gradient Horizontal (Kiri ke Kanan) */}
-                    {/* Opacity dikurangi signifikan: from-orange-50/20 */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-50/20 to-transparent dark:from-[#0f172a]/80 transition-colors duration-500" />
-
-                    {/* ======================================================= */}
                   </div>
                 </motion.div>
 

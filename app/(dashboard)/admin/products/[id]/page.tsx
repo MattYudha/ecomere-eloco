@@ -2,7 +2,7 @@
 import { CustomButton, DashboardSidebar, SectionTitle } from '@/components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState, use, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import {
   convertCategoryNameToURLFriendly as convertSlugToURLFriendly,
@@ -12,12 +12,11 @@ import { nanoid } from 'nanoid';
 import apiClient from '@/lib/api';
 
 interface DashboardProductDetailsProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
-  const resolvedParams = use(params);
-  const id = resolvedParams.id;
+  const { id } = params;
 
   const [product, setProduct] = useState<Product>();
   const [categories, setCategories] = useState<Category[]>();
@@ -191,21 +190,26 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
     <div className="flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5 relative z-10">
       <DashboardSidebar />
       <div
-        className="flex flex-col gap-y-7 xl:ml-5 w-full max-xl:px-5 p-4 rounded-lg
-                  bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                  dark:bg-black/20 dark:border-gray-700"
+        className="flex flex-col gap-y-7 xl:ml-5 w-full max-xl:px-5 p-6 rounded-lg
+                  bg-white dark:bg-black/20 
+                  border border-gray-200 dark:border-gray-700 
+                  shadow-lg backdrop-blur-md 
+                  text-gray-900 dark:text-white"
       >
-        <h1 className="text-3xl font-semibold text-white">Product details</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 dark:text-white">Product details</h1>
+        
         {/* Product name input div - start */}
-
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">Product name:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Product name:</span>
             </div>
             <input
               type="text"
-              className="input input-bordered w-full max-w-xs bg-white/10 border-white/20 text-white placeholder-gray-300 focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="input input-bordered w-full max-w-xs 
+                        bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-gray-300"
               value={product?.title || ''}
               onChange={(e) =>
                 setProduct({ ...product!, title: e.target.value })
@@ -214,16 +218,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product name input div - end */}
-        {/* Product price input div - start */}
 
+        {/* Product price input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">Product price:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Product price:</span>
             </div>
             <input
               type="text"
-              className="input input-bordered w-full max-w-xs bg-white/10 border-white/20 text-white placeholder-gray-300 focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="input input-bordered w-full max-w-xs 
+                        bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-gray-300"
               value={product?.price || ''}
               onChange={(e) =>
                 setProduct({ ...product!, price: Number(e.target.value) })
@@ -232,15 +239,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product price input div - end */}
+
         {/* Product manufacturer input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">Manufacturer:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Manufacturer:</span>
             </div>
             <input
               type="text"
-              className="input input-bordered w-full max-w-xs bg-white/10 border-white/20 text-white placeholder-gray-300 focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="input input-bordered w-full max-w-xs 
+                        bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-gray-300"
               value={product?.manufacturer || ''}
               onChange={(e) =>
                 setProduct({ ...product!, manufacturer: e.target.value })
@@ -249,16 +260,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product manufacturer input div - end */}
-        {/* Product slug input div - start */}
 
+        {/* Product slug input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">Slug:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Slug:</span>
             </div>
             <input
               type="text"
-              className="input input-bordered w-full max-w-xs bg-white/10 border-white/20 text-white placeholder-gray-300 focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="input input-bordered w-full max-w-xs 
+                        bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-gray-300"
               value={
                 product?.slug ? convertSlugToURLFriendly(product?.slug) : ''
               }
@@ -272,17 +286,20 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product slug input div - end */}
-        {/* Product inStock select input div - start */}
 
+        {/* Product inStock select input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">
+              <span className="label-text text-gray-700 dark:text-white font-medium">
                 Is product in stock?
               </span>
             </div>
             <select
-              className="select select-bordered bg-white/10 border-white/20 text-white focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="select select-bordered 
+                        bg-gray-50 border-gray-300 text-gray-900 
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white"
               value={product?.inStock ?? 1}
               onChange={(e) => {
                 setProduct({ ...product!, inStock: Number(e.target.value) });
@@ -294,14 +311,18 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product inStock select input div - end */}
+
         {/* Product category select input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text text-white">Category:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Category:</span>
             </div>
             <select
-              className="select select-bordered bg-white/10 border-white/20 text-white focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="select select-bordered 
+                        bg-gray-50 border-gray-300 text-gray-900 
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white"
               value={product?.categoryId || ''}
               onChange={(e) =>
                 setProduct({
@@ -325,11 +346,13 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
         <div>
           <label className="form-control w-full max-w-sm">
             <div className="label">
-              <span className="label-text text-white">Main Image:</span>
+              <span className="label-text text-gray-700 dark:text-white font-medium">Main Image:</span>
             </div>
             <input
               type="file"
-              className="file-input file-input-bordered w-full max-w-sm bg-white/10 border-white/20 text-white focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="file-input file-input-bordered w-full max-w-sm 
+                        bg-gray-50 border-gray-300 text-gray-900
+                        dark:bg-white/10 dark:border-white/20 dark:text-white"
               onChange={(e) => {
                 const selectedFile = e.target.files?.[0]; // Use optional chaining and File type
 
@@ -343,15 +366,15 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
             <div className="flex items-center gap-2 mt-2">
               <Image
                 src={`/${product.mainImage.replace(/^\//, '')}`}
-                alt={product?.title}
-                className="w-auto h-auto rounded-lg border border-white/20 shadow-lg"
+                alt={product?.title || ''}
+                className="w-auto h-auto rounded-lg border border-gray-200 dark:border-white/20 shadow-md"
                 width={100}
                 height={100}
               />
               <CustomButton
                 buttonType="button"
                 onClick={deleteMainImage}
-                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out"
+                className="bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-500/20 dark:hover:bg-red-500/30 dark:text-red-400 dark:hover:text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out border dark:border-transparent border-red-200"
               >
                 Delete
               </CustomButton>
@@ -359,6 +382,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           )}
         </div>
         {/* Main image file upload div - end */}
+
         {/* Other images file upload div - start */}
         <div className="flex gap-x-1">
           {otherImages &&
@@ -366,24 +390,28 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               <Image
                 src={`/${image.image.replace(/^\//, '')}`}
                 key={nanoid()}
-                alt="product image"
+                alt={product?.title || ''}
                 width={100}
                 height={100}
-                className="w-auto h-auto rounded-lg border border-white/20 shadow-lg"
+                className="w-auto h-auto rounded-lg border border-gray-200 dark:border-white/20 shadow-md"
               />
             ))}
         </div>
         {/* Other images file upload div - end */}
+
         {/* Product description div - start */}
         <div>
           <label className="form-control">
             <div className="label">
-              <span className="label-text text-white">
+              <span className="label-text text-gray-700 dark:text-white font-medium">
                 Product description:
               </span>
             </div>
             <textarea
-              className="textarea textarea-bordered h-24 bg-white/10 border-white/20 text-white placeholder-gray-300 focus:ring-blue-500 dark:bg-black/20 dark:border-gray-700"
+              className="textarea textarea-bordered h-24 
+                        bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400
+                        focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-gray-300"
               value={product?.description || ''}
               onChange={(e) =>
                 setProduct({ ...product!, description: e.target.value })
@@ -392,27 +420,33 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </label>
         </div>
         {/* Product description div - end */}
+
         {/* Action buttons div - start */}
         <div className="flex gap-x-2 max-sm:flex-col">
           <button
             type="button"
             onClick={updateProduct}
-            className="uppercase px-10 py-5 text-lg font-bold shadow-sm focus:outline-none focus:ring-2
-                       bg-blue-500/20 backdrop-blur-md border border-blue-500/30 text-white hover:bg-blue-500/30 hover:border-blue-500/50 transition-all duration-300"
+            className="uppercase px-10 py-5 text-lg font-bold shadow-sm focus:outline-none focus:ring-2 rounded-md
+                       bg-blue-600 text-white hover:bg-blue-700 border-transparent
+                       dark:bg-blue-500/20 dark:backdrop-blur-md dark:border-blue-500/30 dark:text-white dark:hover:bg-blue-500/30 dark:hover:border-blue-500/50 
+                       transition-all duration-300 border"
           >
             Update product
           </button>
           <button
             type="button"
-            className="uppercase px-10 py-5 text-lg font-bold shadow-sm focus:outline-none focus:ring-2
-                       bg-red-500/20 backdrop-blur-md border border-red-500/30 text-white hover:bg-red-500/30 hover:border-red-500/50 transition-all duration-300"
+            className="uppercase px-10 py-5 text-lg font-bold shadow-sm focus:outline-none focus:ring-2 rounded-md
+                       bg-red-600 hover:bg-red-700 border-transparent
+                       dark:bg-red-500/20 dark:backdrop-blur-md dark:border-red-500/30 dark:text-white dark:hover:bg-red-500/30 dark:hover:border-red-500/50 
+                       transition-all duration-300 border"
             onClick={deleteProduct}
           >
             Delete product
           </button>
         </div>
         {/* Action buttons div - end */}
-        <p className="text-xl max-sm:text-lg text-red-400">
+        
+        <p className="text-xl max-sm:text-lg text-red-600 dark:text-red-400 font-medium">
           To delete the product you first need to delete all its records in
           orders (customer_order_product table).
         </p>

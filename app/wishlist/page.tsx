@@ -2,34 +2,25 @@
 import { SectionTitle } from '@/components';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import apiClient from '@/lib/api';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ShoppingCart } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useProductStore } from '../_zustand/store';
-
-interface WishlistedProduct {
-  id: string;
-  slug: string;
-  title: string;
-  mainImage: string;
-  price: number;
-  // Add other product fields you want to display
-}
+import apiClient from '@/lib/api';
+import { formatPrice } from '@/lib/utils';
 
 const WishlistPage = () => {
-  const { data: session, status } = useSession();
-  const [wishlist, setWishlist] = useState<WishlistedProduct[]>([]);
+  const { data: session } = useSession();
+  const { wishlist, addToCart, setWishlist } = useProductStore();
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useProductStore();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWishlist = async () => {
-      if (status === 'loading') return; // Wait for session to load
       if (!session) {
         setLoading(false);
-        return; // No session, no wishlist to fetch
+        return;
       }
 
       try {
@@ -38,18 +29,22 @@ const WishlistPage = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch wishlist');
         }
-        const data: WishlistedProduct[] = await response.json();
-        setWishlist(data);
-      } catch (error) {
-        console.error('[FETCH_WISHLIST_ERROR]', error);
-        toast.error('Failed to load wishlist.');
+        const data = await response.json();
+        const extractedProducts = data.map((item: any) => item.product).filter(Boolean); // Ekstrak hanya bagian produk dan filter null/undefined
+        setWishlist(extractedProducts);
+        setError(null);
+      } catch (err: any) {
+        console.error('[FETCH_WISHLIST_ERROR]', err);
+        setError('Failed to load your wishlist. Please try again later.');
+        toast.error('Could not load your wishlist.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchWishlist();
-  }, [session, status]);
+  }, [session, setWishlist]);
+
 
   const handleRemoveFromWishlist = async (productId: string) => {
     if (!session) {
@@ -57,45 +52,38 @@ const WishlistPage = () => {
       return;
     }
 
+    // Optimistic UI Update: Hapus dulu dari layar biar cepat
+    const previousWishlist = [...wishlist];
+    const newWishlist = wishlist.filter((item) => item.id !== productId);
+    setWishlist(newWishlist);
+
     try {
       const response = await apiClient.delete(`/api/wishlist/${productId}`);
       if (!response.ok) {
         throw new Error('Failed to remove item from wishlist');
       }
-      setWishlist((prevWishlist) =>
-        prevWishlist.filter((item) => item.id !== productId),
-      );
       toast.success('Item removed from wishlist!');
     } catch (error) {
       console.error('[REMOVE_FROM_WISHLIST_ERROR]', error);
       toast.error('Failed to remove item from wishlist.');
+      // Kembalikan data jika gagal
+      setWishlist(previousWishlist);
     }
   };
 
-  const handleAddToCart = (product: WishlistedProduct) => {
+  const handleAddToCart = (product: any) => {
     addToCart({
       id: product.id,
       title: product.title,
       price: product.price,
       image: product.mainImage,
-      amount: 1, // Default quantity
+      amount: 1,
     });
     toast.success(`${product.title} added to cart!`);
-    handleRemoveFromWishlist(product.id); // Optionally remove from wishlist after adding to cart
+    handleRemoveFromWishlist(product.id);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-        <SectionTitle title="My Wishlist" path="Home | Wishlist" />
-        <div className="flex justify-center items-center h-64">
-          <p>Loading wishlist...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!session) {
+  if (!session && !loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
         <SectionTitle title="My Wishlist" path="Home | Wishlist" />
@@ -119,7 +107,11 @@ const WishlistPage = () => {
       <div className="container mx-auto p-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center">My Wishlist</h1>
 
-        {wishlist.length === 0 ? (
+        {loading ? (
+           <div className="text-center">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : wishlist && wishlist.length === 0 ? (
           <div className="text-center p-10 border rounded-lg bg-white dark:bg-gray-800">
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Your wishlist is empty.
@@ -128,7 +120,7 @@ const WishlistPage = () => {
               Start adding your favorite products!
             </p>
             <Link
-              href="/"
+              href="/shop"
               className="mt-5 inline-block px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
             >
               Continue Shopping
@@ -151,9 +143,11 @@ const WishlistPage = () => {
                 <Link href={`/product/${product.slug}`} className="block">
                   <Image
                     src={
-                      product.mainImage
-                        ? `/${product.mainImage.replace(/^\//, '')}`
-                        : '/product_placeholder.jpg'
+                      product.mainImage && product.mainImage.startsWith('http') 
+                        ? product.mainImage 
+                        : product.mainImage 
+                          ? `/${product.mainImage.replace(/^\//, '')}` 
+                          : '/product_placeholder.jpg'
                     }
                     alt={product.title}
                     width={300}
@@ -171,7 +165,7 @@ const WishlistPage = () => {
                     </Link>
                   </h3>
                   <p className="text-gray-700 dark:text-gray-300 text-xl font-bold mb-4">
-                    ${product.price.toFixed(2)}
+                    {formatPrice(product.price)}
                   </p>
                   <button
                     onClick={() => handleAddToCart(product)}

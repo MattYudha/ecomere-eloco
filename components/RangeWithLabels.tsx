@@ -11,6 +11,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { formatPrice } from '@/lib/utils';
 
 const RangeWithLabels = () => {
   const [currentRangeWLabelsValue, setCurrentRangeWLabelsValue] =
@@ -34,11 +35,11 @@ const RangeWithLabels = () => {
         step="200"
       />
       <div className="w-full flex justify-between text-xs px-2">
-        <span>$0</span>
-        <span>$200</span>
-        <span>$400</span>
-        <span>$600</span>
-        <span>$4000</span>
+        <span>{formatPrice(0)}</span>
+        <span>{formatPrice(200)}</span>
+        <span>{formatPrice(400)}</span>
+        <span>{formatPrice(600)}</span>
+        <span>{formatPrice(4000)}</span>
       </div>
     </div>
   );

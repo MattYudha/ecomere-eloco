@@ -10,6 +10,7 @@
 
 'use client';
 import React, { useState } from 'react';
+import { formatPrice } from '@/lib/utils';
 
 interface RangeProps {
   min: number;
@@ -35,7 +36,7 @@ const Range = ({ min, max, priceValue, setInputCategory }: RangeProps) => {
         value={priceValue}
         className="range range-warning"
       />
-      <span>{`Max price: $${currentRangeValue}`}</span>
+      <span>{`Max price: ${formatPrice(currentRangeValue)}`}</span>
     </div>
   );
 };

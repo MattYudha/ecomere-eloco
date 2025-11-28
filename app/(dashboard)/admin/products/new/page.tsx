@@ -364,7 +364,7 @@ const AddNewProduct = () => {
             <div className="relative w-full max-w-xs h-48 rounded-lg overflow-hidden border border-white/20 dark:border-gray-700/20">
               <Image
                 src={previewUrl}
-                alt="Image preview"
+                alt="Preview of product image"
                 layout="fill"
                 objectFit="cover"
               />

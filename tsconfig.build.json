@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./lib",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "esnext",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["./lib/**/*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
+}

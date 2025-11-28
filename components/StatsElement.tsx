@@ -43,14 +43,13 @@ const StatsElement: React.FC<StatsElementProps> = ({
   return (
     <div
       className="w-full h-32 flex flex-col justify-center items-center rounded-lg p-4
-                bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                dark:bg-black/20 dark:border-gray-700"
+                bg-white/70 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
     >
       <div className="flex items-center gap-x-4">
         <div className="text-3xl">{icon}</div>
         <div className="flex flex-col items-start">
-          <h4 className="text-lg text-gray-300">{title}</h4>
-          <p className="text-2xl font-bold text-white">{value}</p>
+          <h4 className="text-lg text-gray-600 dark:text-gray-300">{title}</h4>
+          <p className="text-2xl font-bold">{value}</p>
           <p className={`${changeColor} flex gap-x-1 items-center text-sm`}>
             <ChangeIcon />
             {change} Since last month

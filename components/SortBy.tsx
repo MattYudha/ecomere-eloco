@@ -11,19 +11,38 @@
 'use client';
 import React from 'react';
 import { useSortStore } from '@/app/_zustand/sortStore';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 const SortBy = () => {
-  // getting values from Zustand sort store
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { sortBy, changeSortBy } = useSortStore();
 
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSortValue = e.target.value;
+    changeSortBy(newSortValue); // Update Zustand store
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (newSortValue === 'defaultSort') {
+      params.delete('sort');
+    } else {
+      params.set('sort', newSortValue);
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   return (
-    <div className="flex items-center gap-x-5 max-lg:flex-col max-lg:w-full max-lg:items-start">
+    <div className="flex items-center gap-x-5 max-lg:flex-col max-lg:w-full max-lg:items-start
+                    bg-white/30 dark:bg-black/20 backdrop-blur-md p-3 rounded-xl border border-white/40 dark:border-gray-700/50 shadow-md">
       <h3 className="text-xl text-gray-900 dark:text-white">Sort by:</h3>{' '}
-      {/* Added dark mode text color */}
       <select
         defaultValue={sortBy}
-        onChange={(e) => changeSortBy(e.target.value)}
-        className="select border-gray-400 dark:border-gray-600 py-2 px-2 text-base border-2 select-bordered w-40 focus:outline-none outline-none max-lg:w-full bg-white dark:bg-gray-700 dark:text-white" /* Added dark mode styles */
+        onChange={handleSortChange}
+        className="select border-gray-300 dark:border-gray-600 py-2 px-2 text-base border-2 
+                   w-40 focus:outline-none outline-none max-lg:w-full 
+                   bg-white/40 dark:bg-black/30 text-gray-900 dark:text-white 
+                   rounded-md focus:ring-indigo-500 focus:border-indigo-500"
         name="sort"
       >
         <option value="defaultSort">Default</option>

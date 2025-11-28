@@ -1,6 +1,6 @@
 'use client';
 import { useWishlistStore } from '@/app/_zustand/wishlistStore';
-import WishItem from '@/components/WishItem';
+import ProductItem, { Product } from '@/components/ProductItem';
 import apiClient from '@/lib/api';
 import { nanoid } from 'nanoid';
 import { useSession } from 'next-auth/react';
@@ -10,54 +10,45 @@ export const WishlistModule = () => {
   const { data: session, status } = useSession();
   const { wishlist, setWishlist } = useWishlistStore();
 
-  const getWishlistByUserId = useCallback(
-    async (id: string) => {
-      const response = await apiClient.get(`/api/wishlist/${id}`, {
+  const getWishlist = useCallback(async () => {
+    try {
+      // PERBAIKAN 1: Panggil langsung ke /api/wishlist
+      // Backend akan otomatis tahu siapa user yang login via Session
+      const response = await apiClient.get(`/api/wishlist`, {
         cache: 'no-store',
       });
-      const wishlist = await response.json();
+      
+      const data = await response.json();
 
-      const productArray: {
-        id: string;
-        title: string;
-        price: number;
-        image: string;
-        slug: string;
-        stockAvailabillity: number;
-      }[] = [];
-
-      wishlist.map((item: any) =>
-        productArray.push({
-          id: item?.product?.id,
-          title: item?.product?.title,
-          price: item?.product?.price,
-          image: item?.product?.mainImage,
-          slug: item?.product?.slug,
-          stockAvailabillity: item?.product?.inStock,
-        }),
-      );
+      // PERBAIKAN 2: Mapping data disesuaikan dengan response backend
+      // Backend Anda mengirim array produk langsung: [{ id: '...', title: '...' }]
+      // Bukan nested object: [{ product: { ... } }]
+      const productArray = data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        mainImage: item.mainImage, // Backend mengirim 'mainImage', store mengharapkan 'mainImage'
+        slug: item.slug,
+        stockAvailabillity: item.stockAvailabillity || 0, // Handle jika undefined
+      }));
 
       setWishlist(productArray);
-    },
-    [setWishlist],
-  );
-
-  const getUserByEmail = useCallback(async () => {
-    if (session?.user?.email) {
-      apiClient
-        .get(`/api/users/email/${session?.user?.email}`, {
-          cache: 'no-store',
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          getWishlistByUserId(data?.id);
-        });
+    } catch (error) {
+      console.error("Failed to fetch wishlist:", error);
     }
-  }, [session, getWishlistByUserId]);
+  }, [setWishlist]);
 
+  // PERBAIKAN 3: Hapus getUserByEmail. Cukup trigger saat status 'authenticated'
   useEffect(() => {
-    getUserByEmail();
-  }, [getUserByEmail, wishlist.length]);
+    if (status === 'authenticated') {
+      getWishlist();
+    }
+  }, [status, getWishlist]);
+
+  if (status === 'loading') {
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
   return (
     <>
       {wishlist && wishlist.length === 0 ? (
@@ -79,8 +70,8 @@ export const WishlistModule = () => {
               </thead>
               <tbody>
                 {wishlist &&
-                  wishlist?.map((item) => (
-                    <WishItem product={item} key={nanoid()} />
+                  wishlist.map((item) => (
+                    <ProductItem product={item as Product} key={nanoid()} />
                   ))}
               </tbody>
             </table>

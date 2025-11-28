@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth';
+import type { Session, AuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import GithubProvider from 'next-auth/providers/github';
@@ -8,8 +8,9 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/utils/db';
 import jwt from 'jsonwebtoken';
 
-export const authOptions: any = {
+export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
+
   providers: [
     CredentialsProvider({
       id: 'credentials',
@@ -18,15 +19,14 @@ export const authOptions: any = {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
+
       async authorize(credentials: any) {
         if (!credentials.email || !credentials.password) {
           throw new Error('Email and password required');
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+          where: { email: credentials.email },
         });
 
         if (!user || !user.password) {
@@ -45,55 +45,67 @@ export const authOptions: any = {
         return user;
       },
     }),
+
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
     }),
+
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: any }) {
+      // Generate accessToken HANYA SAAT LOGIN
       if (user) {
-        token.role = user.role;
         token.id = user.id;
-        const backendPayload = {
-          user: {
+        token.role = user.role;
+
+        token.accessToken = jwt.sign(
+          {
             id: user.id,
             role: user.role,
-            email: user.email,
           },
-        };
-        token.accessToken = jwt.sign(
-          backendPayload,
           process.env.JWT_SECRET!,
-          { expiresIn: '1d' },
+          { expiresIn: '1d' }
         );
       }
+
       return token;
     },
+
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        session.user.role = token.role as string;
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
-      (session as any).accessToken = token.accessToken;
+
+      // Jangan assign token undefined
+      if (token.accessToken) {
+        (session as any).accessToken = token.accessToken;
+      }
+
       return session;
     },
   },
+
   pages: {
     signIn: '/login',
-    error: '/login', // Redirect to login page on auth errors
+    error: '/login',
   },
+
   session: {
     strategy: 'jwt',
     maxAge: 15 * 60, // 15 minutes
   },
+
   jwt: {
-    maxAge: 15 * 60, // 15 minutes
+    maxAge: 15 * 60,
   },
+
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
+  debug: false,
 };

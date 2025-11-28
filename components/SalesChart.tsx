@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useTheme } from 'next-themes';
 
 interface SalesChartProps {
   data?: { name: string; revenue: number }[];
@@ -18,14 +19,22 @@ interface SalesChartProps {
 }
 
 const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
+  const { theme } = useTheme();
+
+  const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+  const axisColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+  const legendColor = theme === 'dark' ? 'white' : 'black';
+  const tooltipBg = theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)';
+  const tooltipBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
+
   if (loading) {
     return (
       <div
         className="w-full min-h-96 flex flex-col justify-center items-center gap-y-2
-                      bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
+                      bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-gray-900 dark:text-white
                       dark:bg-black/20 dark:border-gray-700 mt-4"
       >
-        <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
+        <h4 className="text-xl font-bold mb-4">Daily Revenue</h4>
         <p>Loading chart...</p>
       </div>
     );
@@ -34,10 +43,9 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
   return (
     <div
       className="w-full min-h-96 flex flex-col justify-center items-center gap-y-2
-                    bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-white
-                    dark:bg-black/20 dark:border-gray-700 mt-4"
+                    bg-white/70 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-gray-700 shadow-lg rounded-lg p-4 text-gray-900 dark:text-white mt-4"
     >
-      <h4 className="text-xl text-white font-bold mb-4">Weekly Revenue</h4>
+      <h4 className="text-xl font-bold mb-4">Daily Revenue</h4>
       {!loading && data && (
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
@@ -51,18 +59,18 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="rgba(255, 255, 255, 0.2)"
+              stroke={gridColor}
             />
-            <XAxis dataKey="name" stroke="rgba(255, 255, 255, 0.7)" />
-            <YAxis stroke="rgba(255, 255, 255, 0.7)" />
+            <XAxis dataKey="name" stroke={axisColor} />
+            <YAxis stroke={axisColor} />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                borderColor: 'rgba(255, 255, 255, 0.2)',
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
                 borderRadius: '0.5rem',
               }}
             />
-            <Legend wrapperStyle={{ color: 'white' }} />
+            <Legend wrapperStyle={{ color: legendColor }} />
             <Line
               type="monotone"
               dataKey="revenue"

@@ -1,148 +1,58 @@
-import apiClient from '@/lib/api';
-import {
-  NotificationFilters,
-  NotificationResponse,
-  NotificationCreateInput,
-  BulkActionPayload,
-} from '@/types/notification';
+import baseApiClient from '@/lib/api';
+import { NotificationType, NotificationFilters } from '@/types/notification';
 
-export const notificationApi = {
-  /**
-   * Get user notifications with filtering and pagination
-   */
-  async getUserNotifications(
-    userId: string,
-    filters: NotificationFilters = {},
-  ): Promise<NotificationResponse> {
-    const params = new URLSearchParams();
+class NotificationAPI {
+  private apiClient: any;
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
+  constructor(apiClient: any) {
+    this.apiClient = apiClient;
+  }
+
+  getNotifications(userId: string) {
+    return this.apiClient.get(`/api/notifications/${userId}`);
+  }
+
+  getUserNotifications(userId: string, filters?: NotificationFilters) {
+    return this.apiClient.get(`/api/notifications/${userId}`, {
+      params: filters || {},
     });
+  }
 
-    const queryString = params.toString();
-    const endpoint = `/api/notifications/${userId}${queryString ? `?${queryString}` : ''}`;
+  createNotification(notification: NotificationType) {
+    return this.apiClient.post('/api/notifications', notification);
+  }
 
-    const response = await apiClient.get(endpoint);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch notifications: ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Get unread notification count for a user
-   */
-  async getUnreadCount(userId: string): Promise<{ unreadCount: number }> {
-    const response = await apiClient.get(
-      `/api/notifications/${userId}/unread-count`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch unread count: ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Create a new notification
-   */
-  async createNotification(data: NotificationCreateInput) {
-    const response = await apiClient.post('/api/notifications', data);
-
-    if (!response.ok) {
-      throw new Error(`Failed to create notification: ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Mark notification as read/unread
-   */
-  async updateNotification(id: string, isRead: boolean) {
-    const response = await apiClient.put(`/api/notifications/${id}`, {
+  updateNotification(notificationId: string, isRead: boolean) {
+    return this.apiClient.put(`/api/notifications/${notificationId}`, {
       isRead,
     });
+  }
 
-    if (!response.ok) {
-      throw new Error(`Failed to update notification: ${response.statusText}`);
-    }
+  getUnreadCount(userId: string) {
+    return this.apiClient.get(`/api/notifications/${userId}/unread-count`);
+  }
 
-    return response.json();
-  },
+  bulkMarkAsRead(payload: { notificationIds: string[]; userId: string }) {
+    return this.apiClient.put('/api/notifications/bulk/mark-as-read', payload);
+  }
 
-  /**
-   * Bulk mark notifications as read
-   */
-  async bulkMarkAsRead(payload: BulkActionPayload & { userId: string }) {
-    const response = await apiClient.post(
-      '/api/notifications/mark-read',
-      payload,
-    );
+  markAllAsRead(userId: string) {
+    return this.apiClient.put(`/api/notifications/${userId}/mark-all-read`);
+  }
 
-    if (!response.ok) {
-      throw new Error(
-        `Failed to mark notifications as read: ${response.statusText}`,
-      );
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Mark all notifications for a user as read
-   */
-  async markAllAsRead(userId: string) {
-    const response = await apiClient.post(
-      `/api/notifications/${userId}/mark-all-read`,
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to mark all notifications as read: ${response.statusText}`,
-      );
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Delete single notification
-   */
-  async deleteNotification(id: string, userId: string) {
-    const response = await apiClient.delete(`/api/notifications/${id}`, {
-      body: JSON.stringify({ userId }),
-      headers: { 'Content-Type': 'application/json' },
+  deleteNotification(notificationId: string, userId?: string) {
+    return this.apiClient.delete(`/api/notifications/${notificationId}`, {
+      params: { userId },
     });
+  }
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete notification: ${response.statusText}`);
-    }
+  bulkDeleteNotifications(payload: {
+    notificationIds: string[];
+    userId: string;
+  }) {
+    return this.apiClient.post('/api/notifications/bulk/delete', payload);
+  }
+}
 
-    return response.json();
-  },
-
-  /**
-   * Bulk delete notifications
-   */
-  async bulkDeleteNotifications(
-    payload: BulkActionPayload & { userId: string },
-  ) {
-    const response = await apiClient.delete('/api/notifications/bulk', {
-      body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to delete notifications: ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-};
+// WAJIB ADA DUA EXPORT INI!!
+export default new NotificationAPI(baseApiClient);

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useNotificationStore } from '@/app/_zustand/notificationStore';
-import { notificationApi } from '@/lib/notification-api';
+import notificationApi from '@/lib/notification-api';
 import { NotificationFilters } from '@/types/notification';
 import toast from 'react-hot-toast';
 

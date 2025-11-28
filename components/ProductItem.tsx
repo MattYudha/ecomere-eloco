@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
 import apiClient from '@/lib/api';
+import { formatPrice } from '@/lib/utils'; // Added import
 
 export type Product = {
   id: string;
@@ -118,7 +119,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   Price
                 </span>
                 <span className="text-2xl font-extrabold text-brand">
-                  ${product.price.toFixed(2)}
+                  {formatPrice(product.price)}
                 </span>
               </div>
               <motion.button

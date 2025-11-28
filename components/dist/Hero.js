@@ -1,0 +1,127 @@
+'use client';
+"use strict";
+exports.__esModule = true;
+var react_1 = require("react");
+var image_1 = require("next/image");
+var link_1 = require("next/link");
+var framer_motion_1 = require("framer-motion");
+var io5_1 = require("react-icons/io5");
+// Data Slide (Tidak ada perubahan)
+var slides = [
+    {
+        id: 1,
+        bgImage: '/assets/eloqo.png',
+        subtitle: 'Renyah & Tak Tertandingi',
+        title: 'Sensasi Dalam <br/> Setiap Gigitan',
+        text: 'Nikmati rangkaian keripik premium kami—perpaduan rasa autentik dan inovasi yang menciptakan pengalaman ngemil tak terlupakan.',
+        buttonText: 'Lihat Varian Keripik',
+        buttonLink: '/shop'
+    },
+    {
+        id: 2,
+        bgImage: '/assets/eloqo.png',
+        subtitle: 'Gurih yang Menggugah Selera',
+        title: 'Upgrade mood <br/> Cilok & varian baru kita.',
+        text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
+        buttonText: 'Jelajahi Makaroni',
+        buttonLink: '/shop'
+    },
+    {
+        id: 3,
+        bgImage: '/uploads/5.jpg',
+        subtitle: 'Manis, Lembut, & Memikat',
+        title: 'Setiap Gigitan <br/> Membawa Kebahagiaan',
+        text: 'Rasakan kukis premium lembut di dalam, renyah di luar—diciptakan untuk menghadirkan kehangatan di setiap hari.',
+        buttonText: 'Cicipi Kukis Premium',
+        buttonLink: '/shop'
+    },
+    {
+        id: 4,
+        bgImage: '/uploads/seragam.png',
+        subtitle: 'Kualitas Terbaik, Rasa Juara',
+        title: 'PKKMB season?  <br/> Tenang, kebutuhan kamu lengkap di sini!',
+        text: 'Jelajahi dunia rasa ELOQO, tempat setiap produk dibuat dengan bahan-bahan pilihan untuk kepuasan maksimal.',
+        buttonText: 'Belanja Semua Produk',
+        buttonLink: '/shop'
+    },
+];
+var Hero = function () {
+    var _a = react_1.useState(0), current = _a[0], setCurrent = _a[1];
+    var length = slides.length;
+    // --- Logic Autoplay ---
+    react_1.useEffect(function () {
+        var timer = setTimeout(function () {
+            nextSlide();
+        }, 6000);
+        return function () { return clearTimeout(timer); };
+    }, [current]);
+    var nextSlide = react_1.useCallback(function () {
+        setCurrent(current === length - 1 ? 0 : current + 1);
+    }, [current, length]);
+    var prevSlide = function () {
+        setCurrent(current === 0 ? length - 1 : current - 1);
+    };
+    if (!Array.isArray(slides) || slides.length <= 0) {
+        return null;
+    }
+    // --- Variants Animasi Framer Motion ---
+    var slideVariants = {
+        hidden: { opacity: 0, scale: 1.1 },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: { duration: 1.5, ease: [0, 0, 0.58, 1] }
+        },
+        exit: {
+            opacity: 0,
+            transition: { duration: 1 }
+        }
+    };
+    var textVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: function (custom) { return ({
+            opacity: 1,
+            y: 0,
+            transition: {
+                delay: custom * 0.2 + 0.5,
+                duration: 0.8,
+                ease: [0.2, 0.65, 0.3, 0.9]
+            }
+        }); }
+    };
+    return (react_1["default"].createElement("section", { className: "relative w-full h-screen min-h-[700px] overflow-hidden bg-orange-50 dark:bg-slate-900 transition-colors duration-500" },
+        react_1["default"].createElement(framer_motion_1.AnimatePresence, { mode: "wait" }, slides.map(function (slide, index) {
+            return index === current && (react_1["default"].createElement(framer_motion_1.motion.div, { key: slide.id, className: "absolute inset-0 w-full h-full", initial: "hidden", animate: "visible", exit: "exit" },
+                react_1["default"].createElement(framer_motion_1.motion.div, { className: "absolute inset-0 w-full h-full", variants: slideVariants },
+                    react_1["default"].createElement("div", { className: "relative w-full h-full" },
+                        react_1["default"].createElement(image_1["default"], { src: slide.bgImage, alt: slide.subtitle, fill: true, priority: index === 0, className: "object-cover object-center", quality: 90 }))),
+                react_1["default"].createElement("div", { className: "absolute inset-0 flex flex-col justify-center items-center text-center px-6 md:px-12 z-20" },
+                    react_1["default"].createElement(framer_motion_1.motion.p, { custom: 0, variants: textVariants, initial: "hidden", animate: "visible", className: "text-[#cb6112] font-bold tracking-[0.2em] uppercase text-sm md:text-base mb-4 drop-shadow-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm px-4 py-1 rounded-full border border-[#cb6112]/20 dark:border-[#cb6112]/30" }, slide.subtitle),
+                    react_1["default"].createElement(framer_motion_1.motion.h1, { custom: 1, variants: textVariants, initial: "hidden", animate: "visible", className: "font-['Forum'] text-5xl md:text-7xl lg:text-8xl text-gray-900 dark:text-white leading-[1.1] mb-6 drop-shadow-lg transition-colors duration-300", dangerouslySetInnerHTML: { __html: slide.title } }),
+                    react_1["default"].createElement(framer_motion_1.motion.p, { custom: 2, variants: textVariants, initial: "hidden", animate: "visible", className: "text-gray-800 dark:text-gray-200 text-base md:text-xl max-w-2xl mb-10 leading-relaxed font-['DM_Sans'] drop-shadow-md transition-colors duration-300" }, slide.text),
+                    react_1["default"].createElement(framer_motion_1.motion.div, { custom: 3, variants: textVariants, initial: "hidden", animate: "visible" },
+                        react_1["default"].createElement(link_1["default"], { href: slide.buttonLink, className: "group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent overflow-hidden rounded-full transition-all duration-300" },
+                            react_1["default"].createElement("div", { className: "absolute inset-0 bg-[#cb6112] opacity-90 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(203,97,18,0.4)] group-hover:shadow-[0_0_50px_rgba(203,97,18,0.7)]" }),
+                            react_1["default"].createElement("span", { className: "relative text-white font-bold uppercase tracking-widest text-sm z-10 group-hover:translate-x-[-5px] transition-transform" }, slide.buttonText),
+                            react_1["default"].createElement("span", { className: "relative z-10 bg-white text-[#cb6112] rounded-full p-1 group-hover:translate-x-1 transition-transform" },
+                                react_1["default"].createElement(io5_1.IoChevronForward, null)))))));
+        })),
+        react_1["default"].createElement("div", { className: "absolute top-1/2 w-full flex justify-between px-4 md:px-10 z-30 pointer-events-none" },
+            react_1["default"].createElement("button", { onClick: prevSlide, className: "pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full \r\n                     bg-white/40 border border-orange-200 text-[#cb6112]\r\n                     dark:bg-white/5 dark:border-white/10 dark:text-white \r\n                     backdrop-blur-md flex items-center justify-center \r\n                     hover:bg-[#cb6112] hover:border-[#cb6112] hover:text-white \r\n                     dark:hover:bg-[#cb6112] dark:hover:border-[#cb6112] \r\n                     hover:scale-110 transition-all duration-300 group shadow-lg", "aria-label": "Previous Slide" },
+                react_1["default"].createElement(io5_1.IoChevronBack, { size: 24, className: "group-hover:-translate-x-0.5 transition-transform" })),
+            react_1["default"].createElement("button", { onClick: nextSlide, className: "pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full \r\n                     bg-white/40 border border-orange-200 text-[#cb6112]\r\n                     dark:bg-white/5 dark:border-white/10 dark:text-white \r\n                     backdrop-blur-md flex items-center justify-center \r\n                     hover:bg-[#cb6112] hover:border-[#cb6112] hover:text-white \r\n                     dark:hover:bg-[#cb6112] dark:hover:border-[#cb6112] \r\n                     hover:scale-110 transition-all duration-300 group shadow-lg", "aria-label": "Next Slide" },
+                react_1["default"].createElement(io5_1.IoChevronForward, { size: 24, className: "group-hover:translate-x-0.5 transition-transform" }))),
+        react_1["default"].createElement("div", { className: "absolute bottom-32 w-full flex justify-center gap-3 z-30" }, slides.map(function (_, idx) { return (react_1["default"].createElement("button", { key: idx, onClick: function () { return setCurrent(idx); }, className: "h-1.5 rounded-full transition-all duration-500 " + (idx === current
+                ? 'w-12 bg-[#cb6112] shadow-[0_0_10px_#cb6112]'
+                : 'w-3 bg-gray-400/50 hover:bg-[#cb6112]/50 dark:bg-white/30 dark:hover:bg-white/60'), "aria-label": "Go to slide " + (idx + 1) })); })),
+        react_1["default"].createElement(framer_motion_1.motion.div, { initial: { opacity: 0, y: -20 }, animate: { opacity: 1, y: 0 }, transition: { delay: 2, duration: 1 }, className: "absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer" },
+            react_1["default"].createElement(link_1["default"], { href: "#featured-products", className: "flex flex-col items-center group" },
+                react_1["default"].createElement("span", { className: "text-xs text-gray-700 dark:text-white/70 uppercase tracking-[0.2em] mb-2 group-hover:text-[#cb6112] transition-colors" }, "Scroll"),
+                react_1["default"].createElement("div", { className: "w-[30px] h-[50px] rounded-full border-2 border-gray-500 dark:border-white/30 flex justify-center p-1 group-hover:border-[#cb6112] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:shadow-[0_0_15px_rgba(0,0,0,0.2)]" },
+                    react_1["default"].createElement(framer_motion_1.motion.div, { animate: { y: [0, 15, 0] }, transition: {
+                            repeat: Infinity,
+                            duration: 1.5,
+                            ease: 'easeInOut'
+                        }, className: "w-1.5 h-1.5 bg-[#cb6112] rounded-full" }))))));
+};
+exports["default"] = Hero;

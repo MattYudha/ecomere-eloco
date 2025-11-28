@@ -2,50 +2,51 @@ import { getServerSession } from 'next-auth/next';
 import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/utils/authOptions';
 import prisma from '@/utils/db';
-import { Session } from 'next-auth'; // Import Session type
+import { Session } from 'next-auth';
 
-// Define an interface for the context object to explicitly type route parameters
+// Explicit typing for dynamic route context
 interface RouteContext {
   params: {
     productId: string;
   };
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: RouteContext, // Use the explicit interface here
-) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
   try {
-    const session: Session | null = await getServerSession(authOptions); // Explicitly type session
+    // Get session (NextAuth)
+    const session: Session | null = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const { productId } = context.params; // Access params from context
+    const productId = params.productId;
 
     if (!productId) {
       return new NextResponse('Product ID is required', { status: 400 });
     }
 
-    const existingWishlistItem = await prisma.wishlist.findFirst({
+    // Check if item exists in wishlist
+    const wishlistItem = await prisma.wishlist.findFirst({
       where: {
         userId: session.user.id,
         productId,
       },
     });
 
-    if (!existingWishlistItem) {
+    if (!wishlistItem) {
       return new NextResponse('Product not found in wishlist', { status: 404 });
     }
 
+    // Remove wishlist item
     await prisma.wishlist.delete({
-      where: { id: existingWishlistItem.id },
+      where: { id: wishlistItem.id },
     });
 
+    // No response body for successful delete
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error('[WISHLIST_DELETE]', error);
+    console.error('[WISHLIST_DELETE_ERROR]', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

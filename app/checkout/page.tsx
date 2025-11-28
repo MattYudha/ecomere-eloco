@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api';
+import { formatPrice } from '@/lib/utils';
 
 const CheckoutPage = () => {
   const { data: session } = useSession();
@@ -452,9 +453,7 @@ const CheckoutPage = () => {
                         Quantity: {product?.amount}
                       </p>
                     </div>
-                    <p className="flex-none text-base font-bold">
-                      ${product?.price}
-                    </p>
+                    <p className="flex-none text-base font-bold">{formatPrice(product?.price)}</p>
                   </li>
                 ))}
               </ul>
@@ -462,21 +461,19 @@ const CheckoutPage = () => {
               <dl className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6 text-sm font-medium text-gray-900 dark:text-white mt-6">
                 <div className="flex items-center justify-between">
                   <dt className="text-gray-600 dark:text-gray-400">Subtotal</dt>
-                  <dd>${total}</dd>
+                  <dd>{formatPrice(total)}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-gray-600 dark:text-gray-400">Shipping</dt>
-                  <dd>$5</dd>
+                  <dd>{formatPrice(5)}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-gray-600 dark:text-gray-400">Taxes</dt>
-                  <dd>${total / 5}</dd>
+                  <dd>{formatPrice(total / 5)}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4 text-base font-bold">
                   <dt>Order Total</dt>
-                  <dd>
-                    ${total === 0 ? 0 : Math.round(total + total / 5 + 5)}
-                  </dd>
+                  <dd>{formatPrice(total === 0 ? 0 : Math.round(total + total / 5 + 5))}</dd>
                 </div>
               </dl>
             </div>

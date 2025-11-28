@@ -16,18 +16,18 @@ const Pagination = () => {
   // getting from Zustand store current page and methods for incrementing and decrementing current page
   const { page, incrementPage, decrementPage } = usePaginationStore();
   return (
-    <div className="join flex justify-center py-16">
+    <div className="flex gap-x-2 justify-center py-16 my-8 bg-white/30 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-gray-700/50 rounded-xl">
       <button
-        className="join-item btn btn-lg bg-grilli-gold text-black hover:bg-black hover:text-grilli-gold dark:bg-grilli-gold dark:text-black dark:hover:bg-gray-700 dark:hover:text-grilli-gold"
+        className="px-4 py-2 text-lg font-medium rounded-lg bg-white/20 dark:bg-black/30 border border-white/40 dark:border-gray-700/50 text-gray-900 dark:text-white hover:bg-white/40 dark:hover:bg-black/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
         onClick={() => decrementPage()}
       >
         «
       </button>
-      <button className="join-item btn btn-lg bg-grilli-gold text-black hover:bg-black hover:text-grilli-gold dark:bg-grilli-gold dark:text-black dark:hover:bg-gray-700 dark:hover:text-grilli-gold">
+      <button className="px-4 py-2 text-lg font-medium rounded-lg bg-white/40 dark:bg-black/50 border border-white/40 dark:border-gray-700/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300">
         Page {page}
       </button>
       <button
-        className="join-item btn btn-lg bg-grilli-gold text-black hover:bg-black hover:text-grilli-gold dark:bg-grilli-gold dark:text-black dark:hover:bg-gray-700 dark:hover:text-grilli-gold"
+        className="px-4 py-2 text-lg font-medium rounded-lg bg-white/20 dark:bg-black/30 border border-white/40 dark:border-gray-700/50 text-gray-900 dark:text-white hover:bg-white/40 dark:hover:bg-black/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
         onClick={() => incrementPage()}
       >
         »

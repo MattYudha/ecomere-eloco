@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { FaCheck, FaCircleQuestion, FaClock, FaXmark } from 'react-icons/fa6';
 import QuantityInputCart from '@/components/QuantityInputCart';
 import { sanitize } from '@/lib/sanitize';
+import { formatPrice } from '@/lib/utils'; // Added import
 
 export const CartModule = () => {
   const { products, removeFromCart, calculateTotals, total } =
@@ -39,7 +40,7 @@ export const CartModule = () => {
                       ? `/${product.image.replace(/^\//, '')}`
                       : '/product_placeholder.jpg'
                   }
-                  alt="laptop image"
+                  alt={sanitize(product.title)}
                   className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
                 />
               </div>
@@ -64,7 +65,7 @@ export const CartModule = () => {
                         ) : null}
                       </div> */}
                     <p className="mt-1 text-sm font-medium text-gray-900">
-                      ${product.price}
+                      {formatPrice(product.price)}
                     </p>
                   </div>
 
@@ -116,7 +117,7 @@ export const CartModule = () => {
         <dl className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <dt className="text-sm text-gray-600">Subtotal</dt>
-            <dd className="text-sm font-medium text-gray-900">${total}</dd>
+            <dd className="text-sm font-medium text-gray-900">{formatPrice(total)}</dd>
           </div>
           <div className="flex items-center justify-between border-t border-gray-200 pt-4">
             <dt className="flex items-center text-sm text-gray-600">
@@ -131,7 +132,7 @@ export const CartModule = () => {
                 <FaCircleQuestion className="h-5 w-5" aria-hidden="true" />
               </a>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">$5.00</dd>
+            <dd className="text-sm font-medium text-gray-900">{formatPrice(5)}</dd>
           </div>
           <div className="flex items-center justify-between border-t border-gray-200 pt-4">
             <dt className="flex text-sm text-gray-600">
@@ -146,13 +147,11 @@ export const CartModule = () => {
                 <FaCircleQuestion className="h-5 w-5" aria-hidden="true" />
               </a>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">${total / 5}</dd>
+            <dd className="text-sm font-medium text-gray-900">{formatPrice(total / 5)}</dd>
           </div>
           <div className="flex items-center justify-between border-t border-gray-200 pt-4">
             <dt className="text-base font-medium text-gray-900">Order total</dt>
-            <dd className="text-base font-medium text-gray-900">
-              ${total === 0 ? 0 : Math.round(total + total / 5 + 5)}
-            </dd>
+            <dd className="text-base font-medium text-gray-900">{formatPrice(total === 0 ? 0 : Math.round(total + total / 5 + 5))}</dd>
           </div>
         </dl>
         {products.length > 0 && (
