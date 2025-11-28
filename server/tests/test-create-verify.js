@@ -1,5 +1,5 @@
 // Test lengkap: Create product dan verify di database
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 const API_BASE_URL = 'http://localhost:3001';
 

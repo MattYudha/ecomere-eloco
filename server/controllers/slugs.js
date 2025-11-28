@@ -1,4 +1,4 @@
-const prisma = require('../utills/db'); // ✅ Use shared connection
+const prisma = require('../utils/db'); // ✅ Use shared connection
 
 async function getProductBySlug(request, response) {
   const { slug } = request.params;

@@ -40,7 +40,7 @@ const {
   wishlistLimiter,
 } = require('./middleware/rateLimiter');
 
-const { handleServerError } = require('./utills/errorHandler');
+const { handleServerError } = require('./utils/errorHandler');
 
 const app = express();
 

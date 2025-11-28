@@ -1,4 +1,4 @@
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 const { nanoid } = require('nanoid');
 const path = require('path');
 

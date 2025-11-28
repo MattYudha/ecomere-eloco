@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { asyncHandler, AppError } = require('../utills/errorHandler');
+const { asyncHandler, AppError } = require('../utils/errorHandler');
 
 const createOrderProduct = asyncHandler(async (request, response) => {
   const { customerOrderId, productId, quantity } = request.body;

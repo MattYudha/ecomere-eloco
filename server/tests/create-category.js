@@ -1,7 +1,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 (async () => {
   try {

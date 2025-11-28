@@ -1,4 +1,4 @@
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 async function checkBulkUploadResults() {
   console.log('📊 Checking Bulk Upload Results\n');

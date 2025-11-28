@@ -1,5 +1,5 @@
 // Test untuk verifikasi data masuk database
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 async function checkProducts() {
   console.log('🔍 Checking products in database...\n');

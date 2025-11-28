@@ -1,5 +1,5 @@
-const prisma = require('../utills/db');
-const { asyncHandler, AppError } = require('../utills/errorHandler');
+const prisma = require('../utils/db');
+const { asyncHandler, AppError } = require('../utils/errorHandler');
 const {
   parseCsvBufferToRows,
   validateRow,

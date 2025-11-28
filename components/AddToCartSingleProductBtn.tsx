@@ -12,14 +12,22 @@
 import React from 'react';
 import { useProductStore } from '@/app/_zustand/store';
 import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const AddToCartSingleProductBtn = ({
   product,
   quantityCount,
 }: SingleProductBtnProps) => {
   const { addToCart, calculateTotals } = useProductStore();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const handleAddToCart = () => {
+    if (!session) {
+      router.push('/login');
+      return;
+    }
     addToCart({
       id: product?.id.toString(),
       title: product?.title,

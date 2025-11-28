@@ -1,6 +1,6 @@
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 const bcrypt = require('bcryptjs');
-const { asyncHandler, AppError } = require('../utills/errorHandler');
+const { asyncHandler, AppError } = require('../utils/errorHandler');
 
 // Helper function to exclude password from user object
 function excludePassword(user) {

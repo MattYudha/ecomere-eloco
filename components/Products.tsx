@@ -16,39 +16,37 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
   const [loading, setLoading] = useState(true);
   const searchParamsHook = useSearchParams(); // Get searchParams using hook
 
+  const inStock = searchParamsHook.get('inStock');
+  const outOfStock = searchParamsHook.get('outOfStock');
+  const price = searchParamsHook.get('price');
+  const rating = searchParamsHook.get('rating');
+  const pageParam = searchParamsHook.get('page');
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const currentSearchParams = Object.fromEntries(
-        searchParamsHook.entries(),
-      ); // Convert to plain object
+      
       // getting all data from URL slug and preparing everything for sending GET request
-      const inStockNum = currentSearchParams.inStock === 'true' ? 1 : 0;
-      const outOfStockNum = currentSearchParams.outOfStock === 'true' ? 1 : 0;
-      const currentPage = currentSearchParams.page
-        ? Number(currentSearchParams.page)
-        : page; // Use page from Zustand if not in searchParams
+      const inStockNum = inStock === 'true' ? 1 : 0;
+      const outOfStockNum = outOfStock === 'true' ? 1 : 0;
+      const currentPage = pageParam ? Number(pageParam) : page;
 
       let stockFilter = '';
-      if (
-        currentSearchParams.inStock === 'true' &&
-        currentSearchParams.outOfStock === 'true'
-      ) {
+      if (inStock === 'true' && outOfStock === 'true') {
         stockFilter = ''; // Show all, no specific stock filter needed
-      } else if (currentSearchParams.inStock === 'true') {
+      } else if (inStock === 'true') {
         stockFilter = `filters[inStock][$equals]=1`;
-      } else if (currentSearchParams.outOfStock === 'true') {
+      } else if (outOfStock === 'true') {
         stockFilter = `filters[inStock][$equals]=0`;
       }
 
       try {
         // Outer try block starts here
         const apiUrl = `/api/products?filters[price][$lte]=${
-          currentSearchParams.price || 3000
+          price || 3000
         }&filters[rating][$gte]=${
-          Number(currentSearchParams.rating) || 0
+          Number(rating) || 0
         }&${stockFilter ? stockFilter + '&' : ''}${
-          // Add stockFilter here
           (params?.slug?.length ?? 0) > 0
             ? `filters[category][$equals]=${params?.slug ? params.slug[0] : ''}&`
             : ''
@@ -88,7 +86,7 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
     };
 
     fetchProducts();
-  }, [params, searchParamsHook, sortBy, page]); // Add searchParamsHook to dependency array
+  }, [params, sortBy, page, inStock, outOfStock, price, rating, pageParam]);
 
   if (loading) {
     return (

@@ -9,7 +9,7 @@
 
 const path = require('path');
 const { execSync } = require('child_process');
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 const FormData = require('form-data');
 const fs = require('fs');
 

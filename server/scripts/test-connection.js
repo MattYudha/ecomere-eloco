@@ -1,4 +1,4 @@
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 async function testConnection() {
   try {
@@ -22,7 +22,7 @@ async function testConnection() {
     console.log(`📊 Users in database: ${userCount}`);
 
     // Test shared connection (should be the same instance)
-    const prisma2 = require('../utills/db');
+    const prisma2 = require('../utils/db');
     console.log(`🔗 Shared connection working: ${prisma === prisma2}`);
 
     await prisma.$disconnect();

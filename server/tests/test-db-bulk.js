@@ -1,4 +1,4 @@
-const prisma = require('../utills/db');
+const prisma = require('../utils/db');
 
 async function testDatabase() {
   console.log('🔍 Testing database connection for bulk upload...\n');

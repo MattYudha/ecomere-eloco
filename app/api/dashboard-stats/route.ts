@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/utils/db';
-import { unstable_cache as cache } from 'next/cache';
 
 // Helper function to calculate percentage change
 const calculatePercentageChange = (current: number, previous: number) => {
@@ -10,131 +9,130 @@ const calculatePercentageChange = (current: number, previous: number) => {
   return ((current - previous) / previous) * 100;
 };
 
-// This function contains the core logic and is cached.
-const getDashboardStats = cache(
-  async () => {
-    // 1. Define date ranges
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+async function getDashboardStats() {
+  // 1. Define date ranges
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
 
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6);
+  const twoDaysAgo = new Date(today);
+  twoDaysAgo.setDate(today.getDate() - 2);
+  
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6);
 
-    // 2. Define all data fetching promises
-    const todayRevenuePromise = prisma.customer_order.aggregate({
-      _sum: { total: true },
-      where: { updatedAt: { gte: today }, status: 'DELIVERED' },
-    });
+  // 2. Define all data fetching promises
+  const revenuePromise = prisma.customer_order.findMany({
+    where: {
+      updatedAt: { gte: twoDaysAgo },
+      status: 'DELIVERED',
+    },
+    select: {
+      updatedAt: true,
+      total: true,
+    },
+  });
 
-    const yesterdayRevenuePromise = prisma.customer_order.aggregate({
-      _sum: { total: true },
-      where: { updatedAt: { gte: yesterday, lt: today }, status: 'DELIVERED' },
-    });
+  const ordersPromise = prisma.customer_order.findMany({
+    where: {
+      dateTime: { gte: twoDaysAgo },
+    },
+    select: {
+      dateTime: true,
+    },
+  });
 
-    const todayOrdersPromise = prisma.customer_order.count({
-      where: { dateTime: { gte: today } },
-    });
+  const customersPromise = prisma.user.findMany({
+    where: {
+      createdAt: { gte: twoDaysAgo },
+    },
+    select: {
+      createdAt: true,
+    },
+  });
 
-    const yesterdayOrdersPromise = prisma.customer_order.count({
-      where: { dateTime: { gte: yesterday, lt: today } },
-    });
+  const visitorsPromise = prisma.visitorLog.findMany({
+    where: {
+      createdAt: { gte: twoDaysAgo },
+    },
+    select: {
+      ipHash: true,
+      createdAt: true,
+    },
+  });
 
-    const todayCustomersPromise = prisma.user.count({
-      where: { createdAt: { gte: today } },
-    });
+  const weeklyRevenuePromise = prisma.customer_order.findMany({
+    where: {
+      updatedAt: { gte: sevenDaysAgo },
+      status: 'DELIVERED',
+    },
+    select: {
+      updatedAt: true,
+      total: true,
+    },
+  });
 
-    const yesterdayCustomersPromise = prisma.user.count({
-      where: { createdAt: { gte: yesterday, lt: today } },
-    });
+  // 3. Execute all promises in parallel
+  const [
+    revenueData,
+    ordersData,
+    customersData,
+    visitorsData,
+    weeklyOrders,
+  ] = await Promise.all([
+    revenuePromise,
+    ordersPromise,
+    customersPromise,
+    visitorsPromise,
+    weeklyRevenuePromise,
+  ]);
 
-    const todayVisitorsPromise = prisma.visitorLog.groupBy({
-      by: ['ipHash'],
-      where: { createdAt: { gte: today } },
-    });
+  // 4. Process results in JS
+  const todayRevenue = revenueData.filter(o => o.updatedAt >= today).reduce((sum, o) => sum + o.total, 0);
+  const yesterdayRevenue = revenueData.filter(o => o.updatedAt >= yesterday && o.updatedAt < today).reduce((sum, o) => sum + o.total, 0);
 
-    const yesterdayVisitorsPromise = prisma.visitorLog.groupBy({
-      by: ['ipHash'],
-      where: { createdAt: { gte: yesterday, lt: today } },
-    });
+  const todayOrders = ordersData.filter(o => o.dateTime! >= today).length;
+  const yesterdayOrders = ordersData.filter(o => o.dateTime! >= yesterday && o.dateTime! < today).length;
 
-    const weeklyRevenuePromise = prisma.customer_order.findMany({
-      where: {
-        updatedAt: { gte: sevenDaysAgo },
-        status: 'DELIVERED',
-      },
-      select: {
-        updatedAt: true,
-        total: true,
-      },
-    });
+  const todayCustomers = customersData.filter(u => u.createdAt >= today).length;
+  const yesterdayCustomers = customersData.filter(u => u.createdAt >= yesterday && u.createdAt < today).length;
 
-    // 3. Execute all promises in parallel
-    const [
-      todayRevenueResult,
-      yesterdayRevenueResult,
-      todayOrders,
-      yesterdayOrders,
-      todayCustomers,
-      yesterdayCustomers,
-      todayVisitorsGroups,
-      yesterdayVisitorsGroups,
-      weeklyOrders,
-    ] = await Promise.all([
-      todayRevenuePromise,
-      yesterdayRevenuePromise,
-      todayOrdersPromise,
-      yesterdayOrdersPromise,
-      todayCustomersPromise,
-      yesterdayCustomersPromise,
-      todayVisitorsPromise,
-      yesterdayVisitorsPromise,
-      weeklyRevenuePromise,
-    ]);
+  const todayVisitors = new Set(visitorsData.filter(v => v.createdAt >= today).map(v => v.ipHash)).size;
+  const yesterdayVisitors = new Set(visitorsData.filter(v => v.createdAt >= yesterday && v.createdAt < today).map(v => v.ipHash)).size;
 
-    // 4. Process weekly revenue data in JS
-    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const weeklySalesData = dayLabels.map((day) => ({ name: day, revenue: 0 }));
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weeklySalesData = dayLabels.map((day) => ({ name: day, revenue: 0 }));
 
-    weeklyOrders.forEach((order) => {
-      const dayIndex = order.updatedAt.getDay();
-      weeklySalesData[dayIndex].revenue += order.total;
-    });
+  weeklyOrders.forEach((order) => {
+    const dayIndex = order.updatedAt.getDay();
+    weeklySalesData[dayIndex].revenue += order.total;
+  });
 
-    // 5. Format the final stats object
-    const todayRevenue = todayRevenueResult._sum.total || 0;
-    const yesterdayRevenue = yesterdayRevenueResult._sum.total || 0;
+  // 5. Format the final stats object
+  const stats = {
+    revenue: {
+      value: todayRevenue,
+      change: calculatePercentageChange(todayRevenue, yesterdayRevenue),
+    },
+    orders: {
+      value: todayOrders,
+      change: calculatePercentageChange(todayOrders, yesterdayOrders),
+    },
+    customers: {
+      value: todayCustomers,
+      change: calculatePercentageChange(todayCustomers, yesterdayCustomers),
+    },
+    visitors: {
+      value: todayVisitors,
+      change: calculatePercentageChange(todayVisitors, yesterdayVisitors),
+    },
+    weeklySales: weeklySalesData,
+  };
 
-    const todayVisitors = todayVisitorsGroups.length;
-    const yesterdayVisitors = yesterdayVisitorsGroups.length;
-
-    const stats = {
-      revenue: {
-        value: todayRevenue,
-        change: calculatePercentageChange(todayRevenue, yesterdayRevenue),
-      },
-      orders: {
-        value: todayOrders,
-        change: calculatePercentageChange(todayOrders, yesterdayOrders),
-      },
-      customers: {
-        value: todayCustomers,
-        change: calculatePercentageChange(todayCustomers, yesterdayCustomers),
-      },
-      visitors: {
-        value: todayVisitors,
-        change: calculatePercentageChange(todayVisitors, yesterdayVisitors),
-      },
-      weeklySales: weeklySalesData,
-    };
-
-    return stats;
-  },
-  ['dashboard-stats'], // Cache key
-  { revalidate: 60 }, // Cache for 60 seconds
-);
+  return stats;
+}
 
 export async function GET() {
   try {

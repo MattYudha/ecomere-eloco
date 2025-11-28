@@ -10,7 +10,7 @@ import { IoArrowDown, IoChevronBack, IoChevronForward } from 'react-icons/io5';
 const slides = [
   {
     id: 1,
-    bgImage: '/images/hero-slider-1.jpg',
+    bgImage: '/assets/eloqo.png',
     subtitle: 'Renyah & Tak Tertandingi',
     title: 'Sensasi Dalam <br/> Setiap Gigitan',
     text: 'Nikmati rangkaian keripik premium kami—perpaduan rasa autentik dan inovasi yang menciptakan pengalaman ngemil tak terlupakan.',
@@ -19,7 +19,7 @@ const slides = [
   },
   {
     id: 2,
-    bgImage: '/images/hero-slider-2.jpg',
+    bgImage: '/assets/eloqo.png',
     subtitle: 'Gurih yang Menggugah Selera',
     title: 'Cara Baru <br/> Menikmati Makaroni',
     text: 'Temukan makaroni khas ELOQO dengan cita rasa berani dan tekstur sempurna, dirancang untuk memanjakan setiap momen.',
@@ -28,7 +28,7 @@ const slides = [
   },
   {
     id: 3,
-    bgImage: '/images/hero-slider-3.jpg',
+    bgImage: '/assets/eloqo.png',
     subtitle: 'Manis, Lembut, & Memikat',
     title: 'Setiap Gigitan <br/> Membawa Kebahagiaan',
     text: 'Rasakan kukis premium lembut di dalam, renyah di luar—diciptakan untuk menghadirkan kehangatan di setiap hari.',

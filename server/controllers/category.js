@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { asyncHandler, AppError } = require('../utills/errorHandler');
+const { asyncHandler, AppError } = require('../utils/errorHandler');
 
 const createCategory = asyncHandler(async (request, response) => {
   const { name } = request.body;
