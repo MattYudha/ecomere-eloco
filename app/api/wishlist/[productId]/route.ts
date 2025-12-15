@@ -14,7 +14,7 @@ interface RouteContext {
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   try {
     // Get session (NextAuth)
-    const session: Session | null = await getServerSession(authOptions);
+    const session: Session | null = await getServerSession(authOptions as any);
 
     if (!session?.user?.id) {
       return new NextResponse('Unauthorized', { status: 401 });

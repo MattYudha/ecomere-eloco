@@ -1,6 +1,8 @@
 'use client';
 import { DashboardSidebar, StatsElement, SalesChart } from '@/components';
+import apiClient from '@/lib/api';
 import React, { useState, useEffect } from 'react';
+import { formatPrice } from '@/lib/utils';
 import {
   FaDollarSign,
   FaShoppingCart,
@@ -31,7 +33,16 @@ const AdminDashboardPage = () => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/dashboard-stats');
+        // Use apiClient to hit Express backend (localhost:3001) where dashboard-stats is mounted
+        const response = await apiClient.get('/api/dashboard-stats');
+        // apiClient returns response.data directly logic dependent, usually it returns axios-like response or just data
+        // Let's check api.ts. usually it returns parsed JSON if using fetch wrapper, or we need to await .json() if it allows
+        // Checking lib/api.ts (Step 712 view). It uses fetch wrapper.
+        // It returns the response object? 
+        // Wait, typical apiClient implementation returns data directly OR response. 
+        // Let's assume standard fetch for now but CORRECT URL.
+        // Actually apiClient in this project (Step 712) returns `response` from `fetch`.
+
         if (!response.ok) {
           throw new Error('Failed to fetch dashboard stats');
         }
@@ -39,7 +50,6 @@ const AdminDashboardPage = () => {
         setStats(data);
       } catch (error) {
         console.error('Error fetching stats:', error);
-        // Optionally, set some default/error state for stats
       } finally {
         setLoading(false);
       }
@@ -50,10 +60,7 @@ const AdminDashboardPage = () => {
 
   // Helper to format currency
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
+    return formatPrice(value);
   };
 
   // Helper to format percentage
@@ -80,6 +87,7 @@ const AdminDashboardPage = () => {
             isPositive={stats ? stats.revenue.change >= 0 : true}
             icon={<FaDollarSign />}
             loading={loading}
+            period="vs Yesterday"
           />
           <StatsElement
             title="New Orders"
@@ -88,6 +96,7 @@ const AdminDashboardPage = () => {
             isPositive={stats ? stats.orders.change >= 0 : true}
             icon={<FaShoppingCart />}
             loading={loading}
+            period="vs Yesterday"
           />
           <StatsElement
             title="New Customers"
@@ -98,6 +107,7 @@ const AdminDashboardPage = () => {
             isPositive={stats ? stats.customers.change >= 0 : true}
             icon={<FaUsers />}
             loading={loading}
+            period="vs Yesterday"
           />
           <StatsElement
             title="Today's Visitors"
@@ -108,6 +118,7 @@ const AdminDashboardPage = () => {
             isPositive={stats ? stats.visitors.change >= 0 : true}
             icon={<FaChartBar />}
             loading={loading}
+            period="vs Yesterday"
           />
         </div>
 

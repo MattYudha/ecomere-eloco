@@ -16,8 +16,9 @@ const slugRouter = require('./routes/slugs');
 const orderProductRouter = require('./routes/customer_order_product');
 const wishlistRouter = require('./routes/wishlist');
 const notificationsRouter = require('./routes/notifications');
-const merchantRouter = require('./routes/merchant'); // Add this line
+const merchantRouter = require('./routes/merchant');
 const bulkUploadRouter = require('./routes/bulkUpload');
+const dashboardStatsRouter = require('./routes/dashboardStats');
 var cors = require('cors');
 
 // Import logging middleware
@@ -27,6 +28,7 @@ const {
   errorLogger,
   securityLogger,
 } = require('./middleware/requestLogger');
+const trackVisitor = require('./middleware/visitorTracker');
 
 // Import rate limiting middleware
 const {
@@ -52,6 +54,9 @@ app.use(addRequestId);
 
 // Security logging (check for suspicious patterns)
 app.use(securityLogger);
+
+// Track visitors
+app.use(trackVisitor);
 
 // Standard request logging
 app.use(requestLogger);
@@ -129,6 +134,7 @@ app.use('/api/wishlist', wishlistRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/merchants', merchantRouter);
 app.use('/api/bulk-upload', bulkUploadRouter);
+app.use('/api/dashboard-stats', dashboardStatsRouter);
 
 // Health check endpoint (no rate limiting)
 app.get('/health', (req, res) => {

@@ -26,6 +26,7 @@ export type State = {
 
 export type Actions = {
   addToCart: (newProduct: ProductInCart) => void;
+  buyNow: (newProduct: ProductInCart) => void;
   removeFromCart: (id: string) => void;
   updateCartAmount: (id: string, quantity: number) => void;
   calculateTotals: () => void;
@@ -59,6 +60,21 @@ export const useProductStore = create<State & Actions>()(
             });
           }
           return { products: [...state.products] };
+        });
+      },
+      buyNow: (newProduct) => {
+        set((state) => {
+          // Logic for Buy Now:
+          // Option 1: Clear cart and add only this item (Direct Checkout behavior)
+          // Option 2: Add to cart but ensure quantity is EXACTLY what is selected (Overriding existing)
+          // The user's complaint "shows 4-5 because I bought it before" suggests they want to buy ONLY what they just selected.
+          // Implementation: Clear cart, add item.
+
+          return {
+            products: [newProduct],
+            allQuantity: newProduct.amount,
+            total: newProduct.amount * newProduct.price
+          };
         });
       },
       clearCart: () => {

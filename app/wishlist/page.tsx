@@ -16,6 +16,16 @@ const WishlistPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Keep track of which images failed to load
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  const handleImageError = (productId: string) => {
+    setFailedImages((prev) => ({
+      ...prev,
+      [productId]: true,
+    }));
+  };
+
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!session) {
@@ -25,12 +35,14 @@ const WishlistPage = () => {
 
       try {
         setLoading(true);
-        const response = await apiClient.get('/api/wishlist');
+        // Use local fetch to hit Next.js API route (localhost:3000) which handles session
+        const response = await fetch('/api/wishlist');
         if (!response.ok) {
           throw new Error('Failed to fetch wishlist');
         }
         const data = await response.json();
-        const extractedProducts = data.map((item: any) => item.product).filter(Boolean); // Ekstrak hanya bagian produk dan filter null/undefined
+        // API returns array of products directly, no need to map item.product
+        const extractedProducts = data;
         setWishlist(extractedProducts);
         setError(null);
       } catch (err: any) {
@@ -58,7 +70,7 @@ const WishlistPage = () => {
     setWishlist(newWishlist);
 
     try {
-      const response = await apiClient.delete(`/api/wishlist/${productId}`);
+      const response = await fetch(`/api/wishlist/${productId}`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error('Failed to remove item from wishlist');
       }
@@ -101,6 +113,8 @@ const WishlistPage = () => {
     );
   }
 
+
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <SectionTitle title="My Wishlist" path="Home | Wishlist" />
@@ -108,7 +122,7 @@ const WishlistPage = () => {
         <h1 className="text-3xl font-bold mb-6 text-center">My Wishlist</h1>
 
         {loading ? (
-           <div className="text-center">Loading...</div>
+          <div className="text-center">Loading...</div>
         ) : error ? (
           <div className="text-center text-red-500">{error}</div>
         ) : wishlist && wishlist.length === 0 ? (
@@ -143,16 +157,19 @@ const WishlistPage = () => {
                 <Link href={`/product/${product.slug}`} className="block">
                   <Image
                     src={
-                      product.mainImage && product.mainImage.startsWith('http') 
-                        ? product.mainImage 
-                        : product.mainImage 
-                          ? `/${product.mainImage.replace(/^\//, '')}` 
-                          : '/product_placeholder.jpg'
+                      failedImages[product.id]
+                        ? '/product_placeholder.jpg'
+                        : product.mainImage && product.mainImage.startsWith('http')
+                          ? product.mainImage
+                          : product.mainImage
+                            ? `/${product.mainImage.replace(/^\//, '')}`
+                            : '/product_placeholder.jpg'
                     }
                     alt={product.title}
                     width={300}
                     height={200}
                     className="w-full h-48 object-cover object-center transform transition-transform duration-300 hover:scale-105"
+                    onError={() => handleImageError(product.id)}
                   />
                 </Link>
                 <div className="p-4 flex-grow flex flex-col justify-between">

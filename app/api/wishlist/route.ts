@@ -5,7 +5,7 @@ import prisma from '@/utils/db';
 import { Session } from 'next-auth';
 
 // PENTING: Memastikan route ini selalu dijalankan di server (tidak di-cache static)
-export const dynamic = 'force-dynamic'; 
+export const dynamic = 'force-dynamic';
 
 interface AddToWishlistRequestBody {
   productId: string;
@@ -14,7 +14,7 @@ interface AddToWishlistRequestBody {
 // GET /api/wishlist — Fetch user's wishlist
 export async function GET(request: Request) {
   try {
-    const session: Session | null = await getServerSession(authOptions);
+    const session: Session | null = await getServerSession(authOptions as any);
 
     if (!session || !session.user || !session.user.id) {
       return new NextResponse('Unauthorized', { status: 401 });
@@ -34,23 +34,26 @@ export async function GET(request: Request) {
         slug: p.slug || '',
         title: p.title || '',
         mainImage: p.mainImage && p.mainImage.trim() !== ''
-            ? p.mainImage
-            : '/product_placeholder.jpg',
+          ? p.mainImage
+          : '/product_placeholder.jpg',
         price: Number(p.price ?? 0),
         stockAvailabillity: Number(p.inStock ?? 0), // Menambahkan info stock
       };
     });
 
     return NextResponse.json(products);
-  } catch (error) {
-    console.error('[WISHLIST_GET]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+  } catch (error: any) {
+    console.error('[WISHLIST_GET_ERROR]', error);
+    return new NextResponse(JSON.stringify({ error: error.message, stack: error.stack }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session: Session | null = await getServerSession(authOptions);
+    const session: Session | null = await getServerSession(authOptions as any);
 
     if (!session || !session.user || !session.user.id) {
       return new NextResponse('Unauthorized', { status: 401 });
@@ -90,8 +93,8 @@ export async function POST(request: Request) {
         slug: p.slug || '',
         title: p.title || '',
         mainImage: p.mainImage && p.mainImage.trim() !== ''
-            ? p.mainImage
-            : '/product_placeholder.jpg',
+          ? p.mainImage
+          : '/product_placeholder.jpg',
         price: Number(p.price ?? 0),
         stockAvailabillity: Number(p.inStock ?? 0),
       },

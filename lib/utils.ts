@@ -263,10 +263,12 @@ export const isValidCreditCardCVVOrCVC = (input: string) => {
 };
 
 export const formatPrice = (price: number) => {
+  /*
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
   }).format(price);
+  */
+  // Manual formatting to ensure "Rp. 15.000" format (with dot and space, no decimals)
+  return 'Rp. ' + new Intl.NumberFormat('id-ID').format(price);
 };

@@ -30,15 +30,15 @@ const Filters = () => {
   const [inputCategory, setInputCategory] = useState<InputCategory>({
     inStock: { text: 'instock', isChecked: false },
     outOfStock: { text: 'outofstock', isChecked: false },
-    priceFilter: { text: 'price', value: 3000 },
+    priceFilter: { text: 'price', value: 500000 },
     ratingFilter: { text: 'rating', value: 0 },
   });
 
-  const [tempMaxPrice, setTempMaxPrice] = useState<string>('3000'); // Changed to string
+  const [tempMaxPrice, setTempMaxPrice] = useState<string>('500000'); // Changed to string
 
   // Effect to initialize state from URL search params
   useEffect(() => {
-    const currentPrice = Number(searchParams.get('price')) || 3000;
+    const currentPrice = Number(searchParams.get('price')) || 500000;
     const currentRating = Number(searchParams.get('rating')) || 0;
     const currentInStock = searchParams.get('inStock') === 'true';
     const currentOutOfStock = searchParams.get('outOfStock') === 'true';
@@ -134,7 +134,7 @@ const Filters = () => {
           <input
             type="range"
             min={0}
-            max={3000}
+            max={500000}
             step={10}
             value={inputCategory.priceFilter.value}
             className="range range-primary dark:range-primary"
@@ -155,7 +155,7 @@ const Filters = () => {
             <input
               type="number"
               min={0}
-              max={3000}
+              max={500000}
               step={10}
               value={tempMaxPrice}
               onChange={(e) => setTempMaxPrice(e.target.value)}

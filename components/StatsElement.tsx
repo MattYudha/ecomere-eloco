@@ -8,6 +8,7 @@ interface StatsElementProps {
   isPositive: boolean;
   icon: React.ReactNode;
   loading: boolean;
+  period?: string;
 }
 
 const StatsElement: React.FC<StatsElementProps> = ({
@@ -17,6 +18,7 @@ const StatsElement: React.FC<StatsElementProps> = ({
   isPositive,
   icon,
   loading,
+  period = 'Since last month',
 }) => {
   const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
   const ChangeIcon = isPositive ? FaArrowUp : FaArrowDown;
@@ -52,7 +54,8 @@ const StatsElement: React.FC<StatsElementProps> = ({
           <p className="text-2xl font-bold">{value}</p>
           <p className={`${changeColor} flex gap-x-1 items-center text-sm`}>
             <ChangeIcon />
-            {change} Since last month
+            <ChangeIcon />
+            {change} {period}
           </p>
         </div>
       </div>

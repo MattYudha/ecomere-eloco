@@ -44,6 +44,11 @@ var google_1 = require("next-auth/providers/google");
 var bcryptjs_1 = require("bcryptjs");
 var db_1 = require("@/utils/db");
 var jsonwebtoken_1 = require("jsonwebtoken");
+/**
+ * NextAuth config (NextAuth v5 compatible)
+ * ❌ NO AuthOptions
+ * ❌ NO NextAuthOptions
+ */
 exports.authOptions = {
     adapter: prisma_adapter_1.PrismaAdapter(db_1["default"]),
     providers: [
@@ -60,7 +65,7 @@ exports.authOptions = {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                if (!credentials.email || !credentials.password) {
+                                if (!(credentials === null || credentials === void 0 ? void 0 : credentials.email) || !(credentials === null || credentials === void 0 ? void 0 : credentials.password)) {
                                     throw new Error('Email and password required');
                                 }
                                 return [4 /*yield*/, db_1["default"].user.findUnique({
@@ -96,14 +101,15 @@ exports.authOptions = {
         jwt: function (_a) {
             var token = _a.token, user = _a.user;
             return __awaiter(this, void 0, void 0, function () {
+                var u;
                 return __generator(this, function (_b) {
-                    // Generate accessToken HANYA SAAT LOGIN
                     if (user) {
-                        token.id = user.id;
-                        token.role = user.role;
+                        u = user;
+                        token.id = u.id;
+                        token.role = u.role;
                         token.accessToken = jsonwebtoken_1["default"].sign({
-                            id: user.id,
-                            role: user.role
+                            id: u.id,
+                            role: u.role
                         }, process.env.JWT_SECRET, { expiresIn: '1d' });
                     }
                     return [2 /*return*/, token];
@@ -118,7 +124,6 @@ exports.authOptions = {
                         session.user.id = token.id;
                         session.user.role = token.role;
                     }
-                    // Jangan assign token undefined
                     if (token.accessToken) {
                         session.accessToken = token.accessToken;
                     }

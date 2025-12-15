@@ -178,6 +178,17 @@ model bulk_upload_item {
   error         String?
 }
 
+model Visitor {
+  id        String   @id @default(uuid())
+  ip        String
+  userAgent String?
+  userId    String?  // Optional link to user if logged in
+  createdAt DateTime @default(now())
+
+  // We could add an index on createdAt for faster range queries
+  @@index([createdAt])
+}
+
 enum BulkUploadStatus {
   PENDING
   COMPLETED

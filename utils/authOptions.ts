@@ -1,14 +1,21 @@
-import type { Session, AuthOptions } from 'next-auth';
+import type { Session } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
+
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import GithubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+
 import bcrypt from 'bcryptjs';
 import prisma from '@/utils/db';
 import jwt from 'jsonwebtoken';
 
-export const authOptions: AuthOptions = {
+/**
+ * NextAuth config (NextAuth v5 compatible)
+ * ❌ NO AuthOptions
+ * ❌ NO NextAuthOptions
+ */
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
 
   providers: [
@@ -21,7 +28,7 @@ export const authOptions: AuthOptions = {
       },
 
       async authorize(credentials: any) {
-        if (!credentials.email || !credentials.password) {
+        if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password required');
         }
 
@@ -58,34 +65,34 @@ export const authOptions: AuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: any }) {
-      // Generate accessToken HANYA SAAT LOGIN
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        const u = user as any;
+
+        token.id = u.id;
+        token.role = u.role;
 
         token.accessToken = jwt.sign(
           {
-            id: user.id,
-            role: user.role,
+            id: u.id,
+            role: u.role,
           },
           process.env.JWT_SECRET!,
-          { expiresIn: '1d' }
+          { expiresIn: '1d' },
         );
       }
 
       return token;
     },
 
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
       }
 
-      // Jangan assign token undefined
-      if (token.accessToken) {
-        (session as any).accessToken = token.accessToken;
+      if ((token as any).accessToken) {
+        (session as any).accessToken = (token as any).accessToken;
       }
 
       return session;
@@ -99,7 +106,7 @@ export const authOptions: AuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 15 * 60, // 15 minutes
+    maxAge: 15 * 60,
   },
 
   jwt: {

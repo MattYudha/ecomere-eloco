@@ -1,4 +1,5 @@
 const prisma = require('../utils/db');
+// TODO: Migrate to ESM (import) when switching to Node.js native modules or check nanoid v5+ docs
 const { nanoid } = require('nanoid');
 const path = require('path');
 

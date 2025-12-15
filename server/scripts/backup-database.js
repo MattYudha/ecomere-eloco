@@ -1,3 +1,6 @@
+
+require('dotenv').config({ path: __dirname + '/../.env' });
+
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');

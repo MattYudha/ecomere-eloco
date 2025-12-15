@@ -30,7 +30,7 @@ interface SingleProductPageProps {
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   const { productSlug, id } = params;
 
-  const session: Session | null = await getServerSession(authOptions);
+  const session: Session | null = await getServerSession(authOptions as any);
   const accessToken = session?.accessToken as string | undefined;
 
   // sending API request for a single product with a given product slug
@@ -61,10 +61,10 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
         <div className="relative rounded-[2rem] backdrop-blur-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-white/10 dark:via-white/5 dark:to-transparent border border-white/30 dark:border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden">
           {/* Subtle gradient overlay for depth */}
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent pointer-events-none" />
-          
+
           <div className="relative p-8 lg:p-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-              
+
               {/* Left Column - Product Images */}
               <div className="space-y-6">
                 {/* Main Product Image - Floating Glass Card */}
@@ -73,7 +73,7 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                   <div className="relative rounded-3xl backdrop-blur-xl bg-white/25 dark:bg-white/10 border border-white/40 dark:border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-8 overflow-hidden">
                     {/* Inner glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
-                    
+
                     <div className="relative aspect-square flex items-center justify-center">
                       <Image
                         src={getImageUrl(product?.mainImage)}
@@ -112,13 +112,13 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
 
               {/* Right Column - Product Details */}
               <div className="space-y-8">
-                
+
                 {/* Title & Price - Premium Typography */}
                 <div className="space-y-4">
                   <h1 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-[#cb6112] via-[#e07d2e] to-[#cb6112] leading-tight tracking-tight">
                     {sanitize(product?.title)}
                   </h1>
-                  
+
                   <div className="inline-flex items-baseline gap-2 px-6 py-3 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-[#cb6112]/15 via-[#cb6112]/10 to-transparent border border-[#cb6112]/30 shadow-[0_4px_24px_rgba(203,97,18,0.15)]">
                     <span className="text-4xl font-bold text-[#cb6112]">
                       {formatPrice(product?.price)}
@@ -166,7 +166,7 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                     <div className="relative flex items-center gap-3 p-4 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-white/25 via-white/15 to-white/10 dark:from-white/15 dark:via-white/10 dark:to-white/5 border border-white/40 dark:border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3)] overflow-hidden">
                       {/* Embossed light effect */}
                       <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
-                      
+
                       <div className="relative flex items-center gap-3 flex-wrap">
                         {['bca', 'bri', 'dana', 'gopay', 'mandiri'].map((payment) => (
                           <div

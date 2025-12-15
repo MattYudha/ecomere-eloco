@@ -1,59 +1,47 @@
 import { create } from 'zustand';
+import { Product } from '@/components/ProductItem';
 
-export type State = {
-  wishlist: ProductInWishlist[];
+type State = {
+  wishlist: Product[];
   wishQuantity: number;
 };
 
-export type Actions = {
-  addToWishlist: (product: ProductInWishlist) => void;
+type Actions = {
+  addToWishlist: (product: Product) => void;
   removeFromWishlist: (id: string) => void;
-  setWishlist: (wishlist: ProductInWishlist[]) => void;
+  setWishlist: (wishlist: Product[]) => void;
 };
 
 export const useWishlistStore = create<State & Actions>((set) => ({
   wishlist: [],
   wishQuantity: 0,
-  addToWishlist: (product) => {
-    set((state) => {
-      const productInWishlist = state.wishlist.find(
-        (item) => product.id === item.id,
-      );
 
-      if (productInWishlist === undefined) {
-        return {
-          wishlist: [...state.wishlist, product],
-          wishQuantity: state.wishlist.length,
-        };
-      } else {
-        return {
-          wishlist: [...state.wishlist],
-          wishQuantity: state.wishlist.length,
-        };
-      }
-    });
-  },
-  removeFromWishlist: (id) => {
+  addToWishlist: (product) =>
     set((state) => {
-      const productInWishlist = state.wishlist.find((item) => id === item.id);
+      const exists = state.wishlist.some((item) => item.id === product.id);
 
-      if (productInWishlist === undefined) {
-        return {
-          wishlist: [...state.wishlist],
-          wishQuantity: state.wishlist.length,
-        };
-      } else {
-        const newWishlist = state.wishlist.filter((item) => item.id !== id);
-        return {
-          wishlist: [...newWishlist],
-          wishQuantity: state.wishlist.length,
-        };
+      if (exists) {
+        return state;
       }
-    });
-  },
-  setWishlist: (wishlist: ProductInWishlist[]) => {
+
+      const newWishlist = [...state.wishlist, product];
+      return {
+        wishlist: newWishlist,
+        wishQuantity: newWishlist.length,
+      };
+    }),
+
+  removeFromWishlist: (id) =>
     set((state) => {
-      return { wishlist: [...wishlist], wishQuantity: wishlist.length };
-    });
-  },
+      const newWishlist = state.wishlist.filter((item) => item.id !== id);
+      return {
+        wishlist: newWishlist,
+        wishQuantity: newWishlist.length,
+      };
+    }),
+
+  setWishlist: (wishlist) => ({
+    wishlist,
+    wishQuantity: wishlist.length,
+  }),
 }));

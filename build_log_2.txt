@@ -1,0 +1,81 @@
+  ▲ Next.js 14.2.35
+  - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+
+🌼   [35mdaisyUI[39m [2m4.12.24[22m
+├─ [32m✔︎[39m 2 themes added[2m		https://daisyui.com/docs/themes[22m
+╰─ [32m❤︎[39m [0mSupport daisyUI project:[0m	[2mhttps://opencollective.com/daisyui[22m
+
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+./components/Hero.tsx
+59:6  Warning: React Hook useEffect has a missing dependency: 'nextSlide'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/IntroducingSection.tsx
+50:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+158:7  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+163:7  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./lib/notification-api.ts
+58:1  Warning: Assign instance to a variable before exporting as module default  import/no-anonymous-default-export
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/28) ...
+   Generating static pages (7/28) 
+   Generating static pages (14/28) 
+   Generating static pages (21/28) 
+ ✓ Generating static pages (28/28)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                   Size     First Load JS
+┌ ○ /                                         360 B           331 kB
+├ ○ /_not-found                               148 B          87.7 kB
+├ ƒ /admin                                    1.04 kB         336 kB
+├ ƒ /admin/bulk-upload                        3.05 kB         338 kB
+├ ƒ /admin/categories                         1.49 kB         337 kB
+├ ƒ /admin/categories/[id]                    1.24 kB         337 kB
+├ ƒ /admin/categories/new                     1.34 kB         337 kB
+├ ƒ /admin/merchant                           2.94 kB         122 kB
+├ ƒ /admin/merchant/[id]                      3.79 kB         123 kB
+├ ƒ /admin/merchant/new                       3.25 kB         122 kB
+├ ƒ /admin/orders                             399 B           336 kB
+├ ƒ /admin/orders/[id]                        4.8 kB          121 kB
+├ ƒ /admin/products                           408 B           336 kB
+├ ƒ /admin/products/[id]                      2.67 kB         338 kB
+├ ƒ /admin/products/new                       2.41 kB         338 kB
+├ ƒ /admin/users                              1.66 kB         337 kB
+├ ƒ /admin/users/[id]                         1.39 kB         337 kB
+├ ƒ /admin/users/new                          1.35 kB         337 kB
+├ ƒ /api/auth/[...nextauth]                   0 B                0 B
+├ ƒ /api/categories                           0 B                0 B
+├ ○ /api/dashboard-stats                      0 B                0 B
+├ ƒ /api/merchants                            0 B                0 B
+├ ƒ /api/notifications/[userId]/unread-count  0 B                0 B
+├ ƒ /api/register                             0 B                0 B
+├ ƒ /api/wishlist                             0 B                0 B
+├ ƒ /api/wishlist/[productId]                 0 B                0 B
+├ ○ /cart                                     1.74 kB         333 kB
+├ ○ /checkout                                 4.93 kB         340 kB
+├ ○ /login                                    4.57 kB         340 kB
+├ ○ /notification                             5.64 kB         115 kB
+├ ○ /notifications                            5.61 kB         115 kB
+├ ƒ /product/[productSlug]                    360 B           331 kB
+├ ○ /register                                 1.87 kB         337 kB
+├ ƒ /search                                   1.25 kB         337 kB
+├ ƒ /shop/[[...slug]]                         1.47 kB         337 kB
+└ ○ /wishlist                                 1.93 kB         337 kB
++ First Load JS shared by all                 87.5 kB
+  ├ chunks/2117-b2729c195ac8f417.js           31.9 kB
+  ├ chunks/fd9d1056-08847dea39ffa69b.js       53.6 kB
+  └ other shared chunks (total)               1.99 kB
+
+
+ƒ Middleware                                  48.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

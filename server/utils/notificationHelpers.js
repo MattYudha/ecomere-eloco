@@ -2,7 +2,8 @@ const { PrismaClient } = require('@prisma/client');
 const { sendMail } = require('./mail.js');
 const fs = require('fs').promises;
 const path = require('path');
-const { formatPrice } = require('../../lib/utils.js');
+const { formatPrice } = require('./format.js');
+const { logDebug } = require('../utils/debug');
 
 const prisma = new PrismaClient();
 
@@ -32,33 +33,33 @@ const createOrderUpdateNotification = async (
   try {
     const statusMessages = {
       pending: {
-        title: 'Order Received',
-        message: `Thank you! Your order #${orderId} has been received and is being processed.`,
+        title: 'Pesanan Diterima',
+        message: `Terima kasih! Pesanan Anda #${orderId} telah diterima dan sedang diproses.`,
         priority: 'NORMAL',
       },
       confirmed: {
-        title: 'Order Confirmed',
+        title: 'Pesanan Dikonfirmasi',
         message: `Pesanan Anda dengan nomor #${orderId} telah berhasil dikonfirmasi. Kami akan segera menghubungi Anda untuk proses selanjutnya dan mempersiapkan pengiriman.`,
         priority: 'HIGH',
       },
       processing: {
-        title: 'Order Processing',
-        message: `Your order #${orderId} is currently being processed and will ship soon.`,
+        title: 'Pesanan Diproses',
+        message: `Pesanan Anda #${orderId} sedang diproses dan akan segera dikirim.`,
         priority: 'NORMAL',
       },
       shipped: {
-        title: 'Order Shipped',
-        message: `Excellent! Your order #${orderId} has been shipped and is on its way to you.`,
+        title: 'Pesanan Dikirim',
+        message: `Kabar baik! Pesanan Anda #${orderId} telah dikirim dan sedang dalam perjalanan.`,
         priority: 'HIGH',
       },
       delivered: {
-        title: 'Order Delivered',
-        message: `Your order #${orderId} has been successfully delivered. We hope you love your new items!`,
+        title: 'Pesanan Diterima',
+        message: `Pesanan Anda #${orderId} telah berhasil dikirim. Kami harap Anda menyukai barang baru Anda!`,
         priority: 'HIGH',
       },
       cancelled: {
-        title: 'Order Cancelled',
-        message: `Your order #${orderId} has been cancelled. If you have any questions, please contact our support.`,
+        title: 'Pesanan Dibatalkan',
+        message: `Pesanan Anda #${orderId} telah dibatalkan. Jika Anda memiliki pertanyaan, silakan hubungi dukungan kami.`,
         priority: 'URGENT',
       },
     };
@@ -130,11 +131,13 @@ const createOrderUpdateNotification = async (
       }
     }
 
+    logDebug(`✅ Notification created for user ${userId}: ${statusInfo.title}`, { notificationId: notification.id });
     console.log(
       `✅ Notification created for user ${userId}: ${statusInfo.title}`,
     );
     return notification;
   } catch (error) {
+    logDebug('❌ Error creating order notification helper', error);
     console.error('❌ Error creating order notification:', error);
     throw error;
   }

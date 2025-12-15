@@ -4,6 +4,8 @@ const { validateOrderData, ValidationError } = require('../utils/validation');
 const {
   createOrderUpdateNotification,
 } = require('../utils/notificationHelpers');
+const { logDebug } = require('../utils/debug');
+
 
 async function createCustomerOrder(request, response) {
   try {
@@ -21,6 +23,11 @@ async function createCustomerOrder(request, response) {
 
     // Server-side validation
     const validation = validateOrderData(request.body);
+    logDebug('Order validation passed', {
+      isValid: validation.isValid,
+      email: validation.validatedData.email,
+      userIdFromBody: request.body.userId
+    });
     console.log('Validation result:', validation);
 
     if (!validation.isValid) {
@@ -98,44 +105,57 @@ async function createCustomerOrder(request, response) {
 
       // First, try to use userId if provided (from logged-in user)
       if (request.body.userId) {
+        logDebug(`🔍 Using provided userId: ${request.body.userId}`);
         console.log(`🔍 Using provided userId: ${request.body.userId}`);
         user = await prisma.user.findUnique({
           where: { id: request.body.userId },
         });
         if (user) {
+          logDebug(`✅ Found user by ID: ${user.email}`);
           console.log(`✅ Found user by ID: ${user.email}`);
         } else {
+          logDebug(`❌ User not found with ID: ${request.body.userId}`);
           console.log(`❌ User not found with ID: ${request.body.userId}`);
         }
       }
 
       // Fallback: search by email if no userId or user not found
       if (!user) {
+        logDebug(`🔍 Searching user by email: ${validatedData.email}`);
         console.log(`🔍 Searching user by email: ${validatedData.email}`);
         user = await prisma.user.findUnique({
           where: { email: validatedData.email },
         });
         if (user) {
+          logDebug(`✅ Found user by email: ${user.email} (ID: ${user.id})`);
           console.log(`✅ Found user by email: ${user.email}`);
         }
       }
 
       if (user) {
+        logDebug('Attempting to create notification', {
+          userId: user.id,
+          status: validatedData.status || 'pending',
+          orderId: corder.id
+        });
         await createOrderUpdateNotification(
           user.id,
-          'confirmed',
+          validatedData.status || 'pending',
           corder.id,
           validatedData.total,
         );
+        logDebug(`📧 Order confirmation notification sent to user: ${user.email}`);
         console.log(
           `📧 Order confirmation notification sent to user: ${user.email}`,
         );
       } else {
+        logDebug(`ℹ️  No user account found for email: ${validatedData.email} - notification skipped`);
         console.log(
           `ℹ️  No user account found for email: ${validatedData.email} - notification skipped`,
         );
       }
     } catch (notificationError) {
+      logDebug('❌ Failed to create order notification', notificationError);
       console.error(
         '❌ Failed to create order notification:',
         notificationError,

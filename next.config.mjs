@@ -13,6 +13,12 @@ const nextConfig = {
         port: backendUrl ? backendUrl.port : '3001', // Corrected port
         pathname: '/**', // Allow all paths
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

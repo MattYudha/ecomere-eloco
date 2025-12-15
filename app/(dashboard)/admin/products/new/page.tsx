@@ -144,32 +144,52 @@ const AddNewProduct = () => {
   const fetchMerchants = useCallback(async () => {
     try {
       const res = await apiClient.get('/api/merchants');
+      if (!res.ok) {
+        throw new Error('Failed to fetch merchants');
+      }
       const data: Merchant[] = await res.json();
-      setMerchants(data || []);
-      if (data.length > 0) {
-        setProduct((prev) => ({
-          ...prev,
-          merchantId: prev.merchantId || data[0].id,
-        }));
+      if (Array.isArray(data)) {
+        setMerchants(data);
+        if (data.length > 0) {
+          setProduct((prev) => ({
+            ...prev,
+            merchantId: prev.merchantId || data[0].id,
+          }));
+        }
+      } else {
+        console.error('Merchants data is not an array:', data);
+        setMerchants([]);
       }
     } catch (e) {
+      console.error(e);
       toast.error('Failed to load merchants');
+      setMerchants([]);
     }
   }, []);
 
   const fetchCategories = useCallback(async () => {
     try {
       const res = await apiClient.get(`/api/categories`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch categories');
+      }
       const data: Category[] = await res.json();
-      setCategories(data);
-      if (data.length > 0) {
-        setProduct((prev) => ({
-          ...prev,
-          categoryId: prev.categoryId || data[0].id,
-        }));
+      if (Array.isArray(data)) {
+        setCategories(data);
+        if (data.length > 0) {
+          setProduct((prev) => ({
+            ...prev,
+            categoryId: prev.categoryId || data[0].id,
+          }));
+        }
+      } else {
+        console.error('Categories data is not an array:', data);
+        setCategories([]);
       }
     } catch (e) {
+      console.error(e);
       toast.error('Failed to load categories');
+      setCategories([]);
     }
   }, []);
 

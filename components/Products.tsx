@@ -25,7 +25,7 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      
+
       // getting all data from URL slug and preparing everything for sending GET request
       const inStockNum = inStock === 'true' ? 1 : 0;
       const outOfStockNum = outOfStock === 'true' ? 1 : 0;
@@ -42,15 +42,12 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
 
       try {
         // Outer try block starts here
-        const apiUrl = `/api/products?filters[price][$lte]=${
-          price || 3000
-        }&filters[rating][$gte]=${
-          Number(rating) || 0
-        }&${stockFilter ? stockFilter + '&' : ''}${
-          (params?.slug?.length ?? 0) > 0
+        const apiUrl = `/api/products?filters[price][$lte]=${price || 500000
+          }&filters[rating][$gte]=${Number(rating) || 0
+          }&${stockFilter ? stockFilter + '&' : ''}${(params?.slug?.length ?? 0) > 0
             ? `filters[category][$equals]=${params?.slug ? params.slug[0] : ''}&`
             : ''
-        }sort=${sortBy}&page=${currentPage}`;
+          }sort=${sortBy}&page=${currentPage}`;
 
         console.log('Fetching products with URL:', apiUrl); // DEBUG LOG
         const response = await apiClient.get(apiUrl);
