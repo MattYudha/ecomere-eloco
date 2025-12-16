@@ -10,7 +10,16 @@ import apiClient from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 
 const CheckoutPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      toast.error('Please login to checkout');
+      router.push('/login?callbackUrl=/checkout');
+    }
+  }, [status, router]);
+
   const [checkoutForm, setCheckoutForm] = useState({
     name: '',
     lastname: '',
@@ -27,7 +36,7 @@ const CheckoutPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { products, total, clearCart } = useProductStore();
-  const router = useRouter();
+  // The router declaration is already above, so no need to redeclare here.
 
   // Add validation functions that match server requirements
   const validateForm = () => {

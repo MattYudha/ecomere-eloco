@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, Suspense } from 'react';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
+import Link from 'next/link';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -59,6 +60,7 @@ const LoginForm = () => {
     } else {
       setError('');
       toast.success('Successful login');
+      router.refresh(); // Ensure session cookies are applied
       router.replace('/'); // Redirect to dashboard on successful login
     }
   };
@@ -359,12 +361,12 @@ const LoginForm = () => {
               {/* Sign Up Link */}
               <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
                 Don&apos;t have an account?{' '}
-                <a
+                <Link
                   href="/register"
                   className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
                 >
                   Sign up now
-                </a>
+                </Link>
               </p>
             </div>
           </div>
