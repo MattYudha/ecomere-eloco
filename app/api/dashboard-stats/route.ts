@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/utils/db';
+export const dynamic = 'force-dynamic';
 
 // Helper function to calculate percentage change
 const calculatePercentageChange = (current: number, previous: number) => {
@@ -19,7 +20,7 @@ async function getDashboardStats() {
 
   const twoDaysAgo = new Date(today);
   twoDaysAgo.setDate(today.getDate() - 2);
-  
+
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 6);
   sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -147,7 +148,7 @@ async function getDashboardStats() {
     },
     dailySales: dailySalesData,
   };
-  
+
   return stats;
 }
 

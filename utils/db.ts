@@ -1,23 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
-  // Validate that DATABASE_URL is present
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is required');
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    console.warn(
+      '⚠️ DATABASE_URL is missing. Prisma Client will be initialized but may fail on queries.',
+    );
+    return new PrismaClient();
   }
 
-  // Parse DATABASE_URL to check SSL configuration
-  const databaseUrl = process.env.DATABASE_URL;
-  const url = new URL(databaseUrl);
+  try {
+    const url = new URL(databaseUrl);
 
-  // Log SSL configuration for debugging
-  if (process.env.NODE_ENV === 'development') {
-    console.log(
-      ` Database connection: ${url.protocol}//${url.hostname}:${url.port || '3306'}`,
-    );
-    console.log(
-      `🔒 SSL Mode: ${url.searchParams.get('sslmode') || 'not specified'}`,
-    );
+    // Log SSL configuration for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        ` Database connection: ${url.protocol}//${url.hostname}:${url.port || '3306'}`,
+      );
+      console.log(
+        `🔒 SSL Mode: ${url.searchParams.get('sslmode') || 'not specified'}`,
+      );
+    }
+  } catch (error) {
+    console.warn('⚠️ Failed to parse DATABASE_URL for logging');
   }
 
   return new PrismaClient({
