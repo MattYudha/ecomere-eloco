@@ -8,6 +8,12 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: 'eloco.up.railway.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
         protocol: backendUrl ? backendUrl.protocol.replace(':', '') : 'http',
         hostname: backendUrl ? backendUrl.hostname : 'localhost',
         port: backendUrl ? backendUrl.port : '3001', // Corrected port
