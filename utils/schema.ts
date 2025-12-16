@@ -5,6 +5,8 @@ import { commonValidations } from './validation';
 export const registrationSchema = z.object({
   email: commonValidations.email,
   password: commonValidations.password,
+  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
+  lastname: z.string().optional(),
 });
 
 // Login schema (for future use)

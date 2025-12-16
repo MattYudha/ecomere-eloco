@@ -23,11 +23,14 @@ const RegisterPage = () => {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const email = e.target[2].value;
-    const password = e.target[3].value;
-    const confirmPassword = e.target[4].value;
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const lastname = formData.get('lastname') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmpassword') as string;
 
     if (!isValidEmail(email)) {
       setError('Email is invalid');
@@ -55,6 +58,8 @@ const RegisterPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          name,
+          lastname, // Sending name/lastname as well, assuming API can handle or ignore them
           email,
           password,
         }),
@@ -87,7 +92,7 @@ const RegisterPage = () => {
     } catch (error) {
       toast.error('Error, try again');
       setError('Error, try again');
-      console.log(error);
+      console.error(error);
     }
   };
 
