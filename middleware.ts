@@ -1,28 +1,41 @@
 import { withAuth } from 'next-auth/middleware';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export default withAuth(
   async function middleware(req) {
-    // Existing authentication logic for admin routes
-    if (req.nextUrl.pathname.startsWith('/admin')) {
-      if (req.nextauth.token?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-    }
+    // Custom logic inside the middleware function if needed
+    // Note: The redirection logic is primarily handled by the 'authorized' callback below
+    // and the 'pages' config.
 
-    // For all other cases, continue as normal
+    // Allow request to proceed
     return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // This callback determines if the user is authorized to access the page.
-        // If accessing an admin route, token must exist and have 'admin' role.
-        if (req.nextUrl.pathname.startsWith('/admin')) {
+        const { pathname } = req.nextUrl;
+
+        // 1. Admin Routes Protection
+        // Must be authenticated AND have 'admin' role
+        if (pathname.startsWith('/admin')) {
           return !!token && token.role === 'admin';
         }
 
-        // For any other route, access is always granted (public pages).
+        // 2. Authenticated User Routes Protection
+        // Must be authenticated
+        const clientProtectedPaths = ['/dashboard', '/profile', '/orders'];
+        const isClientProtected = clientProtectedPaths.some((route) =>
+          pathname.startsWith(route),
+        );
+
+        if (isClientProtected) {
+          return !!token;
+        }
+
+        // 3. Public Routes (Default)
+        // All other routes are public.
+        // Explicitly ensuring typical public paths are openly accessible:
+        // /, /login, /register, /product/*, /shop/*, /search, /cart, /checkout
         return true;
       },
     },
