@@ -1,7 +1,6 @@
-import * as NextAuthModule from 'next-auth';
+import NextAuth from 'next-auth/next';
 import { authOptions } from '@/utils/authOptions';
 
-// @ts-ignore - This is a workaround for a likely bug in experimental Next.js versions
-const handler = NextAuthModule.default(authOptions);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

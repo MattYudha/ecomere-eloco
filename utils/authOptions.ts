@@ -1,6 +1,3 @@
-import type { Session } from 'next-auth';
-import type { JWT } from 'next-auth/jwt';
-
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import GithubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -10,13 +7,10 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/utils/db';
 import jwt from 'jsonwebtoken';
 
-/**
- * NextAuth config (NextAuth v5 compatible)
- * ❌ NO AuthOptions
- * ❌ NO NextAuthOptions
- */
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
+  // Trust the host header on Railway to prevent redirect issues
+  trustHost: true,
 
   providers: [
     CredentialsProvider({
@@ -105,7 +99,7 @@ export const authOptions = {
   },
 
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 15 * 60,
   },
 
@@ -114,5 +108,5 @@ export const authOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-  debug: false,
+  debug: process.env.NODE_ENV === 'development',
 };
