@@ -14,7 +14,7 @@ router.route('/').get(getAllUsers).post(createUser);
 
 const { getMe } = require('../controllers/auth');
 
-// 🔴 ADD THIS: explicit OPTIONS handler
+// Explicit preflight handler for profile (safety net)
 router.options('/profile', (req, res) => {
   return res.sendStatus(204);
 });

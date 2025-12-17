@@ -49,10 +49,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 /* =========================
-   🔴 CORS (FIXED & SAFE)
+   CORS Configuration
    ========================= */
 
-// Debug incoming requests (keep – useful in prod)
+// Debug incoming requests (useful for monitoring origins)
 app.use((req, res, next) => {
   console.log(
     `[Incoming] ${req.method} | Origin: ${req.headers.origin || 'none'} | ${req.url}`
@@ -82,7 +82,6 @@ const corsOptions = {
     }
 
     console.warn(`[CORS BLOCKED] Origin: ${origin}`);
-    // IMPORTANT: must return ERROR, not false
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -91,11 +90,12 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// APPLY CORS FIRST
+// Apply CORS globally
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// 🔴 BYPASS PREFLIGHT FROM ALL OTHER MIDDLEWARES (CRITICAL)
+// GLOBAL PREFLIGHT BYPASS
+// Ensure OPTIONS requests return 204 immediately, bypassing all subsequent middleware (auth, etc.)
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
@@ -104,7 +104,7 @@ app.use((req, res, next) => {
 });
 
 /* =========================
-   🔵 Core Middlewares
+   Core Middlewares
    ========================= */
 
 app.use(addRequestId);
@@ -120,7 +120,7 @@ app.use(cookieParser());
 app.use(fileUpload());
 
 /* =========================
-   🟡 Rate-limited Routes
+   Rate-limited Routes
    ========================= */
 
 app.use('/api/users', userManagementLimiter);
@@ -134,7 +134,7 @@ app.use('/api/bulk-upload', uploadLimiter);
 app.use('/api/users/email', authLimiter);
 
 /* =========================
-   🟢 API Routes
+   API Routes
    ========================= */
 
 app.use('/api/products', productsRouter);
@@ -154,7 +154,7 @@ app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 
 /* =========================
-   🔍 Health & Info
+   Health & Info
    ========================= */
 
 app.get('/health', (req, res) => {
@@ -166,7 +166,7 @@ app.get('/health', (req, res) => {
 });
 
 /* =========================
-   🔴 404 & Error Handling
+   404 & Error Handling
    ========================= */
 
 app.use('*', (req, res) => {
@@ -182,7 +182,7 @@ app.use((err, req, res, next) => {
 });
 
 /* =========================
-   🚀 Start Server
+   Start Server
    ========================= */
 
 const PORT = process.env.PORT || 3001;
