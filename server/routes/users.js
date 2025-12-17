@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = express.Router();
 
 const {
@@ -15,7 +14,13 @@ router.route('/').get(getAllUsers).post(createUser);
 
 const { getMe } = require('../controllers/auth');
 
-router.get('/profile', getMe); // Must be before /:id capture
+// 🔴 ADD THIS: explicit OPTIONS handler
+router.options('/profile', (req, res) => {
+  return res.sendStatus(204);
+});
+
+// Must be before /:id capture
+router.get('/profile', getMe);
 
 router.route('/:id').get(getUser).put(updateUser).delete(deleteUser);
 
