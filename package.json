@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
-    "@prisma/client": "6.19.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "@types/bcryptjs": "^2.4.6",
@@ -58,7 +57,6 @@
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.35",
     "postcss": "^8.4.38",
-    "prisma": "6.19.0",
     "tailwindcss": "^3.4.4",
     "typescript": "5.4.5"
   }

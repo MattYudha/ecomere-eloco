@@ -3,7 +3,7 @@ import { Inter, Forum, DM_Sans } from 'next/font/google';
 import './globals.css';
 import 'svgmap/dist/svgMap.min.css';
 import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
-import NextAuthProvider from '@/utils/SessionProvider';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Providers from '@/Providers';
@@ -40,23 +40,21 @@ export default function RootLayout({
         className={`${inter.className} ${forum.variable} ${dm_sans.variable}`}
       >
         {/* FIX: Jangan pakai getServerSession di RootLayout, penyebab infinite loop */}
-        <NextAuthProvider>
-          <ThemeProvider>
-            <Providers>
-              <SessionTimeoutWrapper />
+        <ThemeProvider>
+          <Providers>
+            <SessionTimeoutWrapper />
 
-              <Header />
+            <Header />
 
-              <ClientLayoutWrapper>
-                <main className="pt-[80px] relative z-10 mb-20 min-h-screen">
-                  {children}
-                </main>
-              </ClientLayoutWrapper>
+            <ClientLayoutWrapper>
+              <main className="pt-[80px] relative z-10 mb-20 min-h-screen">
+                {children}
+              </main>
+            </ClientLayoutWrapper>
 
-              <Footer />
-            </Providers>
-          </ThemeProvider>
-        </NextAuthProvider>
+            <Footer />
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
