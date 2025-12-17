@@ -184,12 +184,10 @@ app.use((err, req, res, next) => {
 // =========================
 // Start Server (RAILWAY FINAL FIX)
 // =========================
-const PORT = process.env.PORT;
-
-if (!PORT) {
-  console.error('❌ PORT is not defined by Railway');
-  process.exit(1);
-}
+// =========================
+// Start Server (RAILWAY FINAL FIX)
+// =========================
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
