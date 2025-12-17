@@ -191,7 +191,7 @@ if (!PORT) {
   process.exit(1);
 }
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log('CORS, rate limiting, logging ENABLED');
 });
