@@ -46,38 +46,28 @@ const { handleServerError } = require('./utils/errorHandler');
 
 const app = express();
 
-// Trust proxy for accurate IP addresses
+// Trust proxy
 app.set('trust proxy', 1);
 
-// Add request ID to all requests
-app.use(addRequestId);
+// --- MANDATORY CORS AUDIT FIX ---
+// 1. Logging Middleware for Debugging
+app.use((req, res, next) => {
+  console.log(`[Incoming Request] Method: ${req.method} | Origin: ${req.headers.origin} | URL: ${req.url}`);
+  next();
+});
 
-// Security logging (check for suspicious patterns)
-app.use(securityLogger);
-
-// Track visitors
-app.use(trackVisitor);
-
-// Standard request logging
-app.use(requestLogger);
-
-// Error logging (only logs 4xx and 5xx responses)
-app.use(errorLogger);
-
+// 2. CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'https://eloco.vercel.app',
-  'https://elloco.vercel.app', // Based on screenshot
+  'https://elloco.vercel.app',
   process.env.NEXTAUTH_URL,
   process.env.FRONTEND_URL,
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
-// CORS configuration with origin validation
-// CORS configuration with origin validation
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
     if (
@@ -87,30 +77,42 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    if (
-      process.env.NODE_ENV === 'development' &&
-      origin.startsWith('http://localhost:')
-    ) {
-      return callback(null, true);
-    }
-
-    // Reject other origins
-    const msg =
-      'The CORS policy for this site does not allow access from the specified Origin.';
+    console.log(`[CORS Blocked] Origin: ${origin}`);
+    // Instead of error, returning false might be safer for some browsers, but user asked for Error.
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
     return callback(new Error(msg), false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true, // Allow cookies and authorization headers
+  credentials: true,
 };
 
-// Apply general rate limiting to all routes
+// 3. Apply CORS globally BEFORE everything else
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight
+
+// --------------------------------
+
+// Add request ID
+app.use(addRequestId);
+
+// Security logging
+app.use(securityLogger);
+
+// Track visitors
+app.use(trackVisitor);
+
+// Standard request logging
+app.use(requestLogger);
+
+// Error logging
+app.use(errorLogger);
+
+// Apply general rate limiting
 app.use(generalLimiter);
 
 app.use(express.json());
 app.use(require('cookie-parser')());
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
 app.use(fileUpload());
 
 // Apply specific rate limiters to different route groups
