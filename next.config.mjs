@@ -5,6 +5,7 @@ const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL
   : null;
 
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
