@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -46,16 +47,10 @@ const LoginForm = () => {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      // Use apiClient to ensure consistent URL handling (proxy in dev)
+      const res = await apiClient.post('/api/auth/login', {
+        email,
+        password,
       });
 
       const data = await res.json();

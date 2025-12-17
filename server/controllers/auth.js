@@ -7,14 +7,26 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-me-in-prod'
 const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 
 // Helper to set cookie
-const setCookie = (res, token) => {
+const setCookie = (req, res, token) => {
+    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+
     const options = {
         httpOnly: true,
-        secure: true, // Always true for cross-site (Railway -> Vercel)
-        sameSite: 'none', // Required for cross-site
+        secure: isProduction, // True in Prod (HTTPS), False in Dev (HTTP or Localhost)
+        sameSite: isProduction ? 'none' : 'lax', // None for cross-site (Prod), Lax for Localhost
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: '/',
     };
+
+    // DEBUG: Print cookie settings
+    console.log('[Auth] Setting Cookie:', {
+        hostname: req.hostname,
+        NODE_ENV: process.env.NODE_ENV,
+        isProduction,
+        options
+    });
+
     res.cookie('eloco_session', token, options);
 };
 
@@ -61,7 +73,7 @@ const register = asyncHandler(async (req, res) => {
         expiresIn: JWT_EXPIRE,
     });
 
-    setCookie(res, token);
+    setCookie(req, res, token);
 
     res.status(201).json(excludePassword(user));
 });
@@ -97,7 +109,7 @@ const login = asyncHandler(async (req, res) => {
         expiresIn: JWT_EXPIRE,
     });
 
-    setCookie(res, token);
+    setCookie(req, res, token);
 
     res.status(200).json(excludePassword(user));
 });
@@ -106,11 +118,14 @@ const login = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/logout
 // @access  Private
 const logout = asyncHandler(async (req, res) => {
+    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+
     res.cookie('eloco_session', 'none', {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
     });
 
     res.status(200).json({ success: true, data: {} });
@@ -121,6 +136,10 @@ const logout = asyncHandler(async (req, res) => {
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
     let token;
+
+    // DEBUG: Check incoming cookies
+    console.log('[Auth] getMe - Cookies received:', req.cookies);
+    console.log('[Auth] getMe - Headers received:', req.headers.authorization ? 'Has Auth Header' : 'No Auth Header');
 
     if (req.cookies.eloco_session) {
         token = req.cookies.eloco_session;

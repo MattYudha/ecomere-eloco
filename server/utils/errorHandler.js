@@ -139,8 +139,13 @@ const handleServerError = (error, res, context = '') => {
 const asyncHandler = (fn) => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch((error) => {
-      console.error('🔥 Async Handler Error:', error);
-      console.error('Stack:', error.stack);
+      // Only log "🔥" if it's NOT an operational error (i.e. real crash)
+      // or if it IS operational but we want to debug specific codes (usually 401 is noise)
+      if (!error.isOperational || error.statusCode >= 500) {
+        console.error('🔥 Async Handler Error:', error);
+        console.error('Stack:', error.stack);
+      }
+
       handleServerError(error, res, `${req.method} ${req.path}`);
     });
   };
