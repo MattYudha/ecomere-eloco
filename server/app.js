@@ -46,20 +46,25 @@ const {
 const { handleServerError } = require('./utils/errorHandler');
 
 const app = express();
+
+// =========================
+// Trust Proxy (Railway)
+// =========================
 app.set('trust proxy', 1);
 
-/* =========================
-   CORS Configuration
-   ========================= */
-
-// Debug incoming requests (useful for monitoring origins)
-app.use((req, res, next) => {
-  console.log(
-    `[Incoming] ${req.method} | Origin: ${req.headers.origin || 'none'} | ${req.url}`
-  );
-  next();
+// =========================
+// Health Check (PALING ATAS)
+// =========================
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+  });
 });
 
+// =========================
+// CORS Configuration
+// =========================
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
@@ -74,10 +79,7 @@ const corsOptions = {
     // Allow non-browser requests (curl, server-to-server)
     if (!origin) return callback(null, true);
 
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app')
-    ) {
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
 
@@ -91,11 +93,9 @@ const corsOptions = {
 };
 
 // Apply CORS globally
-// Apply CORS globally
 app.use(cors(corsOptions));
 
-// GLOBAL PREFLIGHT BYPASS
-// Ensure OPTIONS requests return 204 immediately, bypassing all subsequent middleware (auth, etc.)
+// Preflight short-circuit (AMAN, tanpa wildcard route)
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
@@ -103,10 +103,9 @@ app.use((req, res, next) => {
   next();
 });
 
-/* =========================
-   Core Middlewares
-   ========================= */
-
+// =========================
+// Core Middlewares
+// =========================
 app.use(addRequestId);
 app.use(securityLogger);
 app.use(trackVisitor);
@@ -119,10 +118,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload());
 
-/* =========================
-   Rate-limited Routes
-   ========================= */
-
+// =========================
+// Rate-limited Routes
+// =========================
 app.use('/api/users', userManagementLimiter);
 app.use('/api/search', searchLimiter);
 app.use('/api/orders', orderLimiter);
@@ -133,10 +131,9 @@ app.use('/api/wishlist', wishlistLimiter);
 app.use('/api/bulk-upload', uploadLimiter);
 app.use('/api/users/email', authLimiter);
 
-/* =========================
-   API Routes
-   ========================= */
-
+// =========================
+// API Routes
+// =========================
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/images', productImagesRouter);
@@ -153,26 +150,9 @@ app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 
-/* =========================
-   Health & Info
-   ========================= */
-
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    requestId: req.reqId,
-  });
-});
-
-/* =========================
-   404 & Error Handling
-   ========================= */
-
-// 404 & Error Handling
 // =========================
-
-// Express 5 fix: Use pathless middleware for catch-all instead of '*'
+// 404 Handler (NO wildcard path)
+// =========================
 app.use((req, res) => {
   res.status(404).json({
     error: 'Route not found',
@@ -180,17 +160,19 @@ app.use((req, res) => {
   });
 });
 
-// Final error handler (OPTIONS already bypassed)
+// =========================
+// Final Error Handler
+// =========================
 app.use((err, req, res, next) => {
   handleServerError(err, res, `${req.method} ${req.path}`);
 });
 
-/* =========================
-   Start Server
-   ========================= */
-
+// =========================
+// Start Server (Railway SAFE)
+// =========================
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log('CORS, rate limiting, logging ENABLED');
 });
