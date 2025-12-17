@@ -1,11 +1,30 @@
+'use strict';
+
 const express = require('express');
 const path = require('path');
 
 // =========================
-// Environment
+// Environment (LOCAL ONLY)
 // =========================
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Railway inject env via "Variables", bukan dari .env file.
+// Jadi .env hanya dibaca saat dev/local.
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '.env') });
+  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+}
+
+// =========================
+// Crash visibility (biar kelihatan di Railway logs)
+// =========================
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT_EXCEPTION]', err);
+  // optional: process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('[UNHANDLED_REJECTION]', err);
+  // optional: process.exit(1);
+});
 
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
@@ -86,13 +105,10 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow non-browser / server-to-server
+    // allow non-browser / server-to-server (curl, health checks, etc.)
     if (!origin) return callback(null, true);
 
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app')
-    ) {
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
 
@@ -101,19 +117,23 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'X-Request-Id',
+  ],
   optionsSuccessStatus: 204,
 };
 
+// CORS harus sebelum routes
 app.use(cors(corsOptions));
 
 // =========================
-// OPTIONS short-circuit (Express 5 SAFE)
+// OPTIONS short-circuit
 // =========================
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
 
@@ -128,9 +148,17 @@ app.use(errorLogger);
 
 app.use(generalLimiter);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
-app.use(fileUpload());
+
+// upload: pilih limit biar aman
+app.use(
+  fileUpload({
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    abortOnLimit: true,
+    createParentPath: true,
+  })
+);
 
 // =========================
 // Rate Limited Groups
@@ -165,7 +193,7 @@ app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 
 // =========================
-// 404 Handler (NO wildcard)
+// 404 Handler
 // =========================
 app.use((req, res) => {
   res.status(404).json({
@@ -182,14 +210,21 @@ app.use((err, req, res, next) => {
 });
 
 // =========================
-// Start Server (RAILWAY FINAL FIX)
+// Start Server (RAILWAY FIX)
 // =========================
-// =========================
-// Start Server (RAILWAY FINAL FIX)
-// =========================
-const PORT = process.env.PORT || 3001;
+// Railway wajib pakai PORT dari environment. Jangan fallback hardcode saat production.
+const isProd = process.env.NODE_ENV === 'production';
 
-app.listen(PORT, () => {
+const PORT = isProd ? Number(process.env.PORT) : Number(process.env.PORT || 3001);
+
+if (isProd && !PORT) {
+  // Ini penting supaya kamu langsung tahu problem env di Railway logs
+  throw new Error('PORT environment variable is not set in production');
+}
+
+// bind ke 0.0.0.0 supaya accessible via Railway proxy
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log('CORS, rate limiting, logging ENABLED');
+  console.log(`NODE_ENV=${process.env.NODE_ENV || 'undefined'}`);
 });
