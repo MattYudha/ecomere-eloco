@@ -17,6 +17,7 @@
     "@types/react-slick": "^0.23.13",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dompurify": "^3.0.8",
     "dotenv": "^17.2.3",
