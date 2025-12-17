@@ -91,8 +91,13 @@ const corsOptions = {
 };
 
 // Apply CORS globally
+// Apply CORS globally
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// Express 5 fix: '*' is not supported, use '(.*)' or avoid it.
+// However, since we have invalid options requests handled below manually, 
+// strictly speaking we might not need this if we use app.use(cors()) and the bypass. 
+// But to keep it working with the library's recommended setup (adjusted for v5):
+app.options('(.*)', cors(corsOptions));
 
 // GLOBAL PREFLIGHT BYPASS
 // Ensure OPTIONS requests return 204 immediately, bypassing all subsequent middleware (auth, etc.)
@@ -169,7 +174,11 @@ app.get('/health', (req, res) => {
    404 & Error Handling
    ========================= */
 
-app.use('*', (req, res) => {
+// 404 & Error Handling
+// =========================
+
+// Express 5 fix: Use pathless middleware for catch-all instead of '*'
+app.use((req, res) => {
   res.status(404).json({
     error: 'Route not found',
     requestId: req.reqId,
