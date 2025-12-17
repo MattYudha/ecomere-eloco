@@ -1,5 +1,9 @@
 const express = require('express');
 const path = require('path');
+
+// =========================
+// Environment
+// =========================
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
@@ -7,7 +11,9 @@ const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
+// =========================
 // Routers
+// =========================
 const productsRouter = require('./routes/products');
 const productImagesRouter = require('./routes/productImages');
 const categoryRouter = require('./routes/category');
@@ -24,13 +30,16 @@ const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
 
-// Logging & utils
+// =========================
+// Middleware & Utils
+// =========================
 const {
   addRequestId,
   requestLogger,
   errorLogger,
   securityLogger,
 } = require('./middleware/requestLogger');
+
 const trackVisitor = require('./middleware/visitorTracker');
 
 const {
@@ -45,11 +54,12 @@ const {
 
 const { handleServerError } = require('./utils/errorHandler');
 
+// =========================
+// App Init
+// =========================
 const app = express();
 
-// =========================
-// Trust Proxy (Railway)
-// =========================
+// Railway / reverse proxy
 app.set('trust proxy', 1);
 
 // =========================
@@ -76,10 +86,13 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow non-browser requests (curl, server-to-server)
+    // allow non-browser / server-to-server
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app')
+    ) {
       return callback(null, true);
     }
 
@@ -92,10 +105,11 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// Apply CORS globally
 app.use(cors(corsOptions));
 
-// Preflight short-circuit (AMAN, tanpa wildcard route)
+// =========================
+// OPTIONS short-circuit (Express 5 SAFE)
+// =========================
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
@@ -119,7 +133,7 @@ app.use(cookieParser());
 app.use(fileUpload());
 
 // =========================
-// Rate-limited Routes
+// Rate Limited Groups
 // =========================
 app.use('/api/users', userManagementLimiter);
 app.use('/api/search', searchLimiter);
@@ -151,7 +165,7 @@ app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 
 // =========================
-// 404 Handler (NO wildcard path)
+// 404 Handler (NO wildcard)
 // =========================
 app.use((req, res) => {
   res.status(404).json({
@@ -168,11 +182,16 @@ app.use((err, req, res, next) => {
 });
 
 // =========================
-// Start Server (Railway SAFE)
+// Start Server (RAILWAY FINAL FIX)
 // =========================
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
+
+if (!PORT) {
+  console.error('❌ PORT is not defined by Railway');
+  process.exit(1);
+}
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log('CORS, rate limiting, logging ENABLED');
 });
