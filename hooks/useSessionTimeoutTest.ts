@@ -1,13 +1,13 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useRef } from 'react';
 
 // Use 30 seconds for testing
 const SESSION_TIMEOUT = 30 * 1000; // 30 seconds for testing
 
 export function useSessionTimeoutTest() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export function useSessionTimeoutTest() {
         // Set new timeout
         timeoutRef.current = setTimeout(() => {
           console.log('🚪 Session expired - signing out');
-          signOut({
-            callbackUrl: '/login?expired=true',
-            redirect: true,
+          // signOut({ callbackUrl: '/login?expired=true' });
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, { method: 'POST' }).then(() => {
+            window.location.href = '/login?expired=true';
           });
         }, SESSION_TIMEOUT);
       };

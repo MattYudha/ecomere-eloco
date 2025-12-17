@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { FaBell } from 'react-icons/fa6';
 import { useUnreadCount, useNotifications } from '@/hooks/useNotifications'; // Import useNotifications
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NotificationBellProps {
   className?: string;
@@ -13,7 +13,7 @@ interface NotificationBellProps {
 const NotificationBell: React.FC<NotificationBellProps> = ({
   className = '',
 }) => {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const { unreadCount, refreshUnreadCount } = useUnreadCount();
   const { markAllUserNotificationsAsRead } = useNotifications(); // Use the new hook
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

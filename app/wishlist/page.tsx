@@ -1,6 +1,6 @@
 'use client';
 import { SectionTitle } from '@/components';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +11,7 @@ import apiClient from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 
 const WishlistPage = () => {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const { wishlist, addToCart, setWishlist } = useProductStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +35,8 @@ const WishlistPage = () => {
 
       try {
         setLoading(true);
-        // Use local fetch to hit Next.js API route (localhost:3000) which handles session
-        const response = await fetch('/api/wishlist');
+        // Use apiClient to hit backend API
+        const response = await apiClient.get('/api/wishlist');
         if (!response.ok) {
           throw new Error('Failed to fetch wishlist');
         }
@@ -70,7 +70,7 @@ const WishlistPage = () => {
     setWishlist(newWishlist);
 
     try {
-      const response = await fetch(`/api/wishlist/${productId}`, { method: 'DELETE' });
+      const response = await apiClient.delete(`/api/wishlist/${productId}`);
       if (!response.ok) {
         throw new Error('Failed to remove item from wishlist');
       }

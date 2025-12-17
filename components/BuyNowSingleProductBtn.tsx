@@ -13,14 +13,14 @@ import { useProductStore } from '@/app/_zustand/store';
 import React from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 
 const BuyNowSingleProductBtn = ({
   product,
   quantityCount,
 }: SingleProductBtnProps) => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const { buyNow, calculateTotals } = useProductStore();
 
   const handleBuyNow = () => {

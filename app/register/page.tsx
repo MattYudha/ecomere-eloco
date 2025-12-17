@@ -1,6 +1,6 @@
 'use client';
 import { CustomButton, SectionTitle } from '@/components';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -9,10 +9,10 @@ import toast from 'react-hot-toast';
 const RegisterPage = () => {
   const [error, setError] = useState('');
   const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useAuth();
 
   useEffect(() => {
-    // chechking if user has already registered redirect to home page
+    // checking if user has already registered redirect to home page
     if (sessionStatus === 'authenticated') {
       router.replace('/');
     }
@@ -52,7 +52,8 @@ const RegisterPage = () => {
 
     try {
       // sending API request for registering user
-      const res = await fetch('/api/register', {
+      // sending API request for registering user
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

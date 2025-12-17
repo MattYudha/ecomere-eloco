@@ -3,11 +3,11 @@
 import { useWishlistStore } from '@/app/_zustand/wishlistStore';
 import ProductItem, { Product } from '@/components/ProductItem';
 import apiClient from '@/lib/api';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useCallback } from 'react';
 
 export const WishlistModule = () => {
-  const { status } = useSession();
+  const { status } = useAuth();
   const { wishlist, setWishlist } = useWishlistStore();
 
   const getWishlist = useCallback(async () => {

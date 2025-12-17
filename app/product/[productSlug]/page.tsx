@@ -13,9 +13,7 @@ import { FaSquareXTwitter } from 'react-icons/fa6';
 import { FaSquarePinterest } from 'react-icons/fa6';
 import { sanitize } from '@/lib/sanitize';
 import { formatPrice } from '@/lib/utils';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/utils/authOptions'; // Import authOptions
-import { Session } from 'next-auth'; // Import augmented Session type
+
 
 interface ImageItem {
   imageID: string;
@@ -30,15 +28,14 @@ interface SingleProductPageProps {
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   const { productSlug, id } = params;
 
-  const session: Session | null = await getServerSession(authOptions as any);
-  const accessToken = session?.accessToken as string | undefined;
+
 
   // sending API request for a single product with a given product slug
-  const data = await apiClient.get(`/api/slugs/${productSlug}`, {}, accessToken);
+  const data = await apiClient.get(`/api/slugs/${productSlug}`);
   const product = await data.json();
 
   // sending API request for more than 1 product image if it exists
-  const imagesData = await apiClient.get(`/api/images/${id}`, {}, accessToken);
+  const imagesData = await apiClient.get(`/api/images/${id}`);
   const images: ImageItem[] = (await imagesData.json()) || [];
 
   if (!product || product.error) {

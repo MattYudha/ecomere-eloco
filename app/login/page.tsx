@@ -1,10 +1,10 @@
 'use client';
 import { CustomButton, SectionTitle } from '@/components';
 import { isValidEmailAddressFormat } from '@/lib/utils';
-import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, Suspense } from 'react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
 
@@ -15,7 +15,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useAuth();
 
   useEffect(() => {
     const expired = searchParams.get('expired');
@@ -45,23 +45,34 @@ const LoginForm = () => {
       return;
     }
 
-    const res = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
-    console.log('Sign In Response:', res);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    if (res?.error) {
-      setError('Invalid email or password');
-      toast.error('Invalid email or password');
-      // The original code had a router.replace('/') here, which seems incorrect for an error.
-      // Removing it as it would redirect on error.
-    } else {
-      setError('');
-      toast.success('Successful login');
-      router.refresh(); // Ensure session cookies are applied
-      router.replace('/'); // Redirect to dashboard on successful login
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Invalid email or password');
+        toast.error(data.message || 'Invalid email or password');
+      } else {
+        setError('');
+        toast.success('Successful login');
+        router.refresh(); // Ensure session cookies are applied
+        router.replace('/'); // Redirect to dashboard on successful login
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login');
+      toast.error('An error occurred during login');
     }
   };
 
@@ -324,7 +335,7 @@ const LoginForm = () => {
                   type="button"
                   className="flex w-full items-center justify-center gap-3 rounded-xl bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm px-3 py-3 text-gray-700 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300/50 dark:ring-gray-600/50 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200"
                   onClick={() => {
-                    signIn('google');
+                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin/google`;
                   }}
                 >
                   <FcGoogle className="h-5 w-5" />
@@ -337,7 +348,7 @@ const LoginForm = () => {
                   type="button"
                   className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-gray-900 to-gray-700 px-3 py-3 text-white shadow-sm hover:from-gray-800 hover:to-gray-600 hover:shadow-md hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-all duration-200"
                   onClick={() => {
-                    signIn('github');
+                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin/github`;
                   }}
                 >
                   <svg

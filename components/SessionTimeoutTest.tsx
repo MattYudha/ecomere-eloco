@@ -1,10 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 
 export default function SessionTimeoutTest() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useAuth();
   const [timeLeft, setTimeLeft] = useState(0);
   const [isActive, setIsActive] = useState(false);
 

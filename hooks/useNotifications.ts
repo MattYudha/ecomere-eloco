@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useNotificationStore } from '@/app/_zustand/notificationStore';
 import notificationApi from '@/lib/notification-api';
 import { NotificationFilters } from '@/types/notification';
@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
  * Custom hook for managing notifications
  */
 export const useNotifications = () => {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const {
     notifications,
     unreadCount,
@@ -277,7 +277,7 @@ export const useNotifications = () => {
  */
 export const useUnreadCount = () => {
   const { unreadCount, setUnreadCount } = useNotificationStore();
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
 
   const fetchUnreadCount = useCallback(async () => {
     if (!session?.user?.email) return;

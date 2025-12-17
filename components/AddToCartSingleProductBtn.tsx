@@ -12,7 +12,7 @@
 import React from 'react';
 import { useProductStore } from '@/app/_zustand/store';
 import toast from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
 const AddToCartSingleProductBtn = ({
@@ -20,7 +20,7 @@ const AddToCartSingleProductBtn = ({
   quantityCount,
 }: SingleProductBtnProps) => {
   const { addToCart, calculateTotals } = useProductStore();
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const router = useRouter();
 
   const handleAddToCart = () => {

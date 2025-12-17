@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { sanitize } from '@/lib/sanitize';
 import { useProductStore, WishlistedProduct } from '../app/_zustand/store';
 import toast from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
 import apiClient from '@/lib/api';
@@ -29,7 +29,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const imageUrl = product.mainImage
     ? `/${product.mainImage.replace(/^\//, '')}`
     : '/product_placeholder.jpg';
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const router = useRouter();
   const { addToCart, addToWishlistLocal, removeFromWishlistLocal, isProductInWishlist } =
     useProductStore();

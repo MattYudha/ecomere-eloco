@@ -3,14 +3,14 @@ import { SectionTitle } from '@/components';
 import { useProductStore } from '../_zustand/store';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 
 const CheckoutPage = () => {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
