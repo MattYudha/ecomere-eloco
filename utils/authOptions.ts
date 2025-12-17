@@ -5,12 +5,12 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import bcrypt from 'bcryptjs';
 import prisma from '@/utils/db';
-import jwt from 'jsonwebtoken';
+
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   // Trust the host header on Railway to prevent redirect issues
-  trustHost: true,
+
 
   providers: [
     CredentialsProvider({
@@ -59,52 +59,32 @@ export const authOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }: any) {
       if (user) {
-        const u = user as any;
-
-        token.id = u.id;
-        token.role = u.role;
-
-        token.accessToken = jwt.sign(
-          {
-            id: u.id,
-            role: u.role,
-          },
-          process.env.JWT_SECRET!,
-          { expiresIn: '1d' },
-        );
+        token.id = user.id;
+        token.role = user.role;
       }
-
       return token;
     },
 
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: any) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role;
+        session.user.id = token.id;
+        session.user.role = token.role;
       }
-
-      if ((token as any).accessToken) {
-        (session as any).accessToken = (token as any).accessToken;
-      }
-
       return session;
     },
   },
 
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
+
 
   session: {
     strategy: 'jwt' as const,
-    maxAge: 15 * 60,
+    maxAge: 30 * 60,
   },
 
   jwt: {
-    maxAge: 15 * 60,
+    maxAge: 30 * 60,
   },
 
   secret: process.env.NEXTAUTH_SECRET,

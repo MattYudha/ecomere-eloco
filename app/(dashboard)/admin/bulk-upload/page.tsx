@@ -95,7 +95,7 @@ const BulkUploadPage = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:3001/api/bulk-upload', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bulk-upload`, {
         method: 'POST',
         body: formData,
       });
@@ -195,10 +195,9 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors
               bg-white/10 backdrop-blur-md border-white/30 shadow-lg text-white
-              dark:bg-black/20 dark:border-gray-700 ${
-                dragActive
-                  ? 'border-blue-500 bg-white/20'
-                  : 'hover:border-white/50'
+              dark:bg-black/20 dark:border-gray-700 ${dragActive
+                ? 'border-blue-500 bg-white/20'
+                : 'hover:border-white/50'
               }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -281,8 +280,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
           <div
             className={`border-l-4 p-6 rounded-lg
               bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-              dark:bg-black/20 dark:border-gray-700 ${
-                uploadResult.success ? 'border-green-500' : 'border-red-500'
+              dark:bg-black/20 dark:border-gray-700 ${uploadResult.success ? 'border-green-500' : 'border-red-500'
               }`}
           >
             <div className="flex items-start gap-3">
@@ -293,18 +291,16 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
               )}
               <div className="flex-1">
                 <h3
-                  className={`text-xl font-bold mb-2 ${
-                    uploadResult.success ? 'text-green-400' : 'text-red-400'
-                  }`}
+                  className={`text-xl font-bold mb-2 ${uploadResult.success ? 'text-green-400' : 'text-red-400'
+                    }`}
                 >
                   {uploadResult.success
                     ? '✅ Upload Successful!'
                     : '❌ Upload Failed'}
                 </h3>
                 <p
-                  className={`mb-3 ${
-                    uploadResult.success ? 'text-green-200' : 'text-red-200'
-                  }`}
+                  className={`mb-3 ${uploadResult.success ? 'text-green-200' : 'text-red-200'
+                    }`}
                 >
                   {uploadResult.message}
                 </p>
