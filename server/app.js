@@ -49,10 +49,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 /* =========================
-   🔴 CORS (MUST BE FIRST)
+   🔴 CORS (FIXED & SAFE)
    ========================= */
 
-// Debug incoming requests
+// Debug incoming requests (keep – useful in prod)
 app.use((req, res, next) => {
   console.log(
     `[Incoming] ${req.method} | Origin: ${req.headers.origin || 'none'} | ${req.url}`
@@ -71,6 +71,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
+    // Allow non-browser requests (curl, server-to-server)
     if (!origin) return callback(null, true);
 
     if (
@@ -81,23 +82,26 @@ const corsOptions = {
     }
 
     console.warn(`[CORS BLOCKED] Origin: ${origin}`);
-    return callback(null, false); // ❗ DO NOT throw error
+    // IMPORTANT: must return ERROR, not false
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204,
 };
 
 // APPLY CORS FIRST
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// 🔴 BYPASS PREFLIGHT FROM ALL OTHER MIDDLEWARES (CRITICAL)
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 /* =========================
    🔵 Core Middlewares
@@ -172,11 +176,8 @@ app.use('*', (req, res) => {
   });
 });
 
-// IMPORTANT: do not block OPTIONS here
+// Final error handler (OPTIONS already bypassed)
 app.use((err, req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
   handleServerError(err, res, `${req.method} ${req.path}`);
 });
 
