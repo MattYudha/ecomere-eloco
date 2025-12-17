@@ -74,11 +74,16 @@ const allowedOrigins = [
 ].filter(Boolean); // Remove undefined values
 
 // CORS configuration with origin validation
+// CORS configuration with origin validation
 const corsOptions = {
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') // Allow all Vercel deployments
+    ) {
       return callback(null, true);
     }
 
@@ -94,8 +99,8 @@ const corsOptions = {
       'The CORS policy for this site does not allow access from the specified Origin.';
     return callback(new Error(msg), false);
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true, // Allow cookies and authorization headers
 };
 
@@ -103,7 +108,9 @@ const corsOptions = {
 app.use(generalLimiter);
 
 app.use(express.json());
+app.use(require('cookie-parser')());
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
 app.use(fileUpload());
 
 // Apply specific rate limiters to different route groups
@@ -137,6 +144,8 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/merchants', merchantRouter);
 app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
+const authRouter = require('./routes/auth');
+app.use('/api/auth', authRouter); // Mount auth routes
 
 // Health check endpoint (no rate limiting)
 app.get('/health', (req, res) => {
