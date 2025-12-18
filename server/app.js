@@ -137,7 +137,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle preflight dengan benar (jangan manual sendStatus tanpa header)
-app.options('*', cors(corsOptions));
+app.options('(.*)', cors(corsOptions));
 
 // =========================
 // Core Middlewares
