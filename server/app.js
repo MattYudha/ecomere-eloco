@@ -6,8 +6,7 @@ const path = require('path');
 // =========================
 // Environment (LOCAL ONLY)
 // =========================
-// Railway inject env via "Variables", bukan dari .env file.
-// Jadi .env hanya dibaca saat dev/local.
+// Railway inject env via Variables. .env hanya untuk local/dev.
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: path.join(__dirname, '.env') });
   require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
@@ -18,12 +17,10 @@ if (process.env.NODE_ENV !== 'production') {
 // =========================
 process.on('uncaughtException', (err) => {
   console.error('[UNCAUGHT_EXCEPTION]', err);
-  // optional: process.exit(1);
 });
 
 process.on('unhandledRejection', (err) => {
   console.error('[UNHANDLED_REJECTION]', err);
-  // optional: process.exit(1);
 });
 
 const fileUpload = require('express-fileupload');
@@ -78,21 +75,26 @@ const { handleServerError } = require('./utils/errorHandler');
 // =========================
 const app = express();
 
-// Railway / reverse proxy
+// Railway / reverse proxy (penting untuk ip/secure cookies jika ada)
 app.set('trust proxy', 1);
 
 // =========================
-// Health Check (PALING ATAS)
+// Basic routes (paling atas)
 // =========================
+app.get('/', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
   });
 });
 
 // =========================
-// CORS Configuration
+// CORS Configuration (SAFE)
 // =========================
 const allowedOrigins = [
   'http://localhost:3000',
@@ -108,12 +110,17 @@ const corsOptions = {
     // allow non-browser / server-to-server (curl, health checks, etc.)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      return callback(null, true);
+    const ok =
+      allowedOrigins.includes(origin) ||
+      // opsi: subdomain vercel preview
+      origin.endsWith('.vercel.app');
+
+    if (!ok) {
+      console.warn(`[CORS BLOCKED] Origin: ${origin}`);
     }
 
-    console.warn(`[CORS BLOCKED] Origin: ${origin}`);
-    return callback(new Error('Not allowed by CORS'));
+    // PENTING: jangan callback(new Error(...)) karena itu jadi 500
+    return callback(null, ok);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -129,13 +136,8 @@ const corsOptions = {
 // CORS harus sebelum routes
 app.use(cors(corsOptions));
 
-// =========================
-// OPTIONS short-circuit
-// =========================
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
+// Handle preflight dengan benar (jangan manual sendStatus tanpa header)
+app.options('*', cors(corsOptions));
 
 // =========================
 // Core Middlewares
@@ -149,9 +151,10 @@ app.use(errorLogger);
 app.use(generalLimiter);
 
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// upload: pilih limit biar aman
+// upload: limit biar aman
 app.use(
   fileUpload({
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -199,6 +202,7 @@ app.use((req, res) => {
   res.status(404).json({
     error: 'Route not found',
     requestId: req.reqId,
+    path: req.originalUrl,
   });
 });
 
@@ -206,25 +210,38 @@ app.use((req, res) => {
 // Final Error Handler
 // =========================
 app.use((err, req, res, next) => {
+  try {
+    console.error('[EXPRESS_ERROR]', {
+      requestId: req.reqId,
+      method: req.method,
+      path: req.originalUrl,
+      message: err?.message,
+      stack: err?.stack,
+    });
+  } catch (_) {
+    // ignore logging errors
+  }
+
   handleServerError(err, res, `${req.method} ${req.path}`);
 });
 
 // =========================
 // Start Server (RAILWAY FIX)
 // =========================
-// Railway wajib pakai PORT dari environment. Jangan fallback hardcode saat production.
-const isProd = process.env.NODE_ENV === 'production';
-
-const PORT = isProd ? Number(process.env.PORT) : Number(process.env.PORT || 3001);
-
-if (isProd && !PORT) {
-  // Ini penting supaya kamu langsung tahu problem env di Railway logs
-  throw new Error('PORT environment variable is not set in production');
-}
+// Railway umumnya pakai PORT. Beberapa setup pakai RAILWAY_TCP_APPLICATION_PORT.
+// Kita ambil yang tersedia, fallback aman untuk local.
+const PORT =
+  Number(process.env.PORT) ||
+  Number(process.env.RAILWAY_TCP_APPLICATION_PORT) ||
+  3001;
 
 // bind ke 0.0.0.0 supaya accessible via Railway proxy
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log('CORS, rate limiting, logging ENABLED');
   console.log(`NODE_ENV=${process.env.NODE_ENV || 'undefined'}`);
+  console.log(`ENV PORT=${process.env.PORT || 'undefined'}`);
+  console.log(
+    `RAILWAY_TCP_APPLICATION_PORT=${process.env.RAILWAY_TCP_APPLICATION_PORT || 'undefined'}`
+  );
+  console.log('CORS, rate limiting, logging ENABLED');
 });
