@@ -121,8 +121,8 @@ const logout = asyncHandler(async (req, res) => {
     const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
     const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
 
-    res.cookie('eloco_session', 'none', {
-        expires: new Date(Date.now() + 10 * 1000),
+    res.cookie('eloco_session', '', {
+        expires: new Date(0), // Expire immediately
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',

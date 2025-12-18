@@ -3,3 +3,33 @@ Data: {
   "notificationId": "_nne-GClLOaVJ_F9XzFcU"
 }
 --------------------------------------------------
+[2025-12-18T11:24:38.037Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2025-12-18T11:24:38.563Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-18T11:24:38.614Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2025-12-18T11:24:38.614Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "dfddad58-7a1c-4500-bf5b-f67d852e1564"
+}
+--------------------------------------------------
+[2025-12-18T11:24:38.995Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2025-12-18T11:24:38.994Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Diterima
+Data: {
+  "notificationId": "syMpl5ipKGhRTxF3Zfk3C"
+}
+--------------------------------------------------
+[2025-12-18T11:25:14.643Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "_EQWtzD_5N2f00zjtTfHD"
+}
+--------------------------------------------------

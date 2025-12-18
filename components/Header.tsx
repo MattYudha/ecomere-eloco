@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   motion,
   AnimatePresence,
@@ -23,8 +23,14 @@ import HeartElement from './HeartElement';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 const Header = () => {
-  const { data: session } = useAuth();
+  const { data: session, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Debug mount status
+  useEffect(() => {
+    console.log('[Header] Mounted, Session:', !!session);
+  }, [session]);
   const { cart } = useCart();
   const { wishlist } = useWishlist();
   const { theme } = useTheme();
@@ -202,9 +208,15 @@ const Header = () => {
                       )}
 
                       <button
-                        onClick={() => {
-                          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, { method: 'POST' })
-                            .then(() => window.location.reload());
+                        onClick={async () => {
+                          console.log('[Header] Logout clicked');
+                          try {
+                            await logout();
+                            window.location.href = '/login'; // Force full navigation to clear state
+                          } catch (e) {
+                            console.error('Logout error:', e);
+                            window.location.href = '/login';
+                          }
                           setIsDropdownOpen(false);
                         }}
                         className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
@@ -374,9 +386,13 @@ const Header = () => {
 
                     {session?.user ? (
                       <button
-                        onClick={() => {
-                          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, { method: 'POST' })
-                            .then(() => window.location.reload());
+                        onClick={async () => {
+                          try {
+                            await logout();
+                            window.location.href = '/login';
+                          } catch (e) {
+                            window.location.href = '/login';
+                          }
                           closeMobileMenu();
                         }}
                         className="w-full py-3.5 rounded-xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold hover:bg-red-100 dark:hover:bg-red-900/20 transition-all flex justify-center items-center gap-2"
