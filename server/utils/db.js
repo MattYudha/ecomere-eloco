@@ -33,12 +33,29 @@ const createPrismaClient = () => {
     );
   }
 
-  return new PrismaClient({
+  const client = new PrismaClient({
     log:
       process.env.NODE_ENV === 'development'
         ? ['query', 'info', 'warn', 'error']
         : ['error', 'warn'],
   });
+
+  // DEBUG: Inspect generated models
+  // We attach this check to the instance creation to verify on startup
+  try {
+    const modelKeys = Object.keys(client).filter(key => !key.startsWith('_') && !key.startsWith('$'));
+    console.log('🔍 PRISMA CLIENT INITIALIZED');
+    console.log('🔑 Available Models:', modelKeys);
+    if (!modelKeys.includes('product')) { // Note: Prisma models are usually lowercase in keys like prisma.product
+      console.error('❌ CRITICAL: "product" model is MISSING from Prisma Client!');
+    } else {
+      console.log('✅ "product" model found.');
+    }
+  } catch (err) {
+    console.error('⚠️ Could not inspect Prisma keys:', err);
+  }
+
+  return client;
 };
 
 // ♻️ Reuse Prisma client across hot reloads
