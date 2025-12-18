@@ -8,9 +8,12 @@ export function middleware(request: NextRequest) {
   const hasSession = request.cookies.has('eloco_session');
 
   // Admin protection
-  if (pathname.startsWith('/admin') && !hasSession) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+  // DISABLED FOR CROSS-DOMAIN AUTH (Railway Backend + Vercel Frontend)
+  // Middleware cannot see cookies set by Backend on a different domain.
+  // We rely on Client-Side Layout Protection in app/(dashboard)/admin/layout.tsx
+  // if (pathname.startsWith('/admin') && !hasSession) {
+  //   return NextResponse.redirect(new URL('/login', request.url));
+  // }
 
   // Auth-required pages
   const protectedPaths = ['/dashboard', '/profile', '/orders'];
