@@ -368,9 +368,10 @@ const Header = () => {
                         <Link
                           href="/admin"
                           onClick={closeMobileMenu}
-                          className="block p-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 text-[#cb6112] font-bold mt-2"
+                          className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 text-[#cb6112] font-bold mt-2"
                         >
-                          Admin Dashboard
+                          <LuLayoutDashboard size={22} className="text-[#cb6112]" />
+                          <span>Admin Dashboard</span>
                         </Link>
                       )}
                     </div>
