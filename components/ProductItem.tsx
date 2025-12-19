@@ -27,7 +27,7 @@ type ProductItemProps = {
 
 const ProductItem = ({ product }: ProductItemProps) => {
   const imageUrl = product.mainImage
-    ? `/${product.mainImage.replace(/^\//, '')}`
+    ? (product.mainImage.startsWith('http') ? product.mainImage : `/${product.mainImage.replace(/^\//, '')}`)
     : '/product_placeholder.jpg';
   const { data: session } = useAuth();
   const router = useRouter();

@@ -213,7 +213,7 @@ const DashboardProductTable = () => {
                             height={56}
                             src={
                               product?.mainImage
-                                ? `/${product.mainImage.replace(/^\//, '')}`
+                                ? (product.mainImage.startsWith('http') ? product.mainImage : `/${product.mainImage.replace(/^\//, '')}`)
                                 : '/product_placeholder.jpg'
                             }
                             alt={sanitize(product?.title) || 'Product image'}
