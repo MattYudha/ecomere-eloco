@@ -16,7 +16,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { data: session, status: sessionStatus } = useAuth();
+  const { data: session, status: sessionStatus, checkAuth } = useAuth();
 
   useEffect(() => {
     const expired = searchParams.get('expired');
@@ -61,8 +61,9 @@ const LoginForm = () => {
       } else {
         setError('');
         toast.success('Successful login');
-        router.refresh(); // Ensure session cookies are applied
-        router.replace('/'); // Redirect to dashboard on successful login
+        await checkAuth(); // Manually update auth context state
+        router.refresh();
+        router.replace('/');
       }
     } catch (error) {
       console.error('Login error:', error);
