@@ -13,8 +13,11 @@ export const apiClient = {
       url = `${this.baseUrl}${endpoint}`;
     }
 
+    const isFormData = options.body instanceof FormData;
+
     const defaultHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
+      // Only set JSON content type if it's NOT FormData
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(options.headers as Record<string, string> || {}),
     };
 
@@ -35,12 +38,23 @@ export const apiClient = {
   get: (endpoint: string, options?: RequestInit, token?: string) =>
     apiClient.request(endpoint, { ...options, method: 'GET' }, token),
 
-  post: (endpoint: string, data?: any, options?: RequestInit, token?: string) =>
-    apiClient.request(
+  post: (endpoint: string, data?: any, options?: RequestInit, token?: string) => {
+    const isFormData = data instanceof FormData;
+    return apiClient.request(
       endpoint,
-      { ...options, method: 'POST', body: data ? JSON.stringify(data) : undefined },
+      {
+        ...options,
+        method: 'POST',
+        body: isFormData ? data : (data ? JSON.stringify(data) : undefined),
+        headers: {
+          ...options?.headers,
+          // IMPORTANT: Do NOT set Content-Type for FormData (browser sets boundary)
+          ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+        }
+      },
       token
-    ),
+    );
+  },
 
   put: (endpoint: string, data?: any, options?: RequestInit, token?: string) =>
     apiClient.request(
