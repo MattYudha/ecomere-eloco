@@ -108,7 +108,7 @@ async function deleteMainImage(req, res) {
     // UPDATE DATABASE
     await prisma.product.update({
       where: { id: productId },
-      data: { mainImage: null },
+      data: { mainImage: '' },
     });
 
     res.status(200).json({ message: 'Main image deleted successfully.' });
