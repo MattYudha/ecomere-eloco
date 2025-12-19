@@ -90,13 +90,9 @@ const deleteProductOrder = asyncHandler(async (request, response) => {
     throw new AppError('Order product ID is required', 400);
   }
 
-  const existingOrder = await prisma.customer_order_product.findUnique({
-    where: { id },
-  });
-
-  if (!existingOrder) {
-    throw new AppError('Order product not found', 404);
-  }
+  // FIX: Do NOT check for existence by ID because 'id' here is actually 'customerOrderId'
+  // passed from the frontend for bulk deletion of child items.
+  // const existingOrder = await prisma.customer_order_product.findUnique({ where: { id } });
 
   await prisma.customer_order_product.deleteMany({
     where: {
