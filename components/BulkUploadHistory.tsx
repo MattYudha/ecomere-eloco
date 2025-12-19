@@ -186,10 +186,9 @@ const BulkUploadHistory = () => {
   return (
     <div
       className="space-y-4 p-4 rounded-lg
-                bg-white/10 backdrop-blur-md border border-white/20 shadow-lg
-                dark:bg-black/20 dark:border-gray-700"
+                bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 shadow-lg"
     >
-      <h2 className="text-2xl font-bold mb-4 text-white">📜 Upload History</h2>
+      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">📜 Upload History</h2>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && batchToDelete && (
@@ -256,17 +255,16 @@ const BulkUploadHistory = () => {
         <div
           key={batch.id}
           className="rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow
-                     bg-white/10 backdrop-blur-md border border-white/20 text-white
-                     dark:bg-black/20 dark:border-gray-700"
+                     bg-gray-50 dark:bg-slate-700/50 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               {getStatusIcon(batch.status)}
               <div>
-                <h3 className="font-semibold text-lg text-white">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                   {batch.fileName}
                 </h3>
-                <p className="text-sm text-gray-200">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Uploaded by {batch.uploadedBy} •{' '}
                   {formatDate(batch.uploadedAt)}
                 </p>
@@ -274,15 +272,14 @@ const BulkUploadHistory = () => {
             </div>
             <div className="flex items-center gap-2">
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  batch.status === 'COMPLETED'
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${batch.status === 'COMPLETED'
                     ? 'bg-green-500 text-white'
                     : batch.status === 'FAILED'
                       ? 'bg-red-500 text-white'
                       : batch.status === 'PARTIAL'
                         ? 'bg-yellow-500 text-white'
                         : 'bg-gray-500 text-white'
-                }`}
+                  }`}
               >
                 {batch.status}
               </span>
@@ -302,34 +299,34 @@ const BulkUploadHistory = () => {
           </div>
 
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <div className="bg-white/10 rounded p-3 text-center border border-white/20">
-              <p className="text-2xl font-bold text-white">
+            <div className="bg-white dark:bg-white/5 rounded p-3 text-center border border-gray-200 dark:border-white/20">
+              <p className="text-2xl font-bold text-gray-800 dark:text-white">
                 {batch.totalRecords}
               </p>
-              <p className="text-xs text-gray-200">Total</p>
+              <p className="text-xs text-gray-500 dark:text-gray-200">Total</p>
             </div>
-            <div className="bg-white/10 rounded p-3 text-center border border-white/20">
-              <p className="text-2xl font-bold text-green-400">
+            <div className="bg-white dark:bg-white/5 rounded p-3 text-center border border-gray-200 dark:border-white/20">
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {batch.successfulRecords}
               </p>
-              <p className="text-xs text-gray-200">Success</p>
+              <p className="text-xs text-gray-500 dark:text-gray-200">Success</p>
             </div>
-            <div className="bg-white/10 rounded p-3 text-center border border-white/20">
-              <p className="text-2xl font-bold text-red-400">
+            <div className="bg-white dark:bg-white/5 rounded p-3 text-center border border-gray-200 dark:border-white/20">
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {batch.failedRecords}
               </p>
-              <p className="text-xs text-gray-200">Failed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-200">Failed</p>
             </div>
-            <div className="bg-white/10 rounded p-3 text-center border border-white/20">
-              <p className="text-2xl font-bold text-blue-400">
+            <div className="bg-white dark:bg-white/5 rounded p-3 text-center border border-gray-200 dark:border-white/20">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {batch.totalRecords > 0
                   ? Math.round(
-                      (batch.successfulRecords / batch.totalRecords) * 100,
-                    )
+                    (batch.successfulRecords / batch.totalRecords) * 100,
+                  )
                   : 0}
                 %
               </p>
-              <p className="text-xs text-gray-200">Success Rate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-200">Success Rate</p>
             </div>
           </div>
 

@@ -154,20 +154,19 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
     <div className="flex xl:flex-row flex-col justify-start items-start relative z-10">
       <DashboardSidebar />
       <div className="w-full xl:p-14 p-4">
-        <h1 className="text-4xl font-bold mb-8 text-white">
+        <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-white">
           Bulk Upload Products
         </h1>
 
         {/* Instructions */}
         <div
           className="p-4 mb-6 rounded-lg
-                    bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                    dark:bg-black/20 dark:border-gray-700"
+                    bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
         >
-          <h2 className="text-lg font-semibold mb-2 text-white">
+          <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
             📋 Instructions
           </h2>
-          <ul className="list-disc list-inside space-y-1 text-sm text-gray-200">
+          <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-300">
             <li>Download the CSV template below</li>
             <li>
               Fill in your product data (title, price, manufacturer, stock,
@@ -183,8 +182,8 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
           <button
             onClick={downloadTemplate}
             className="flex items-center gap-2 font-bold py-3 px-6 rounded-lg transition-colors
-                       bg-white/20 backdrop-blur-md border border-white/30 shadow-lg text-white
-                       hover:bg-white/30 hover:border-white/50"
+                       bg-white dark:bg-white/20 border border-gray-200 dark:border-white/30 shadow-lg text-purple-600 dark:text-white
+                       hover:bg-gray-50 dark:hover:bg-white/30"
           >
             <FaDownload /> Download CSV Template
           </button>
@@ -194,20 +193,20 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
         <div className="mb-6">
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors
-              bg-white/10 backdrop-blur-md border-white/30 shadow-lg text-white
-              dark:bg-black/20 dark:border-gray-700 ${dragActive
-                ? 'border-blue-500 bg-white/20'
-                : 'hover:border-white/50'
+              bg-white dark:bg-slate-800 border-gray-300 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white
+              ${dragActive
+                ? 'border-blue-500 bg-blue-50 dark:bg-white/20'
+                : 'hover:border-purple-400 dark:hover:border-white/50'
               }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <FaFileUpload className="text-6xl text-white mx-auto mb-4" />
-            <p className="text-lg mb-2">
+            <FaFileUpload className="text-6xl text-purple-500 dark:text-white mx-auto mb-4" />
+            <p className="text-lg mb-2 text-gray-700 dark:text-gray-200">
               {file ? (
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-purple-600 dark:text-white">
                   Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
                 </span>
               ) : (
@@ -225,8 +224,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
             <label
               htmlFor="file-upload"
               className="inline-block font-bold py-2 px-6 rounded cursor-pointer transition-colors
-                         bg-white/20 backdrop-blur-md border border-white/30 shadow-lg text-white
-                         hover:bg-white/30 hover:border-white/50"
+                         bg-purple-600 text-white hover:bg-purple-700 shadow-lg"
             >
               Select CSV File
             </label>
@@ -240,8 +238,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
               onClick={handleUpload}
               disabled={uploading}
               className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-colors
-                bg-white/20 backdrop-blur-md border border-white/30 shadow-lg text-white
-                hover:bg-white/30 hover:border-white/50
+                bg-purple-600 text-white hover:bg-purple-700 shadow-lg
                 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {uploading ? (
@@ -354,14 +351,13 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
         {/* CSV Format Guide */}
         <div
           className="mt-8 p-6 rounded-lg
-                    bg-white/10 backdrop-blur-md border border-white/20 shadow-lg text-white
-                    dark:bg-black/20 dark:border-gray-700"
+                    bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
         >
-          <h2 className="text-2xl font-bold mb-4 text-white">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
             📝 CSV Format Guide
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-transparent border border-white/20 text-sm text-white">
+            <table className="min-w-full bg-transparent border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-white">
               <thead>
                 <tr className="bg-white/20 dark:bg-black/30">
                   <th className="border border-white/20 px-4 py-2 text-left">
@@ -450,12 +446,12 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
                   </td>
                 </tr>
                 <tr>
-                  <td className="border border-white/20 px-4 py-2 font-mono">
+                  <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 font-mono">
                     categoryId
                   </td>
-                  <td className="border border-white/20 px-4 py-2">✅ Yes</td>
-                  <td className="border border-white/20 px-4 py-2">UUID</td>
-                  <td className="border border-white/20 px-4 py-2">
+                  <td className="border border-gray-200 dark:border-gray-700 px-4 py-2">✅ Yes</td>
+                  <td className="border border-gray-200 dark:border-gray-700 px-4 py-2">UUID</td>
+                  <td className="border border-gray-200 dark:border-gray-700 px-4 py-2">
                     Category ID from database
                   </td>
                 </tr>
