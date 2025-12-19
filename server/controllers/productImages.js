@@ -1,7 +1,6 @@
 const prisma = require('../utils/db');
-// TODO: Migrate to ESM (import) when switching to Node.js native modules or check nanoid v5+ docs
+const cloudinary = require('../utils/cloudinary');
 const { nanoid } = require('nanoid');
-const path = require('path');
 
 async function getSingleProductImages(request, response) {
   const { id } = request.params;
@@ -29,33 +28,42 @@ async function createImage(request, response) {
       return response.status(400).json({ message: 'Product ID is required.' });
     }
 
-    // 3. Move the file to the public directory
-    const imagePath = '/uploads/' + `${nanoid()}_${uploadedFile.name}`;
-    const movePath = path.join(__dirname, '..', '..', 'public', imagePath); // Corrected path construction
+    // 3. Upload to Cloudinary
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'eloco/products/gallery',
+        public_id: `${nanoid()}_${uploadedFile.name.replace(/\.[^/.]+$/, "")}`,
+        resource_type: 'auto',
+      },
+      async (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return response.status(500).json({ error: 'Error uploading image to Cloudinary' });
+        }
 
-    uploadedFile.mv(movePath, async (err) => {
-      if (err) {
-        console.error(err);
-        return response.status(500).send(err);
+        try {
+          // 4. Create image record in the database
+          const newImage = await prisma.image.create({
+            data: {
+              imageID: nanoid(),
+              productID: productID,
+              image: result.secure_url, // Save Cloudinary URL
+            },
+          });
+          return response.status(201).json(newImage);
+        } catch (dbError) {
+          console.error('Database error:', dbError);
+          // Cleanup Cloudinary
+          await cloudinary.uploader.destroy(result.public_id);
+          return response
+            .status(500)
+            .json({ error: 'Error saving image to database' });
+        }
       }
+    );
 
-      try {
-        // 4. Create image record in the database
-        const newImage = await prisma.image.create({
-          data: {
-            imageID: nanoid(),
-            productID: productID,
-            image: imagePath, // Save the web-accessible path
-          },
-        });
-        return response.status(201).json(newImage);
-      } catch (dbError) {
-        console.error('Database error:', dbError);
-        return response
-          .status(500)
-          .json({ error: 'Error saving image to database' });
-      }
-    });
+    uploadStream.end(uploadedFile.data);
+
   } catch (error) {
     console.error('Error creating image:', error);
     return response.status(500).json({ error: 'Error creating image' });
@@ -102,6 +110,23 @@ async function updateImage(request, response) {
 async function deleteImage(request, response) {
   try {
     const { id } = request.params;
+
+    // Find images to delete from Cloudinary
+    const images = await prisma.image.findMany({
+      where: { productID: String(id) }
+    });
+
+    for (const img of images) {
+      if (img.image.includes('cloudinary')) {
+        const regex = /\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/;
+        const match = img.image.match(regex);
+        if (match && match[1]) {
+          await cloudinary.uploader.destroy(match[1]);
+        }
+      }
+      // If local file, we might want to try deleting it too but let's assume moving forward we use Cloudinary
+    }
+
     await prisma.image.deleteMany({
       where: {
         productID: String(id), // Converting id to string

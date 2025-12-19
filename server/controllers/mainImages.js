@@ -1,7 +1,6 @@
 const prisma = require('../utils/db');
+const cloudinary = require('../utils/cloudinary');
 const { nanoid } = require('nanoid');
-const path = require('path');
-const fs = require('fs').promises; // Import fs.promises for async file operations
 
 async function uploadMainImage(req, res) {
   try {
@@ -16,57 +15,58 @@ async function uploadMainImage(req, res) {
       return res.status(400).json({ message: 'Product ID is required.' });
     }
 
-    const imagePath = '/uploads/' + `${nanoid()}_${uploadedFile.name}`;
-    const movePath = path.join(__dirname, '..', '..', 'public', imagePath);
-
-    console.log('__dirname:', __dirname);
-    console.log('imagePath:', imagePath);
-    console.log('movePath:', movePath);
-
-    uploadedFile.mv(movePath, async (err) => {
-      if (err) {
-        console.error('Error moving file:', err);
-        return res.status(500).send(err);
-      }
-
-      try {
-        await prisma.product.update({
-          where: { id: productID },
-          data: { mainImage: imagePath },
-        });
-
-        res.status(200).json({
-          message: 'File uploaded successfully',
-          imagePath: imagePath,
-        });
-      } catch (dbError) {
-        console.error('Database error:', dbError);
-
-        // Clean up file if DB update fails
-        try {
-          await fs.unlink(movePath);
-          console.log(`Cleaned up uploaded file: ${movePath}`);
-        } catch (cleanupError) {
-          console.error(`Failed to clean up uploaded file: ${cleanupError}`);
+    // Upload to Cloudinary using stream
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'eloco/products',
+        public_id: `${nanoid()}_${uploadedFile.name.replace(/\.[^/.]+$/, "")}`, // Remove extension for public_id
+        resource_type: 'auto',
+      },
+      async (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return res.status(500).json({ error: 'Error uploading image to Cloudinary' });
         }
 
-        return res
-          .status(500)
-          .json({ error: 'Error updating product main image' });
+        try {
+          const imagePath = result.secure_url; // Use the secure URL from Cloudinary
+
+          await prisma.product.update({
+            where: { id: productID },
+            data: { mainImage: imagePath },
+          });
+
+          res.status(200).json({
+            message: 'File uploaded successfully',
+            imagePath: imagePath,
+          });
+        } catch (dbError) {
+          console.error('Database error:', dbError);
+          // Try to delete from Cloudinary if DB update fails
+          await cloudinary.uploader.destroy(result.public_id);
+
+          return res
+            .status(500)
+            .json({ error: 'Error updating product main image in database' });
+        }
       }
-    });
+    );
+
+    // Write buffer to stream
+    uploadStream.end(uploadedFile.data);
+
   } catch (error) {
-    console.error('Error uploading main image:', error);
-    return res.status(500).json({ error: 'Error uploading main image' });
+    console.error('Error in uploadMainImage:', error);
+    return res.status(500).json({ error: 'Unexpected error during upload' });
   }
 }
 
 async function deleteMainImage(req, res) {
   try {
     const { id: productId } = req.params;
-    const { imagePath: imagePathToDelete } = req.body;
+    const { imagePath } = req.body; // Expecting the full URL or we need to extract public_id
 
-    if (!productId || !imagePathToDelete) {
+    if (!productId || !imagePath) {
       return res
         .status(400)
         .json({ message: 'Product ID and image path are required.' });
@@ -80,42 +80,29 @@ async function deleteMainImage(req, res) {
       return res.status(404).json({ message: 'Product not found.' });
     }
 
-    if (product.mainImage !== imagePathToDelete) {
-      return res.status(403).json({
-        message: "Unauthorized: Image path does not match product's main image.",
-      });
+    // Authorization check (loose, as extraction is needed)
+    if (product.mainImage !== imagePath) {
+      return res.status(403).json({ message: "Image path mismatch." });
     }
 
-    if (!product.mainImage) {
-      return res
-        .status(404)
-        .json({ message: 'No main image found for this product to delete.' });
-    }
+    // DELETE FROM CLOUDINARY
+    // Extract public_id from URL
+    // Format: https://res.cloudinary.com/<cloud_name>/image/upload/v<version>/<folder>/<public_id>.<ext>
+    // We need <folder>/<public_id>
 
-    const absolutePathToDelete = path.join(
-      __dirname,
-      '..',
-      '..',
-      'public',
-      imagePathToDelete
-    );
-
-    // DELETE PHYSICAL FILE
     try {
-      await fs.unlink(absolutePathToDelete);
-      console.log(`Successfully deleted file: ${absolutePathToDelete}`);
-    } catch (fileError) {
-      if (fileError.code === 'ENOENT') {
-        console.warn(
-          `File not found on disk, but proceeding with DB update: ${absolutePathToDelete}`
-        );
+      const regex = /\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/;
+      const match = imagePath.match(regex);
+      if (match && match[1]) {
+        const publicId = match[1];
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`Deleted from Cloudinary: ${publicId}`);
       } else {
-        console.error('Error deleting physical file:', fileError);
-
-        return res
-          .status(500)
-          .json({ error: 'Error deleting physical image file.' });
+        console.warn(`Could not extract public_id from: ${imagePath}. Skipping Cloudinary delete.`);
       }
+    } catch (cloudError) {
+      console.error('Error deleting from Cloudinary:', cloudError);
+      // Continue to DB delete even if cloud fails? usually yes.
     }
 
     // UPDATE DATABASE

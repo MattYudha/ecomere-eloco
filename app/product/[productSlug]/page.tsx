@@ -47,6 +47,7 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
     if (!path) {
       return '/product_placeholder.jpg';
     }
+    if (path.startsWith('http')) return path;
     // Ensures a single leading slash for a consistent root-relative path
     return `/${path.replace(/^\//, '')}`;
   };

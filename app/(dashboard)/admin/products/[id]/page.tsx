@@ -18,6 +18,12 @@ interface DashboardProductDetailsProps {
 const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
   const { id } = params;
 
+  const getImageUrl = (path: string | null | undefined) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `/${path.replace(/^\//, '')}`;
+  };
+
   const [product, setProduct] = useState<Product>();
   const [categories, setCategories] = useState<Category[]>();
   const [otherImages, setOtherImages] = useState<OtherImages[]>([]);
@@ -197,7 +203,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
                   text-gray-900 dark:text-white"
       >
         <h1 className="text-3xl font-semibold text-gray-800 dark:text-white">Product details</h1>
-        
+
         {/* Product name input div - start */}
         <div>
           <label className="form-control w-full max-w-xs">
@@ -365,7 +371,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           {product?.mainImage && (
             <div className="flex items-center gap-2 mt-2">
               <Image
-                src={`/${product.mainImage.replace(/^\//, '')}`}
+                src={getImageUrl(product.mainImage)}
                 alt={product?.title || ''}
                 className="w-auto h-auto rounded-lg border border-gray-200 dark:border-white/20 shadow-md"
                 width={100}
@@ -388,7 +394,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           {otherImages &&
             otherImages.map((image) => (
               <Image
-                src={`/${image.image.replace(/^\//, '')}`}
+                src={getImageUrl(image.image)}
                 key={nanoid()}
                 alt={product?.title || ''}
                 width={100}
@@ -445,7 +451,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
           </button>
         </div>
         {/* Action buttons div - end */}
-        
+
         <p className="text-xl max-sm:text-lg text-red-600 dark:text-red-400 font-medium">
           To delete the product you first need to delete all its records in
           orders (customer_order_product table).
