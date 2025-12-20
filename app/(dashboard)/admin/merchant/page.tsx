@@ -46,10 +46,10 @@ export default function MerchantPage() {
       <DashboardSidebar />
       <div className="flex-1 p-10 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">Merchants</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Merchants</h1>
           <Link
             href="/admin/merchant/new"
-            className="bg-white/20 backdrop-blur-md border border-white/30 shadow-lg text-white px-6 py-2 rounded-full hover:bg-white/30 hover:border-white/50 transition-all duration-300"
+            className="bg-[#cb6112] text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-orange-200 dark:shadow-none"
           >
             Add Merchant
           </Link>
@@ -57,17 +57,17 @@ export default function MerchantPage() {
 
         <div
           className="rounded-lg shadow-md p-6
-                    bg-white/10 backdrop-blur-md border border-white/20 text-white
-                    dark:bg-black/20 dark:border-gray-700"
+                    bg-white dark:bg-black/20 backdrop-blur-md border border-gray-200 dark:border-gray-700
+                    text-gray-900 dark:text-white"
         >
           {loading ? (
-            <div className="text-center py-10 text-white">
+            <div className="text-center py-10 text-gray-500 dark:text-gray-400">
               Loading merchants...
             </div>
           ) : merchants.length > 0 ? (
-            <table className="w-full bg-transparent text-white">
+            <table className="w-full bg-transparent text-gray-900 dark:text-white">
               <thead>
-                <tr className="border-b border-white/20 bg-white/20 dark:bg-black/30">
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5">
                   <th className="py-3 text-left">Name</th>
                   <th className="py-3 text-left">Email</th>
                   <th className="py-3 text-left">Status</th>
@@ -79,7 +79,7 @@ export default function MerchantPage() {
                 {merchants.map((merchant) => (
                   <tr
                     key={merchant.id}
-                    className="border-b border-white/10 hover:bg-white/10 dark:hover:bg-black/20"
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5"
                   >
                     <td className="py-4">{merchant.name}</td>
                     <td className="py-4">{merchant.email || 'N/A'}</td>
@@ -113,7 +113,7 @@ export default function MerchantPage() {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-10 text-white">
+            <div className="text-center py-10 text-gray-500 dark:text-gray-400">
               No merchants found
             </div>
           )}

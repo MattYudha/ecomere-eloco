@@ -20,8 +20,8 @@ const slides = [
   {
     id: 2,
     bgImage: '/assets/eloqo.png',
-    subtitle: 'Gurih yang Menggugah Selera',
-    title: 'Upgrade mood <br/> Cilok & varian baru kita.',
+    subtitle: 'Cookies yang Menggugah Selera',
+    title: 'Upgrade mood <br/> Cookies & varian baru kita.',
     text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
     buttonText: 'Jelajahi Makaroni',
     buttonLink: '/shop',
@@ -30,8 +30,8 @@ const slides = [
     id: 3,
     bgImage: '/uploads/5.jpg',
     subtitle: 'Manis, Lembut, & Memikat',
-    title: 'Setiap Gigitan <br/> Membawa Kebahagiaan',
-    text: 'Rasakan kukis premium lembut di dalam, renyah di luar—diciptakan untuk menghadirkan kehangatan di setiap hari.',
+    title: 'Upgrade mood <br/> Cilok Gurih dan Nikmat',
+    text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
     buttonText: 'Cicipi Kukis Premium',
     buttonLink: '/shop',
   },
@@ -98,97 +98,92 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative w-full h-screen min-h-[700px] overflow-hidden bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
+    <section className="relative w-full h-screen min-h-[500px] md:min-h-[700px] overflow-hidden bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
       {/* --- SLIDER CONTENT --- */}
       <AnimatePresence mode="wait">
-        {slides.map(
-          (slide, index) =>
-            index === current && (
-              <motion.div
-                key={slide.id}
-                className="absolute inset-0 w-full h-full"
-                initial="hidden"
-                animate="visible"
-                exit="exit"
+        <motion.div
+          key={slides[current].id}
+          className="absolute inset-0 w-full h-full"
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {/* 1. Background Image */}
+          <motion.div
+            className="absolute inset-0 w-full h-full"
+            variants={slideVariants}
+          >
+            <div className="relative w-full h-full">
+              <Image
+                src={slides[current].bgImage}
+                alt={slides[current].subtitle}
+                fill
+                priority={current === 0}
+                className="object-cover object-center"
+                quality={90}
+              />
+
+            </div>
+          </motion.div>
+
+          {/* 3. Content Text */}
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4 md:px-12 z-20 pt-16 md:pt-0">
+            {/* Subtitle */}
+            <motion.p
+              custom={0}
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-[#cb6112] font-bold tracking-[0.2em] uppercase text-xs md:text-base mb-3 md:mb-4 drop-shadow-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm px-3 py-1 md:px-4 md:py-1 rounded-full border border-[#cb6112]/20 dark:border-[#cb6112]/30"
+            >
+              {slides[current].subtitle}
+            </motion.p>
+
+            {/* Title */}
+            <motion.h1
+              custom={1}
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+              className="font-['Forum'] text-4xl md:text-7xl lg:text-8xl text-gray-900 dark:text-white leading-[1.1] mb-4 md:mb-6 drop-shadow-lg transition-colors duration-300"
+              dangerouslySetInnerHTML={{ __html: slides[current].title }}
+            />
+
+            {/* Description */}
+            <motion.p
+              custom={2}
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-gray-800 dark:text-gray-200 text-sm md:text-xl max-w-xs md:max-w-2xl mb-8 md:mb-10 leading-relaxed font-['DM_Sans'] drop-shadow-md transition-colors duration-300"
+            >
+              {slides[current].text}
+            </motion.p>
+
+            {/* Button */}
+            <motion.div
+              custom={3}
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <Link
+                href={slides[current].buttonLink}
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent overflow-hidden rounded-full transition-all duration-300"
               >
-                {/* 1. Background Image */}
-                <motion.div
-                  className="absolute inset-0 w-full h-full"
-                  variants={slideVariants}
-                >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={slide.bgImage}
-                      alt={slide.subtitle}
-                      fill
-                      priority={index === 0}
-                      className="object-cover object-center"
-                      quality={90}
-                    />
+                <div className="absolute inset-0 bg-[#cb6112] opacity-90 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(203,97,18,0.4)] group-hover:shadow-[0_0_50px_rgba(203,97,18,0.7)]" />
 
-                  </div>
-                </motion.div>
+                <span className="relative text-white font-bold uppercase tracking-widest text-sm z-10 group-hover:translate-x-[-5px] transition-transform">
+                  {slides[current].buttonText}
+                </span>
 
-                {/* 3. Content Text */}
-                <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 md:px-12 z-20">
-                  {/* Subtitle */}
-                  <motion.p
-                    custom={0}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="text-[#cb6112] font-bold tracking-[0.2em] uppercase text-sm md:text-base mb-4 drop-shadow-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm px-4 py-1 rounded-full border border-[#cb6112]/20 dark:border-[#cb6112]/30"
-                  >
-                    {slide.subtitle}
-                  </motion.p>
-
-                  {/* Title */}
-                  <motion.h1
-                    custom={1}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="font-['Forum'] text-5xl md:text-7xl lg:text-8xl text-gray-900 dark:text-white leading-[1.1] mb-6 drop-shadow-lg transition-colors duration-300"
-                    dangerouslySetInnerHTML={{ __html: slide.title }}
-                  />
-
-                  {/* Description */}
-                  <motion.p
-                    custom={2}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="text-gray-800 dark:text-gray-200 text-base md:text-xl max-w-2xl mb-10 leading-relaxed font-['DM_Sans'] drop-shadow-md transition-colors duration-300"
-                  >
-                    {slide.text}
-                  </motion.p>
-
-                  {/* Button */}
-                  <motion.div
-                    custom={3}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                  >
-                    <Link
-                      href={slide.buttonLink}
-                      className="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent overflow-hidden rounded-full transition-all duration-300"
-                    >
-                      <div className="absolute inset-0 bg-[#cb6112] opacity-90 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(203,97,18,0.4)] group-hover:shadow-[0_0_50px_rgba(203,97,18,0.7)]" />
-
-                      <span className="relative text-white font-bold uppercase tracking-widest text-sm z-10 group-hover:translate-x-[-5px] transition-transform">
-                        {slide.buttonText}
-                      </span>
-
-                      <span className="relative z-10 bg-white text-[#cb6112] rounded-full p-1 group-hover:translate-x-1 transition-transform">
-                        <IoChevronForward />
-                      </span>
-                    </Link>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ),
-        )}
+                <span className="relative z-10 bg-white text-[#cb6112] rounded-full p-1 group-hover:translate-x-1 transition-transform">
+                  <IoChevronForward />
+                </span>
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
       </AnimatePresence>
 
       {/* --- CUSTOM NAVIGATION ARROWS --- */}
@@ -234,11 +229,10 @@ const Hero = () => {
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
-            className={`h-1.5 rounded-full transition-all duration-500 ${
-              idx === current
-                ? 'w-12 bg-[#cb6112] shadow-[0_0_10px_#cb6112]'
-                : 'w-3 bg-gray-400/50 hover:bg-[#cb6112]/50 dark:bg-white/30 dark:hover:bg-white/60'
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-500 ${idx === current
+              ? 'w-12 bg-[#cb6112] shadow-[0_0_10px_#cb6112]'
+              : 'w-3 bg-gray-400/50 hover:bg-[#cb6112]/50 dark:bg-white/30 dark:hover:bg-white/60'
+              }`}
             aria-label={`Go to slide ${idx + 1}`}
           />
         ))}

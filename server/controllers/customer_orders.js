@@ -123,12 +123,29 @@ async function createCustomerOrder(request, response) {
       if (!user) {
         logDebug(`🔍 Searching user by email: ${validatedData.email}`);
         console.log(`🔍 Searching user by email: ${validatedData.email}`);
+
+        // Try precise match first
         user = await prisma.user.findUnique({
           where: { email: validatedData.email },
         });
+
+        // if not found, try case insensitive search
+        if (!user) {
+          user = await prisma.user.findFirst({
+            where: {
+              email: {
+                equals: validatedData.email,
+                mode: 'insensitive'
+              }
+            },
+          });
+        }
+
         if (user) {
           logDebug(`✅ Found user by email: ${user.email} (ID: ${user.id})`);
           console.log(`✅ Found user by email: ${user.email}`);
+        } else {
+          console.log(`❌ User NOT found for email: ${validatedData.email}`);
         }
       }
 
@@ -143,6 +160,18 @@ async function createCustomerOrder(request, response) {
           validatedData.status || 'pending',
           corder.id,
           validatedData.total,
+          {
+            name: validatedData.name,
+            lastname: validatedData.lastname,
+            email: validatedData.email,
+            phone: validatedData.phone,
+            address: validatedData.adress,
+            city: validatedData.city,
+            country: validatedData.country,
+            postalCode: validatedData.postalCode,
+            company: validatedData.company,
+            apartment: validatedData.apartment
+          }
         );
         logDebug(`📧 Order confirmation notification sent to user: ${user.email}`);
         console.log(
@@ -345,9 +374,12 @@ async function deleteCustomerOrder(request, response) {
       });
     }
 
-    await prisma.customer_order.delete({
+    await prisma.customer_order.update({
       where: {
         id: id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
 
@@ -381,9 +413,10 @@ async function getCustomerOrder(request, response) {
       });
     }
 
-    const order = await prisma.customer_order.findUnique({
+    const order = await prisma.customer_order.findFirst({
       where: {
         id: id,
+        isDeleted: false,
       },
     });
 
@@ -421,13 +454,20 @@ async function getAllOrders(request, response) {
 
     const [orders, totalCount] = await Promise.all([
       prisma.customer_order.findMany({
+        where: {
+          isDeleted: false,
+        },
         skip: offset,
         take: limit,
         orderBy: {
           dateTime: 'desc',
         },
       }),
-      prisma.customer_order.count(),
+      prisma.customer_order.count({
+        where: {
+          isDeleted: false,
+        },
+      }),
     ]);
 
     console.log({ orders, totalCount });

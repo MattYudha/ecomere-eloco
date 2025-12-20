@@ -8,49 +8,79 @@ class NotificationAPI {
     this.apiClient = apiClient;
   }
 
-  getNotifications(userId: string) {
-    return this.apiClient.get(`/api/notifications/${userId}`);
+  async getNotifications(userId: string) {
+    const response = await this.apiClient.get(`/api/notifications/${userId}`);
+    if (!response.ok) throw new Error('Failed to fetch notifications');
+    return response.json();
   }
 
-  getUserNotifications(userId: string, filters?: NotificationFilters) {
-    return this.apiClient.get(`/api/notifications/${userId}`, {
-      params: filters || {},
-    });
+  async getUserNotifications(userId: string, filters?: NotificationFilters) {
+    let url = `/api/notifications/${userId}`;
+    if (filters) {
+      // Remove undefined values
+      const cleanFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, v]) => v != null)
+      );
+      const queryParams = new URLSearchParams(cleanFilters as any).toString();
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+    }
+
+    const response = await this.apiClient.get(url);
+    if (!response.ok) throw new Error('Failed to fetch user notifications');
+    return response.json();
   }
 
-  createNotification(notification: NotificationType) {
-    return this.apiClient.post('/api/notifications', notification);
+  async createNotification(notification: NotificationType) {
+    const response = await this.apiClient.post('/api/notifications', notification);
+    if (!response.ok) throw new Error('Failed to create notification');
+    return response.json();
   }
 
-  updateNotification(notificationId: string, isRead: boolean) {
-    return this.apiClient.put(`/api/notifications/${notificationId}`, {
+  async updateNotification(notificationId: string, isRead: boolean) {
+    const response = await this.apiClient.put(`/api/notifications/${notificationId}`, {
       isRead,
     });
+    if (!response.ok) throw new Error('Failed to update notification');
+    return response.json();
   }
 
-  getUnreadCount(userId: string) {
-    return this.apiClient.get(`/api/notifications/${userId}/unread-count`);
+  async getUnreadCount(userId: string) {
+    const response = await this.apiClient.get(`/api/notifications/${userId}/unread-count`);
+    if (!response.ok) throw new Error('Failed to get unread count');
+    return response.json();
   }
 
-  bulkMarkAsRead(payload: { notificationIds: string[]; userId: string }) {
-    return this.apiClient.put('/api/notifications/bulk/mark-as-read', payload);
+  async bulkMarkAsRead(payload: { notificationIds: string[]; userId: string }) {
+    const response = await this.apiClient.put('/api/notifications/bulk/mark-as-read', payload);
+    if (!response.ok) throw new Error('Failed to bulk mark as read');
+    return response.json();
   }
 
-  markAllAsRead(userId: string) {
-    return this.apiClient.put(`/api/notifications/${userId}/mark-all-read`);
+  async markAllAsRead(userId: string) {
+    const response = await this.apiClient.put(`/api/notifications/${userId}/mark-all-read`);
+    if (!response.ok) throw new Error('Failed to mark all as read');
+    return response.json();
   }
 
-  deleteNotification(notificationId: string, userId?: string) {
-    return this.apiClient.delete(`/api/notifications/${notificationId}`, {
-      params: { userId },
-    });
+  async deleteNotification(notificationId: string, userId?: string) {
+    let url = `/api/notifications/${notificationId}`;
+    if (userId) {
+      url += `?userId=${userId}`;
+    }
+    const response = await this.apiClient.delete(url);
+    if (!response.ok) throw new Error('Failed to delete notification');
+    return response.json(); // Assuming delete endpoint returns the deleted item or success message
   }
 
-  bulkDeleteNotifications(payload: {
+  async bulkDeleteNotifications(payload: {
     notificationIds: string[];
     userId: string;
   }) {
-    return this.apiClient.post('/api/notifications/bulk/delete', payload);
+    const response = await this.apiClient.post('/api/notifications/bulk/delete', payload);
+    if (!response.ok) throw new Error('Failed to bulk delete notifications');
+    return response.json();
   }
 }
 

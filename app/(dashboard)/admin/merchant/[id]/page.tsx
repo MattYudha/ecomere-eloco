@@ -131,7 +131,7 @@ export default function MerchantDetailPage({
       toast.error(
         typeof error === 'object' && error !== null && 'message' in error
           ? (error as { message?: string }).message ||
-              'Failed to delete merchant'
+          'Failed to delete merchant'
           : 'Failed to delete merchant',
       );
     }
@@ -164,7 +164,7 @@ export default function MerchantDetailPage({
       <DashboardSidebar />
       <div className="flex-1 p-10 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Merchant Details</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Merchant Details</h1>
           <div className="flex gap-4">
             <Link
               href="/admin/merchant"
@@ -181,13 +181,13 @@ export default function MerchantDetailPage({
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700 transition-colors">
           <form
             onSubmit={handleSubmit}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Name
               </label>
               <input
@@ -271,12 +271,12 @@ export default function MerchantDetailPage({
           </form>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Merchant Products</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 transition-colors">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Merchant Products</h2>
           {merchant.products.length > 0 ? (
             <table className="w-full">
               <thead>
-                <tr className="border-b">
+                <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
                   <th className="py-3 text-left">Title</th>
                   <th className="py-3 text-left">Price</th>
                   <th className="py-3 text-left">In Stock</th>
@@ -285,7 +285,7 @@ export default function MerchantDetailPage({
               </thead>
               <tbody>
                 {merchant.products.map((product) => (
-                  <tr key={product.id} className="border-b hover:bg-gray-50">
+                  <tr key={product.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors">
                     <td className="py-4">{product.title}</td>
                     <td className="py-4">{formatPrice(product.price / 100)}</td>
                     <td className="py-4">{product.inStock}</td>

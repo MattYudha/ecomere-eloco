@@ -4,13 +4,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { sanitize } from '@/lib/sanitize';
-import { useProductStore, WishlistedProduct } from '../app/_zustand/store';
+import { useProductStore } from '../app/_zustand/store';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { Heart, ShoppingCart } from 'lucide-react';
-import apiClient from '@/lib/api';
-import { formatPrice } from '@/lib/utils'; // Added import
+import { ShoppingCart } from 'lucide-react';
+
+import { formatPrice } from '@/lib/utils';
 
 export type Product = {
   id: string;
@@ -29,137 +29,77 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const imageUrl = product.mainImage
     ? (product.mainImage.startsWith('http') ? product.mainImage : `/${product.mainImage.replace(/^\//, '')}`)
     : '/product_placeholder.jpg';
-  const { data: session } = useAuth();
   const router = useRouter();
-  const { addToCart, addToWishlistLocal, removeFromWishlistLocal, isProductInWishlist } =
-    useProductStore();
-
-  const handleToggleWishlist = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent link navigation
-    if (!session?.user) {
-      toast.error('You must be logged in to manage your wishlist.');
-      router.push('/login');
-      return;
-    }
-    const wishlistedProduct: WishlistedProduct = {
-      id: product.id,
-      slug: product.slug,
-      title: product.title,
-      mainImage: product.mainImage || '',
-      price: product.price,
-    };
-    if (isProductInWishlist(product.id)) {
-      try {
-        await apiClient.delete(`/api/wishlist/${product.id}`);
-        removeFromWishlistLocal(product.id);
-        toast.success('Removed from wishlist!');
-      } catch (error) {
-        toast.error('Failed to remove from wishlist.');
-      }
-    } else {
-      try {
-        await apiClient.post('/api/wishlist', { productId: product.id });
-        addToWishlistLocal(wishlistedProduct);
-        toast.success('Added to wishlist!');
-      } catch (error) {
-        toast.error('Failed to add to wishlist.');
-      }
-    }
-  };
+  const { addToCart } = useProductStore();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent link navigation
-    addToCart(
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.mainImage || '/product_placeholder.jpg',
-        amount: 1,
-      },
-    );
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.mainImage || '/product_placeholder.jpg',
+      amount: 1,
+    });
     toast.success(`${product.title} added to cart!`);
   };
 
   return (
     <motion.div
-      className="group relative w-full rounded-2xl overflow-hidden"
-      initial={{ opacity: 0, y: 50 }}
+      className="group relative w-full h-full"
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4 }}
     >
-      <Link href={`/product/${product.slug}`} className="block">
+      <Link href={`/product/${product.slug}`} className="block h-full">
         <motion.div
-          className="relative w-full rounded-2xl overflow-hidden shadow-xl 
-                     bg-white/60 dark:bg-dark-bg/60 
-                     backdrop-blur-lg 
-                     border border-gray-300 dark:border-brand/20"
-          whileHover={{ scale: 1.05, y: -5 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+          className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          whileHover={{ y: -8 }}
         >
           {/* Image Container */}
-          <div className="relative w-full h-56 bg-white/30 dark:bg-black/10">
+          <div className="relative w-full aspect-square bg-gray-50 dark:bg-gray-700/50 overflow-hidden">
             <Image
               src={imageUrl}
               alt={sanitize(product?.title) || 'Product image'}
               fill
-              className="object-contain transition-transform duration-500 group-hover:scale-110"
+              className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
             />
+
+            {/* Quick Action Overlay (Optional) */}
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
 
           {/* Content Section */}
-          <div className="p-5 space-y-3">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-white line-clamp-2 min-h-[3.5rem] transition-colors group-hover:text-brand">
-              {sanitize(product.title)}
-            </h3>
-            <div className="pt-3 border-t border-brand/20 flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                  Price
-                </span>
-                <span className="text-xl font-extrabold text-brand">
-                  {formatPrice(product.price)}
-                </span>
-              </div>
+          <div className="flex-1 p-3 flex flex-col gap-2">
+            <div className="flex-1 space-y-1">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2 group-hover:text-[#cb6112] transition-colors">
+                {sanitize(product.title)}
+              </h3>
+              <p className="text-lg font-bold text-[#cb6112]">
+                {formatPrice(product.price)}
+              </p>
+            </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <motion.button
-                  onClick={handleAddToCart}
-                  className="shine-effect relative overflow-hidden h-[40px] text-sm font-semibold shadow-sm bg-brand text-white rounded-lg flex items-center justify-center gap-2 hover:brightness-110 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <ShoppingCart size={16} />
-                  Add
-                </motion.button>
-                <motion.button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(`/product/${product.slug}`);
-                  }}
-                  className="shine-effect relative overflow-hidden h-[40px] text-sm font-semibold shadow-sm bg-orange-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Buy Now
-                </motion.button>
-              </div>
+            <div className="grid grid-cols-2 gap-2 mt-auto">
+              <button
+                onClick={handleAddToCart}
+                className="flex items-center justify-center gap-1 h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <ShoppingCart size={12} />
+                Add
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(`/product/${product.slug}`);
+                }}
+                className="flex items-center justify-center h-8 px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20"
+              >
+                Buy Now
+              </button>
             </div>
           </div>
-
-          {/* Wishlist Button */}
-          <motion.button
-            onClick={handleToggleWishlist}
-            className="absolute top-3 right-3 p-2 rounded-full bg-white/60 dark:bg-dark-bg/60 backdrop-blur-md text-red-500 transition-colors z-10"
-            aria-label="Toggle wishlist"
-            whileHover={{ scale: 1.2 }}
-          >
-            <Heart
-              size={20}
-              fill={isProductInWishlist(product.id) ? 'currentColor' : 'none'}
-            />
-          </motion.button>
         </motion.div>
       </Link>
     </motion.div>

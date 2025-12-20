@@ -44,14 +44,14 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+        className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-[#cb6112] hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-all duration-300 focus:outline-none"
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
       >
         <FaBell className="w-6 h-6" />
 
         {/* Unread Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+          <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm animate-bounce">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -59,67 +59,64 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
       {/* Dropdown Menu */}
       {isDropdownOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-gray-100 dark:border-[#cb6112]/20 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none z-50 overflow-hidden ring-1 ring-black/5">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900">
+            <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
               Notifications
+              {unreadCount > 0 && (
+                <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-[#cb6112]/10 text-[#cb6112]">
+                  {unreadCount} New
+                </span>
+              )}
             </h3>
             {unreadCount > 0 && (
-              <span className="text-sm text-gray-500">
-                {unreadCount} unread
-              </span>
+              <button
+                onClick={async () => {
+                  await markAllUserNotificationsAsRead();
+                }}
+                className="text-xs font-semibold text-gray-500 hover:text-[#cb6112] transition-colors"
+              >
+                Mark all read
+              </button>
             )}
           </div>
 
-          {/* Quick Actions */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex space-x-2">
-              <Link
-                href="/notification"
-                onClick={() => setIsDropdownOpen(false)}
-                className="flex-1 px-3 py-2 text-sm font-medium text-center text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
-              >
-                View All
-              </Link>
-
-              {unreadCount > 0 && (
-                <button
-                  className="flex-1 px-3 py-2 text-sm font-medium text-center text-gray-600 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-colors"
-                  onClick={async () => {
-                    await markAllUserNotificationsAsRead();
-                    setIsDropdownOpen(false);
-                  }}
-                >
-                  Mark All Read
-                </button>
-              )}
-            </div>
-          </div>
+          {/* Quick Actions (View All) - Moved to bottom usually but kept simple here */}
 
           {/* Notification Preview */}
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-[20rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
             {unreadCount === 0 ? (
-              <div className="p-6 text-center">
-                <FaBell className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-500 text-sm">No new notifications</p>
-                <p className="text-gray-400 text-xs mt-1">
-                  You&apos;re all caught up!
+              <div className="p-8 text-center flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center mb-3">
+                  <FaBell className="w-5 h-5 text-gray-400 dark:text-slate-600" />
+                </div>
+                <p className="text-gray-900 dark:text-white font-medium text-sm">No new notifications</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  We'll notify you when something arrives.
                 </p>
               </div>
             ) : (
-              <div className="p-4 space-y-3">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">
-                    You have {unreadCount} unread notification
-                    {unreadCount !== 1 ? 's' : ''}
+              <div className="p-0">
+                <div className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider bg-gray-50/50 dark:bg-white/5">
+                  Recent
+                </div>
+                {/* 
+                    Ideally we would map through recent notifications here. 
+                    Since this component currently only tracks unreadCount and links to the full page, 
+                    we'll encourage the user to click through. 
+                    For a full improvement, we would need to fetch the top 5 notifications here.
+                 */}
+                <div className="p-5 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''} requiring your attention.
                   </p>
                   <Link
                     href="/notification"
                     onClick={() => setIsDropdownOpen(false)}
-                    className="inline-flex items-center px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+                    className="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm font-bold text-white bg-[#cb6112] rounded-xl hover:bg-orange-700 transition-all shadow-lg shadow-orange-500/20"
                   >
-                    View in Notification Center →
+                    View All Notifications
                   </Link>
                 </div>
               </div>
@@ -127,13 +124,13 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-3 bg-gray-50 border-t border-gray-200">
+          <div className="p-0 border-t border-gray-100 dark:border-white/5">
             <Link
               href="/notification"
               onClick={() => setIsDropdownOpen(false)}
-              className="block w-full text-center text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+              className="block w-full py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-[#cb6112] hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
             >
-              Go to Notification Center
+              View Notification History
             </Link>
           </div>
         </div>

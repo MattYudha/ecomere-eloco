@@ -29,6 +29,7 @@ const createOrderUpdateNotification = async (
   orderStatus,
   orderId,
   totalAmount = null,
+  extraMetadata = {},
 ) => {
   try {
     const statusMessages = {
@@ -85,6 +86,7 @@ const createOrderUpdateNotification = async (
           orderId: orderId,
           status: orderStatus,
           ...(totalAmount && { totalAmount: totalAmount }),
+          ...extraMetadata,
         },
       },
     });

@@ -123,8 +123,8 @@ const NotificationsPage = () => {
   // Loading state
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <FaSpinner className="animate-spin text-4xl text-[#cb6112]" />
       </div>
     );
   }
@@ -135,21 +135,21 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-2">
-            <FaBell className="text-2xl text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Notification Center</h1>
+            <FaBell className="text-2xl text-[#cb6112]" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Notification Center</h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Manage and view all your notifications in one place
           </p>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 transition-colors duration-300">
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="mb-4">
             <div className="relative">
@@ -159,11 +159,11 @@ const NotificationsPage = () => {
                 placeholder="Search notifications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-[#cb6112] focus:border-[#cb6112] outline-none transition-all"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1 bg-[#cb6112] text-white text-sm rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#cb6112] focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors"
               >
                 Search
               </button>
@@ -174,14 +174,14 @@ const NotificationsPage = () => {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center space-x-2">
               <FaFilter className="text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Filters:</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters:</span>
             </div>
 
             {/* Type Filter */}
             <select
               value={selectedType}
               onChange={(e) => handleTypeFilter(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md text-sm focus:ring-2 focus:ring-[#cb6112] focus:border-[#cb6112] outline-none transition-colors"
             >
               <option value="all">All Types</option>
               <option value={NotificationType.ORDER_UPDATE}>Order Updates</option>
@@ -194,7 +194,7 @@ const NotificationsPage = () => {
             <select
               value={selectedStatus}
               onChange={(e) => handleStatusFilter(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md text-sm focus:ring-2 focus:ring-[#cb6112] focus:border-[#cb6112] outline-none transition-colors"
             >
               <option value="all">All Status</option>
               <option value="unread">Unread</option>
@@ -217,7 +217,7 @@ const NotificationsPage = () => {
                   sortOrder: 'desc'
                 });
               }}
-              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 underline"
+              className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white underline transition-colors"
             >
               Clear Filters
             </button>
@@ -226,22 +226,22 @@ const NotificationsPage = () => {
 
         {/* Bulk Actions */}
         {selectedIds?.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-6 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-700">
+              <span className="text-sm text-orange-800 dark:text-orange-200">
                 {selectedIds?.length} notification(s) selected
               </span>
               <div className="flex space-x-3">
                 <button
                   onClick={handleBulkMarkAsRead}
-                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-[#cb6112] bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-800 rounded-md hover:bg-orange-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#cb6112] focus:ring-offset-1 dark:focus:ring-offset-gray-900 transition-colors"
                 >
                   <FaCheckCircle className="w-4 h-4 mr-1" />
                   Mark as Read
                 </button>
                 <button
                   onClick={handleBulkDelete}
-                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-md hover:bg-red-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:focus:ring-offset-gray-900 transition-colors"
                 >
                   <FaTrash className="w-4 h-4 mr-1" />
                   Delete
@@ -254,12 +254,12 @@ const NotificationsPage = () => {
         {/* Select All Checkbox */}
         {notifications?.length > 0 && (
           <div className="mb-4">
-            <label className="flex items-center space-x-2 text-sm text-gray-600">
+            <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
               <input
                 type="checkbox"
                 checked={selectedIds?.length === notifications?.length && notifications?.length > 0}
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-[#cb6112] bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-500 rounded focus:ring-[#cb6112] focus:ring-2 cursor-pointer"
               />
               <span>Select all notifications</span>
             </label>
@@ -271,7 +271,7 @@ const NotificationsPage = () => {
           {loading && (!notifications || notifications.length === 0) ? (
             <div className="text-center py-12">
               <FaSpinner className="animate-spin text-3xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Loading notifications...</p>
+              <p className="text-gray-500 dark:text-gray-400">Loading notifications...</p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
@@ -280,20 +280,20 @@ const NotificationsPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-red-600 font-medium mb-2">Error loading notifications</p>
-              <p className="text-gray-500 mb-4">{error}</p>
+              <p className="text-red-600 dark:text-red-400 font-medium mb-2">Error loading notifications</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
               <button
                 onClick={() => fetchNotifications()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="px-4 py-2 bg-[#cb6112] text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#cb6112] focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
               >
                 Try Again
               </button>
             </div>
           ) : (!notifications || notifications.length === 0) ? (
             <div className="text-center py-12">
-              <FaBell className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications found</h3>
-              <p className="text-gray-500">
+              <FaBell className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No notifications found</h3>
+              <p className="text-gray-500 dark:text-gray-400">
                 {Object.keys(filters).some(key => filters[key as keyof typeof filters] !== undefined && key !== 'page' && key !== 'limit' && key !== 'sortBy' && key !== 'sortOrder')
                   ? "Try adjusting your filters to see more notifications."
                   : "You don't have any notifications yet."}
@@ -322,7 +322,7 @@ const NotificationsPage = () => {
                   <button
                     onClick={loadMore}
                     disabled={loading}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 bg-[#cb6112] text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-[#cb6112] focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? (
                       <>
@@ -341,7 +341,7 @@ const NotificationsPage = () => {
 
         {/* Stats */}
         {total > 0 && (
-          <div className="mt-8 text-center text-sm text-gray-500">
+          <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
             Showing {notifications?.length || 0} of {total} notification{total !== 1 ? 's' : ''}
             {page < totalPages && ` (Page ${page} of ${totalPages})`}
           </div>

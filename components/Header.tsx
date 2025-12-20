@@ -17,9 +17,9 @@ import { IoIosLogOut } from 'react-icons/io';
 import { LuLayoutDashboard } from 'react-icons/lu';
 import { Menu, X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
-import { useWishlist } from '@/hooks/useWishlist';
+
 import SearchInput from './SearchInput';
-import HeartElement from './HeartElement';
+
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 const Header = () => {
@@ -32,7 +32,7 @@ const Header = () => {
     console.log('[Header] Mounted, Session:', !!session);
   }, [session]);
   const { cart } = useCart();
-  const { wishlist } = useWishlist();
+
   const { theme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
@@ -241,12 +241,7 @@ const Header = () => {
             <div className="hidden md:block">
               <ThemeToggle />
             </div>
-            <Link
-              href="/wishlist"
-              className={`hidden md:block hover:scale-110 transition-transform ${isScrolled ? 'text-slate-800 dark:text-white' : ''}`}
-            >
-              <HeartElement wishQuantity={wishlist.length} />
-            </Link>
+
 
             <Link
               href="/cart"
@@ -342,16 +337,7 @@ const Header = () => {
                         Shop
                       </Link>
 
-                      <Link
-                        href="/wishlist"
-                        onClick={closeMobileMenu}
-                        className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
-                      >
-                        <span>Wishlist</span>
-                        <span className="bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300">
-                          {wishlist.length}
-                        </span>
-                      </Link>
+
 
                       <Link
                         href="/cart"
@@ -359,9 +345,11 @@ const Header = () => {
                         className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
                       >
                         <span>Cart</span>
-                        <span className="bg-[#cb6112] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md shadow-orange-200 dark:shadow-none">
-                          {totalItems}
-                        </span>
+                        {totalItems > 0 && (
+                          <span className="bg-[#cb6112] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md shadow-orange-200 dark:shadow-none">
+                            {totalItems}
+                          </span>
+                        )}
                       </Link>
 
                       {session?.user?.role === 'admin' && (

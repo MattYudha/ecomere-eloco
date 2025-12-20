@@ -4,7 +4,20 @@ import {
   NotificationType,
   NotificationPriority,
 } from '@/types/notification';
-// Simple date formatter function
+import { motion } from 'framer-motion';
+import {
+  FaBoxOpen,
+  FaCreditCard,
+  FaTag,
+  FaExclamationTriangle,
+  FaCheck,
+  FaTrash,
+  FaInfoCircle,
+  FaCircle,
+} from 'react-icons/fa';
+
+// --- HELPERS ---
+
 const formatTimeAgo = (date: string) => {
   const now = new Date();
   const past = new Date(date);
@@ -12,22 +25,43 @@ const formatTimeAgo = (date: string) => {
 
   if (diffInSeconds < 60) return 'Just now';
   if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    return `${Math.floor(diffInSeconds / 60)}m ago`;
   if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 3600)}h ago`;
   if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   return past.toLocaleDateString();
 };
-import {
-  FaShoppingCart,
-  FaCreditCard,
-  FaTag,
-  FaExclamationTriangle,
-  FaCheck,
-  FaTrash,
-  FaCircle,
-} from 'react-icons/fa';
+
+const getTypeIcon = (type: NotificationType) => {
+  switch (type) {
+    case NotificationType.ORDER_UPDATE:
+      return <FaBoxOpen className="text-white text-lg" />;
+    case NotificationType.PAYMENT_STATUS:
+      return <FaCreditCard className="text-white text-lg" />;
+    case NotificationType.PROMOTION:
+      return <FaTag className="text-white text-lg" />;
+    case NotificationType.SYSTEM_ALERT:
+      return <FaExclamationTriangle className="text-white text-lg" />;
+    default:
+      return <FaInfoCircle className="text-white text-lg" />;
+  }
+};
+
+const getTypeStyles = (type: NotificationType) => {
+  switch (type) {
+    case NotificationType.ORDER_UPDATE:
+      return 'from-amber-500 to-orange-600 shadow-orange-500/30';
+    case NotificationType.PAYMENT_STATUS:
+      return 'from-emerald-500 to-green-600 shadow-emerald-500/30';
+    case NotificationType.PROMOTION:
+      return 'from-[#cb6112] to-orange-500 shadow-orange-500/30'; // Brand Color
+    case NotificationType.SYSTEM_ALERT:
+      return 'from-red-500 to-rose-600 shadow-red-500/30';
+    default:
+      return 'from-gray-500 to-gray-600 shadow-gray-500/30';
+  }
+};
 
 interface NotificationCardProps {
   notification: Notification;
@@ -36,61 +70,6 @@ interface NotificationCardProps {
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
 }
-
-const getTypeIcon = (type: NotificationType) => {
-  switch (type) {
-    case NotificationType.ORDER_UPDATE:
-      return <FaShoppingCart className="text-blue-500" />;
-    case NotificationType.PAYMENT_STATUS:
-      return <FaCreditCard className="text-green-500" />;
-    case NotificationType.PROMOTION:
-      return <FaTag className="text-purple-500" />;
-    case NotificationType.SYSTEM_ALERT:
-      return <FaExclamationTriangle className="text-red-500" />;
-    default:
-      return <FaCircle className="text-gray-500" />;
-  }
-};
-
-const getTypeColor = (type: NotificationType) => {
-  switch (type) {
-    case NotificationType.ORDER_UPDATE:
-      return 'bg-blue-100 text-blue-800';
-    case NotificationType.PAYMENT_STATUS:
-      return 'bg-green-100 text-green-800';
-    case NotificationType.PROMOTION:
-      return 'bg-purple-100 text-purple-800';
-    case NotificationType.SYSTEM_ALERT:
-      return 'bg-red-100 text-red-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
-
-const getPriorityBadge = (priority: NotificationPriority) => {
-  const priorityStyles = {
-    [NotificationPriority.LOW]: 'bg-gray-100 text-gray-600 border-gray-300',
-    [NotificationPriority.NORMAL]: 'bg-blue-100 text-blue-600 border-blue-300',
-    [NotificationPriority.HIGH]:
-      'bg-orange-100 text-orange-600 border-orange-300',
-    [NotificationPriority.URGENT]: 'bg-red-100 text-red-600 border-red-300',
-  };
-
-  const priorityLabels = {
-    [NotificationPriority.LOW]: 'Low',
-    [NotificationPriority.NORMAL]: 'Normal',
-    [NotificationPriority.HIGH]: 'High',
-    [NotificationPriority.URGENT]: 'Urgent',
-  };
-
-  return (
-    <span
-      className={`px-2 py-1 text-xs font-medium rounded-full border ${priorityStyles[priority]}`}
-    >
-      {priorityLabels[priority]}
-    </span>
-  );
-};
 
 const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
@@ -101,107 +80,133 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 }) => {
   const timeAgo = formatTimeAgo(notification.createdAt);
 
+  // Extract Metadata securely
+  const metadata = notification.metadata as any || {};
+  const orderId = metadata.orderId || metadata.order_id; // Handle possible casing
+  const amount = metadata.amount || metadata.totalAmount;
+
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -100 }}
       className={`
-      border rounded-lg p-4 transition-all duration-200 hover:shadow-md
-      ${notification.isRead ? 'bg-white border-gray-200' : 'bg-blue-50 border-blue-200 shadow-sm'}
-      ${isSelected ? 'ring-2 ring-blue-500 border-blue-500' : ''}
-    `}
+        group relative overflow-hidden rounded-xl border transition-all duration-300
+        ${notification.isRead
+          ? 'bg-white border-gray-100 dark:bg-slate-800/50 dark:border-gray-700'
+          : 'bg-white border-[#cb6112]/30 dark:bg-slate-800 dark:border-[#cb6112]/50 shadow-lg shadow-[#cb6112]/5'
+        }
+        ${isSelected ? 'ring-2 ring-[#cb6112] ring-offset-2 dark:ring-offset-slate-900' : ''}
+      `}
     >
-      <div className="flex items-start space-x-3">
-        {/* Selection Checkbox */}
-        <div className="flex items-center pt-1">
+      {/* Unread Indicator Bar */}
+      {!notification.isRead && (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#cb6112]" />
+      )}
+
+      <div className="p-4 sm:p-5 flex gap-4">
+        {/* Checkbox */}
+        <div className="pt-1">
           <input
             type="checkbox"
             checked={isSelected}
             onChange={() => onToggleSelect(notification.id)}
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-            aria-label={`Select notification: ${notification.title}`}
+            className="w-5 h-5 rounded border-gray-300 text-[#cb6112] focus:ring-[#cb6112]/50 cursor-pointer"
           />
+        </div>
+
+        {/* Icon Box */}
+        <div
+          className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-lg ${getTypeStyles(notification.type)}`}
+        >
+          {getTypeIcon(notification.type)}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center space-x-2 flex-1">
-              <div className="flex-shrink-0">
-                {getTypeIcon(notification.type)}
-              </div>
-              <h3
-                className={`text-sm font-medium truncate ${
-                  notification.isRead
-                    ? 'text-gray-900'
-                    : 'text-gray-900 font-semibold'
-                }`}
-              >
-                {notification.title}
-              </h3>
-              {!notification.isRead && (
-                <div
-                  className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"
-                  aria-label="Unread notification"
-                />
-              )}
-            </div>
-
-            {/* Priority Badge */}
-            <div className="flex-shrink-0 ml-2">
-              {getPriorityBadge(notification.priority)}
-            </div>
+          <div className="flex justify-between items-start mb-1">
+            <h3 className={`text-base font-bold pr-4 ${notification.isRead ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
+              {notification.title}
+            </h3>
+            <span className="text-xs font-medium text-gray-400 whitespace-nowrap">
+              {timeAgo}
+            </span>
           </div>
 
-          {/* Message */}
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
             {notification.message}
           </p>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {/* Type Badge */}
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(notification.type)}`}
-              >
-                {notification.type.replace('_', ' ')}
-              </span>
+          {/* Metadata Chips (Order ID, Amount, etc.) */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {orderId && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-slate-700/50 border border-gray-200 dark:border-gray-600">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Order ID</span>
+                <span className="text-xs font-mono font-medium text-gray-900 dark:text-gray-200 select-all">
+                  #{typeof orderId === 'string' ? orderId.substring(0, 8).toUpperCase() : orderId}
+                </span>
+              </div>
+            )}
+            {amount && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-slate-700/50 border border-gray-200 dark:border-gray-600">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Total</span>
+                <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
+                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(Number(amount))}
+                </span>
+              </div>
+            )}
+          </div>
 
-              {/* Timestamp */}
-              <span
-                className="text-xs text-gray-500"
-                title={new Date(notification.createdAt).toLocaleString()}
-              >
-                {timeAgo}
-              </span>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-2">
-              {!notification.isRead && (
-                <button
-                  onClick={() => onMarkAsRead(notification.id)}
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors"
-                  aria-label="Mark as read"
-                >
-                  <FaCheck className="w-3 h-3 mr-1" />
-                  Mark Read
-                </button>
+          {/* Detailed Customer Info (If available) */}
+          {(metadata.name || metadata.address) && (
+            <div className="mt-3 p-3 bg-gray-50 dark:bg-slate-700/30 rounded-lg border border-gray-100 dark:border-gray-600/50 text-xs text-gray-600 dark:text-gray-300 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+              {metadata.name && (
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-gray-400 font-semibold mb-0.5">Customer</span>
+                  <span className="font-medium">{metadata.name} {metadata.lastname}</span>
+                </div>
               )}
-
-              <button
-                onClick={() => onDelete(notification.id)}
-                className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-100 rounded hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-colors"
-                aria-label="Delete notification"
-              >
-                <FaTrash className="w-3 h-3 mr-1" />
-                Delete
-              </button>
+              {metadata.phone && (
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-gray-400 font-semibold mb-0.5">Phone</span>
+                  <span className="font-medium">{metadata.phone}</span>
+                </div>
+              )}
+              {(metadata.billingAddress || metadata.address) && (
+                <div className="col-span-1 sm:col-span-2 flex flex-col mt-1">
+                  <span className="text-[10px] uppercase text-gray-400 font-semibold mb-0.5">Shipping Address</span>
+                  <span className="font-medium leading-relaxed">
+                    {metadata.address || metadata.billingAddress}
+                    {metadata.apartment ? `, ${metadata.apartment}` : ''}
+                    {metadata.city ? `, ${metadata.city}` : ''}
+                    {metadata.postalCode ? `, ${metadata.postalCode}` : ''}
+                  </span>
+                </div>
+              )}
             </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {!notification.isRead && (
+              <button
+                onClick={() => onMarkAsRead(notification.id)}
+                className="text-xs font-medium text-[#cb6112] hover:text-orange-700 flex items-center gap-1 transition-colors"
+              >
+                <FaCheck size={10} /> Mark as Read
+              </button>
+            )}
+            <button
+              onClick={() => onDelete(notification.id)}
+              className="text-xs font-medium text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+            >
+              <FaTrash size={10} /> Delete
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

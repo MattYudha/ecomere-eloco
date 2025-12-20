@@ -68,6 +68,7 @@ model Customer_order {
   country     String
   orderNotice String?
   total       Int
+  isDeleted   Boolean                  @default(false)
   products    customer_order_product[]
 }
 

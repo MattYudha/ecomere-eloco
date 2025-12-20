@@ -303,7 +303,7 @@ export const useUnreadCount = () => {
   // Auto-refresh unread count every 30 seconds
   useEffect(() => {
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000); // 30 seconds
+    const interval = setInterval(fetchUnreadCount, 5000); // 5 seconds for snappier updates
 
     // Listen for order completed events to refresh immediately
     const handleOrderCompleted = () => {

@@ -94,7 +94,7 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
   }
 
   return (
-    <div className="grid grid-cols-3 justify-items-center gap-x-2 gap-y-5 max-[1300px]:grid-cols-3 max-lg:grid-cols-2 max-[500px]:grid-cols-1">
+    <div className="grid grid-cols-4 justify-items-center gap-x-3 gap-y-4 max-2xl:grid-cols-3 max-lg:grid-cols-2 max-[500px]:grid-cols-1">
       {products.length > 0 ? (
         products.map((product: any) => (
           <ProductItem key={product.id} product={product} />
