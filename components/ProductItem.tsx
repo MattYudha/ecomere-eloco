@@ -113,24 +113,38 @@ const ProductItem = ({ product }: ProductItemProps) => {
             <h3 className="text-lg font-bold text-gray-800 dark:text-white line-clamp-2 min-h-[3.5rem] transition-colors group-hover:text-brand">
               {sanitize(product.title)}
             </h3>
-            <div className="flex items-end justify-between pt-2 border-t border-brand/20">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="pt-3 border-t border-brand/20 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                   Price
                 </span>
-                <span className="text-2xl font-extrabold text-brand">
+                <span className="text-xl font-extrabold text-brand">
                   {formatPrice(product.price)}
                 </span>
               </div>
-              <motion.button
-                onClick={handleAddToCart}
-                className="shine-effect relative overflow-hidden px-5 h-[44px] text-sm font-semibold shadow-md bg-brand text-white rounded-full flex items-center gap-2"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ShoppingCart size={16} />
-                Add
-              </motion.button>
+
+              <div className="grid grid-cols-2 gap-2">
+                <motion.button
+                  onClick={handleAddToCart}
+                  className="shine-effect relative overflow-hidden h-[40px] text-sm font-semibold shadow-sm bg-brand text-white rounded-lg flex items-center justify-center gap-2 hover:brightness-110 transition-all"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ShoppingCart size={16} />
+                  Add
+                </motion.button>
+                <motion.button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/product/${product.slug}`);
+                  }}
+                  className="shine-effect relative overflow-hidden h-[40px] text-sm font-semibold shadow-sm bg-orange-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700 transition-all"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Buy Now
+                </motion.button>
+              </div>
             </div>
           </div>
 

@@ -50,26 +50,30 @@ export const useProductStore = create<State & Actions>()(
           const cartItem = state.products.find(
             (item) => item.id === newProduct.id,
           );
+          let updatedProducts;
           if (!cartItem) {
-            return { products: [...state.products, newProduct] };
+            updatedProducts = [...state.products, newProduct];
           } else {
-            state.products.map((product) => {
+            updatedProducts = state.products.map((product) => {
               if (product.id === cartItem.id) {
-                product.amount += newProduct.amount;
+                return { ...product, amount: product.amount + newProduct.amount };
               }
+              return product;
             });
           }
-          return { products: [...state.products] };
+
+          let amount = 0;
+          let total = 0;
+          updatedProducts.forEach((item) => {
+            amount += item.amount;
+            total += item.amount * item.price;
+          });
+
+          return { products: updatedProducts, allQuantity: amount, total: total };
         });
       },
       buyNow: (newProduct) => {
         set((state) => {
-          // Logic for Buy Now:
-          // Option 1: Clear cart and add only this item (Direct Checkout behavior)
-          // Option 2: Add to cart but ensure quantity is EXACTLY what is selected (Overriding existing)
-          // The user's complaint "shows 4-5 because I bought it before" suggests they want to buy ONLY what they just selected.
-          // Implementation: Clear cart, add item.
-
           return {
             products: [newProduct],
             allQuantity: newProduct.amount,
@@ -88,10 +92,18 @@ export const useProductStore = create<State & Actions>()(
       },
       removeFromCart: (id) => {
         set((state) => {
-          state.products = state.products.filter(
+          const updatedProducts = state.products.filter(
             (product: ProductInCart) => product.id !== id,
           );
-          return { products: state.products };
+
+          let amount = 0;
+          let total = 0;
+          updatedProducts.forEach((item) => {
+            amount += item.amount;
+            total += item.amount * item.price;
+          });
+
+          return { products: updatedProducts, allQuantity: amount, total: total };
         });
       },
 
@@ -113,19 +125,21 @@ export const useProductStore = create<State & Actions>()(
       },
       updateCartAmount: (id, amount) => {
         set((state) => {
-          const cartItem = state.products.find((item) => item.id === id);
+          const updatedProducts = state.products.map((product) => {
+            if (product.id === id) {
+              return { ...product, amount: amount };
+            }
+            return product;
+          });
 
-          if (!cartItem) {
-            return { products: [...state.products] };
-          } else {
-            state.products.map((product) => {
-              if (product.id === cartItem.id) {
-                product.amount = amount;
-              }
-            });
-          }
+          let allQuantity = 0;
+          let total = 0;
+          updatedProducts.forEach((item) => {
+            allQuantity += item.amount;
+            total += item.amount * item.price;
+          });
 
-          return { products: [...state.products] };
+          return { products: updatedProducts, allQuantity: allQuantity, total: total };
         });
       },
       // Wishlist actions

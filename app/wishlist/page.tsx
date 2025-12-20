@@ -55,7 +55,7 @@ const WishlistPage = () => {
     };
 
     fetchWishlist();
-  }, [session, setWishlist]);
+  }, [session?.user?.id, setWishlist]);
 
 
   const handleRemoveFromWishlist = async (productId: string) => {

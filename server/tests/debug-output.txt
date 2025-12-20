@@ -1,0 +1,53 @@
+Testing Dashboard Stats Logic...
+1. Testing Revenue Query...
+Revenue Result: { _sum: { total: 30000 } }
+2. Testing New Orders Query...
+Γ¥î Test Failed: PrismaClientValidationError: 
+Invalid `prisma.customer_order.count()` invocation:
+
+{
+  select: {
+    _count: {
+      select: {
+        _all: true
+      }
+    }
+  },
+  where: {
+    createdAt: {
+    ~~~~~~~~~
+      gte: new Date("2025-12-19T17:00:00.000Z"),
+      lt: new Date("2025-12-20T17:00:00.000Z")
+    },
+?   AND?: Customer_orderWhereInput | Customer_orderWhereInput[],
+?   OR?: Customer_orderWhereInput[],
+?   NOT?: Customer_orderWhereInput | Customer_orderWhereInput[],
+?   id?: StringFilter | String,
+?   name?: StringFilter | String,
+?   lastname?: StringFilter | String,
+?   phone?: StringFilter | String,
+?   email?: StringFilter | String,
+?   company?: StringFilter | String,
+?   adress?: StringFilter | String,
+?   apartment?: StringFilter | String,
+?   postalCode?: StringFilter | String,
+?   dateTime?: DateTimeNullableFilter | DateTime | Null,
+?   updatedAt?: DateTimeFilter | DateTime,
+?   status?: StringFilter | String,
+?   city?: StringFilter | String,
+?   country?: StringFilter | String,
+?   orderNotice?: StringNullableFilter | String | Null,
+?   total?: IntFilter | Int,
+?   products?: Customer_order_productListRelationFilter
+  }
+}
+
+Unknown argument `createdAt`. Did you mean `updatedAt`? Available options are marked with ?.
+    at Nn (C:\Users\ACER\ecomere-eloco\server\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at ei.handleRequestError (C:\Users\ACER\ecomere-eloco\server\node_modules\@prisma\client\runtime\library.js:121:6911)
+    at ei.handleAndLogRequestError (C:\Users\ACER\ecomere-eloco\server\node_modules\@prisma\client\runtime\library.js:121:6593)
+    at ei.request (C:\Users\ACER\ecomere-eloco\server\node_modules\@prisma\client\runtime\library.js:121:6300)
+    at async a (C:\Users\ACER\ecomere-eloco\server\node_modules\@prisma\client\runtime\library.js:130:9551)
+    at async testStats (C:\Users\ACER\ecomere-eloco\server\tests\debug-stats.js:22:24) {
+  clientVersion: '6.19.1'
+}

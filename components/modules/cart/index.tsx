@@ -9,9 +9,15 @@ import QuantityInputCart from '@/components/QuantityInputCart';
 import { sanitize } from '@/lib/sanitize';
 import { formatPrice } from '@/lib/utils'; // Added import
 
+import { useEffect } from 'react';
+
 export const CartModule = () => {
   const { products, removeFromCart, calculateTotals, total } =
     useProductStore();
+
+  useEffect(() => {
+    calculateTotals();
+  }, [calculateTotals]);
 
   const handleRemoveItem = (id: string) => {
     removeFromCart(id);

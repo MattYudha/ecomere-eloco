@@ -33,3 +33,18 @@ Data: {
   "notificationId": "_EQWtzD_5N2f00zjtTfHD"
 }
 --------------------------------------------------
+[2025-12-20T08:41:47.654Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "SWkThb-p_yDXGPzwug87-"
+}
+--------------------------------------------------
+[2025-12-20T08:45:01.198Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Diterima
+Data: {
+  "notificationId": "3DwIy9_rEvtUjAzHknj97"
+}
+--------------------------------------------------
+[2025-12-20T09:00:34.101Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "bHT_K1zL24fr4FSR787xV"
+}
+--------------------------------------------------

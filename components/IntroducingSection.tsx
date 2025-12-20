@@ -11,6 +11,8 @@ interface ProductCardProps {
   description: string;
   imageUrl?: string;
   price?: string;
+  rating?: string;
+  sold?: string;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -18,6 +20,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   description,
   imageUrl,
   price,
+  rating = '4.5',
+  sold = '10+',
 }) => {
   return (
     <motion.div
@@ -97,13 +101,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
             </div>
             <div className="flex flex-col border-l border-r border-gray-100 dark:border-white/10">
-              <span className="text-[#cb6112] font-bold text-xs md:text-lg">4.9★</span>
+              <span className="text-[#cb6112] font-bold text-xs md:text-lg">{rating}★</span>
               <span className="text-[8px] md:text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 scale-90 md:scale-100">
                 Rating
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[#cb6112] font-bold text-xs md:text-lg">1K+</span>
+              <span className="text-[#cb6112] font-bold text-xs md:text-lg">{sold}</span>
               <span className="text-[8px] md:text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 scale-90 md:scale-100">
                 Sold
               </span>
@@ -148,7 +152,7 @@ const IntroducingSection = () => {
     >
       {/* --- DECORATIVE ELEMENTS --- */}
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/assets/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-      
+
       <div className="absolute top-0 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#cb6112] rounded-full blur-[80px] md:blur-[120px] opacity-20 dark:opacity-10 animate-pulse"></div>
       <div
         className="absolute bottom-0 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-yellow-500 dark:bg-orange-900 rounded-full blur-[60px] md:blur-[100px] opacity-10 dark:opacity-20 animate-pulse"
@@ -282,19 +286,25 @@ const IntroducingSection = () => {
             title="Eloqo Cookies"
             description="Kukis premium renyah dengan coklat lumer."
             imageUrl="/assets/brand1.png"
-            price="Rp 45.000"
+            price="Rp 15.000"
+            rating="4.5"
+            sold="10+"
           />
           <ProductCard
             title="Eloqo Chips"
             description="Keripik pedas dengan bumbu rahasia."
             imageUrl="/assets/brand2.png"
-            price="Rp 35.000"
+            price="Rp 15.000"
+            rating="4.0"
+            sold="20+"
           />
           <ProductCard
-            title="Eloqo Signature"
-            description="Varian signature kami yang paling laris."
-            imageUrl="/assets/eloqo.png"
-            price="Rp 50.000"
+            title="Cilok Bumbu Seblak"
+            description="Rasakan cita rasa Cilok yang enak dan Lezat"
+            imageUrl="/assets/cilok.png"
+            price="Rp 15.000"
+            rating="4.7"
+            sold="30+"
           />
         </div>
       </div>
