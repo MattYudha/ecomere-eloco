@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React from 'react';
+import Image from 'next/image';
 import { useTheme } from '@/context/ThemeContext'; // Pastikan path ini sesuai
 import { motion } from 'framer-motion';
 
@@ -51,10 +52,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
             UPDATED: Tinggi gambar disesuaikan mobile (h-32) vs desktop (md:h-64) */}
         <div className="relative w-full h-32 md:h-64 rounded-lg md:rounded-xl overflow-hidden mb-3 md:mb-5 flex items-center justify-center p-2 md:p-4 bg-gray-50 dark:bg-slate-900/50 group-hover:bg-orange-50 dark:group-hover:bg-slate-800/50 transition-colors">
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={title}
-              className="max-h-full max-w-full object-contain drop-shadow-lg transition-transform duration-500 group-hover:scale-110"
+              fill
+              className="object-contain drop-shadow-lg transition-transform duration-500 group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="text-center">
@@ -159,17 +162,26 @@ const IntroducingSection = () => {
         style={{ animationDelay: '2s' }}
       ></div>
 
-      <img
-        src="/assets/shape-5.png"
-        alt=""
-        className="absolute top-[10%] left-[5%] w-32 md:w-[500px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none"
-      />
-      <img
-        src="/assets/shape-6.png"
-        alt=""
-        className="absolute bottom-[10%] right-[5%] w-24 md:w-[400px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none"
+      {/* Decorative Shapes Wrapper for Next/Image */}
+      <div className="absolute top-[10%] left-[5%] w-32 md:w-[500px] h-32 md:h-[500px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none">
+        <Image
+          src="/assets/shape-5.png"
+          alt=""
+          fill
+          className="object-contain"
+        />
+      </div>
+      <div
+        className="absolute bottom-[10%] right-[5%] w-24 md:w-[400px] h-24 md:h-[400px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none"
         style={{ animationDelay: '-3s' }}
-      />
+      >
+        <Image
+          src="/assets/shape-6.png"
+          alt=""
+          fill
+          className="object-contain"
+        />
+      </div>
 
       {/* --- MAIN CONTENT --- */}
       <div className="container mx-auto px-4 relative z-20 flex flex-col items-center">

@@ -93,7 +93,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
                 </div>
                 <p className="text-gray-900 dark:text-white font-medium text-sm">No new notifications</p>
                 <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-                  We'll notify you when something arrives.
+                  We&apos;ll notify you when something arrives.
                 </p>
               </div>
             ) : (

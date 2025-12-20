@@ -50,17 +50,17 @@ const Hero = () => {
   const [current, setCurrent] = useState(0);
   const length = slides.length;
 
+  const nextSlide = useCallback(() => {
+    setCurrent(current === length - 1 ? 0 : current + 1);
+  }, [current, length]);
+
   // --- Logic Autoplay ---
   useEffect(() => {
     const timer = setTimeout(() => {
       nextSlide();
     }, 6000);
     return () => clearTimeout(timer);
-  }, [current]);
-
-  const nextSlide = useCallback(() => {
-    setCurrent(current === length - 1 ? 0 : current + 1);
-  }, [current, length]);
+  }, [current, nextSlide]);
 
   const prevSlide = () => {
     setCurrent(current === 0 ? length - 1 : current - 1);
