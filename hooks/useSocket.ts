@@ -3,7 +3,8 @@ import { io, Socket } from 'socket.io-client';
 import { useAuth } from './useAuth';
 
 export const useSocket = () => {
-    const { user } = useAuth();
+    const { data } = useAuth();
+    const user = data?.user;
     const socketRef = useRef<Socket | null>(null);
 
     useEffect(() => {
