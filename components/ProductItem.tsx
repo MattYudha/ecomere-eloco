@@ -22,7 +22,7 @@ export type Product = {
   rating?: number;
   reviewCount?: number;
   description?: string | null;
-  inStock?: boolean;
+  inStock?: number | boolean;
 };
 
 type ProductItemProps = {

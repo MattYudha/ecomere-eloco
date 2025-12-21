@@ -85,4 +85,5 @@ class NotificationAPI {
 }
 
 // WAJIB ADA DUA EXPORT INI!!
-export default new NotificationAPI(baseApiClient);
+const notificationApiInstance = new NotificationAPI(baseApiClient);
+export default notificationApiInstance;

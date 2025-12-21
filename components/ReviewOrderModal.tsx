@@ -40,29 +40,29 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
     const { createReview, isLoading: isSubmitting } = useReviewStore();
 
     useEffect(() => {
+        const fetchOrderDetails = async () => {
+            setLoading(true);
+            try {
+                // Assuming endpoint to get order with products
+                const res = await apiClient.get(`/api/orders/${orderId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setProducts(data.products || []);
+                } else {
+                    toast.error('Failed to load order details');
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error('Error fetching order');
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (isOpen && orderId) {
             fetchOrderDetails();
         }
     }, [isOpen, orderId]);
-
-    const fetchOrderDetails = async () => {
-        setLoading(true);
-        try {
-            // Assuming endpoint to get order with products
-            const res = await apiClient.get(`/api/orders/${orderId}`);
-            if (res.ok) {
-                const data = await res.json();
-                setProducts(data.products || []);
-            } else {
-                toast.error('Failed to load order details');
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error('Error fetching order');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
