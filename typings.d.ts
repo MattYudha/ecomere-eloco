@@ -10,6 +10,7 @@ interface Product {
   categoryId: string;
   category: { name: string } | null;
   inStock: number;
+  reviewCount?: number;
 }
 
 interface Merchant {
