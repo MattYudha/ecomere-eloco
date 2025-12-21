@@ -14,7 +14,7 @@ export const useSocket = () => {
             // In dev: often http://localhost:3001 if separate. If proxied by Next, can be empty string.
             // Given your setup seems to proxy /api, but socket.io typically needs its own port or path unless configured on same server port.
             // Since backend runs on 3001 and frontend on 3000, we should point to backend.
-            const url = 'http://localhost:3001';
+            const url = socketUrl || (typeof window !== 'undefined' ? window.location.origin : '');
 
             socketRef.current = io(url, {
                 // path: '/socket.io', // Default
