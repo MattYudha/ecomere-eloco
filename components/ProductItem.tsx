@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
+import { FaStar } from 'react-icons/fa6';
 
 import { formatPrice } from '@/lib/utils';
 
@@ -18,7 +19,10 @@ export type Product = {
   mainImage: string | null;
   title: string;
   price: number;
+  rating?: number;
+  reviewCount?: number;
   description?: string | null;
+  inStock?: boolean;
 };
 
 type ProductItemProps = {
@@ -76,6 +80,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2 group-hover:text-[#cb6112] transition-colors">
                 {sanitize(product.title)}
               </h3>
+
+              {/* Rating Star */}
+              <div className="flex items-center gap-1">
+                <div className="flex text-[#fbbf24] text-[10px]">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className={i < Math.round(product.rating || 0) ? "fill-current" : "text-gray-200 dark:text-gray-600"} />
+                  ))}
+                </div>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">({product.reviewCount || 0})</span>
+              </div>
+
               <p className="text-lg font-bold text-[#cb6112]">
                 {formatPrice(product.price)}
               </p>

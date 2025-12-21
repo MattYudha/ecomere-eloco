@@ -213,3 +213,234 @@ Data: {
 --------------------------------------------------
 [2025-12-20T15:35:26.678Z] 📧 Order confirmation notification sent to user: admin@gmail.com
 --------------------------------------------------
+[2025-12-21T09:51:55.472Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2025-12-21T09:51:56.044Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-21T09:51:56.114Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T09:51:56.115Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "03dac27c-4a79-42c0-ba4f-75c94b572db5"
+}
+--------------------------------------------------
+[2025-12-21T09:51:56.552Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Diterima
+Data: {
+  "notificationId": "HUjj6FUyLQ4i_FMLob5mJ"
+}
+--------------------------------------------------
+[2025-12-21T09:51:56.553Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T09:53:18.893Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "sJ4-GWJzvg_s2_M0HM6Jt"
+}
+--------------------------------------------------
+[2025-12-21T09:53:40.089Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Diterima
+Data: {
+  "notificationId": "ZwNLwUbIAqbxIC1PgCEdv"
+}
+--------------------------------------------------
+[2025-12-21T09:58:50.838Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat123345@gmail.com",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2025-12-21T09:58:51.452Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-21T09:58:51.525Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T09:58:51.526Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "fff0422b-a5da-4447-ac1c-25f93cd51ec3"
+}
+--------------------------------------------------
+[2025-12-21T09:58:51.948Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Diterima
+Data: {
+  "notificationId": "NWQrxaSygxXI_RgUvsmd7"
+}
+--------------------------------------------------
+[2025-12-21T09:58:51.948Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T10:24:49.482Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2025-12-21T10:24:50.157Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-21T10:24:50.224Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T10:24:50.225Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "1d2fbabb-92b1-4bec-b73f-48f330dfb916"
+}
+--------------------------------------------------
+[2025-12-21T10:24:50.680Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Diterima
+Data: {
+  "notificationId": "Gr3WHSO818kLXwFq8zd3O"
+}
+--------------------------------------------------
+[2025-12-21T10:24:50.680Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2025-12-21T10:40:59.093Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T10:40:59.515Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T10:40:59.637Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T10:40:59.638Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "17548ed5-bbb1-4e04-a9d0-adcae5558476"
+}
+--------------------------------------------------
+[2025-12-21T10:41:00.464Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Diterima
+Data: {
+  "notificationId": "OyI-bsSotqUmyhvPvtjK5"
+}
+--------------------------------------------------
+[2025-12-21T10:41:00.465Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:20:31.837Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T11:20:33.764Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T11:20:33.850Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:20:33.851Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "dcbf6063-f4d5-4797-9a23-3fc97b9a4a51"
+}
+--------------------------------------------------
+[2025-12-21T11:20:34.358Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Diterima
+Data: {
+  "notificationId": "FY5siuD0CckOp0bhZ5Eol"
+}
+--------------------------------------------------
+[2025-12-21T11:20:34.359Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:22:08.452Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "NAO93Cv0XS-se3DAos3Ey"
+}
+--------------------------------------------------
+[2025-12-21T11:36:54.953Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "fc288d5y1725@student.devacademy.id",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T11:36:57.215Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T11:36:57.290Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:36:57.291Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "dd23a0d0-117e-4e6e-88c5-5fa353176d6d"
+}
+--------------------------------------------------
+[2025-12-21T11:36:58.831Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Diterima
+Data: {
+  "notificationId": "UljjS_hpTynLtuZ91YpbJ"
+}
+--------------------------------------------------
+[2025-12-21T11:36:58.832Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:38:02.318Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Diterima
+Data: {
+  "notificationId": "vYlghWQ48FwKrERsoxGbK"
+}
+--------------------------------------------------
+[2025-12-21T11:53:23.624Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat123345@gmail.com",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T11:53:24.170Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T11:53:24.252Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:53:24.252Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "c8a4c721-514b-47ec-816d-d1d862086ef8"
+}
+--------------------------------------------------
+[2025-12-21T11:53:24.708Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T11:53:24.708Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Dibuat
+Data: {
+  "notificationId": "NVjhGo-Yv-zRJ7SccDLQf"
+}
+--------------------------------------------------
+[2025-12-21T11:53:24.709Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T11:55:07.576Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T11:55:07.688Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Selesai
+Data: {
+  "notificationId": "fsWXQx5yvqjc7nWsXHHlc"
+}
+--------------------------------------------------
+[2025-12-21T12:33:49.354Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat12334@gmail.com",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T12:33:50.432Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T12:33:50.516Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T12:33:50.516Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "0986ed84-1216-4e17-a184-128b6f28b915"
+}
+--------------------------------------------------
+[2025-12-21T12:33:51.500Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T12:33:51.500Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Dibuat
+Data: {
+  "notificationId": "vKpnSPsppLdJHQb-FptCi"
+}
+--------------------------------------------------
+[2025-12-21T12:33:51.501Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------

@@ -44,7 +44,7 @@ const CheckoutPage = () => {
 
     // Name validation
     if (!checkoutForm.name.trim() || checkoutForm.name.trim().length < 2) {
-      errors.push('Name must be at least 2 characters');
+      errors.push('Nama Depan minimal 2 karakter');
     }
 
     // Lastname validation
@@ -52,7 +52,7 @@ const CheckoutPage = () => {
       !checkoutForm.lastname.trim() ||
       checkoutForm.lastname.trim().length < 2
     ) {
-      errors.push('Lastname must be at least 2 characters');
+      errors.push('Nama Belakang minimal 2 karakter');
     }
 
     // Email validation
@@ -62,26 +62,26 @@ const CheckoutPage = () => {
       !checkoutForm.email.trim() ||
       !emailRegex.test(checkoutForm.email.trim())
     ) {
-      errors.push('Please enter a valid email address');
+      errors.push('Mohon masukkan alamat email yang valid');
     }
 
     // Phone validation (must be at least 10 digits)
     const phoneDigits = checkoutForm.phone.replace(/[^0-9]/g, '');
     if (!checkoutForm.phone.trim() || phoneDigits.length < 10) {
-      errors.push('Phone number must be at least 10 digits');
+      errors.push('Nomor HP/WA minimal 10 digit');
     }
 
-    // Company validation
+    // Company validation (Kecamatan)
     if (
       !checkoutForm.company.trim() ||
-      checkoutForm.company.trim().length < 5
+      checkoutForm.company.trim().length < 3
     ) {
-      errors.push('Company must be at least 5 characters');
+      errors.push('Kecamatan minimal 3 karakter');
     }
 
     // Address validation
     if (!checkoutForm.adress.trim() || checkoutForm.adress.trim().length < 5) {
-      errors.push('Address must be at least 5 characters');
+      errors.push('Alamat Lengkap minimal 5 karakter');
     }
 
     // Apartment validation (updated to 1 character minimum)
@@ -93,16 +93,16 @@ const CheckoutPage = () => {
     }
 
     // City validation
-    if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 5) {
-      errors.push('City must be at least 5 characters');
+    if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 3) {
+      errors.push('Kota/Kabupaten minimal 3 karakter');
     }
 
-    // Country validation
+    // Country validation (Provinsi)
     if (
       !checkoutForm.country.trim() ||
-      checkoutForm.country.trim().length < 5
+      checkoutForm.country.trim().length < 3
     ) {
-      errors.push('Country must be at least 5 characters');
+      errors.push('Provinsi minimal 3 karakter');
     }
 
     // Postal code validation
@@ -110,7 +110,7 @@ const CheckoutPage = () => {
       !checkoutForm.postalCode.trim() ||
       checkoutForm.postalCode.trim().length < 3
     ) {
-      errors.push('Postal code must be at least 3 characters');
+      errors.push('Kode Pos minimal 3 karakter');
     }
 
     return errors;
@@ -145,7 +145,7 @@ const CheckoutPage = () => {
     );
 
     if (missingFields.length > 0) {
-      toast.error('Please fill in all required fields');
+      toast.error('Mohon lengkapi semua field yang wajib diisi');
       return;
     }
 
@@ -318,7 +318,7 @@ const CheckoutPage = () => {
       }
 
       toast.success(
-        'Order created successfully! You will be contacted for payment.',
+        'Pesanan berhasil dibuat! Kami akan menghubungi Anda untuk pembayaran.',
       );
       setTimeout(() => {
         router.push('/');
@@ -399,16 +399,16 @@ const CheckoutPage = () => {
   }, [products.length, router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-300 dark:bg-orange-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
         <div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-300 dark:bg-indigo-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-300 dark:bg-amber-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
           style={{ animationDelay: '1s' }}
         ></div>
         <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 dark:bg-pink-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-300 dark:bg-yellow-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
           style={{ animationDelay: '2s' }}
         ></div>
       </div>
@@ -416,7 +416,7 @@ const CheckoutPage = () => {
       <SectionTitle title="Checkout" path="Home | Cart | Checkout" />
 
       <main className="relative z-10 mx-auto max-w-screen-2xl grid grid-cols-1 lg:grid-cols-2 gap-x-16 lg:px-8 xl:gap-x-48 py-12 sm:py-16">
-        <h1 className="sr-only">Order information</h1>
+        <h1 className="sr-only">Informasi Pemesanan</h1>
 
         {/* Order Summary */}
         <section
@@ -431,7 +431,7 @@ const CheckoutPage = () => {
                 id="summary-heading"
                 className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
               >
-                Order Summary
+                Ringkasan Pesanan
               </h2>
 
               <ul
@@ -459,7 +459,7 @@ const CheckoutPage = () => {
                         {product?.title}
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400">
-                        Quantity: {product?.amount}
+                        Jumlah: {product?.amount}
                       </p>
                     </div>
                     <p className="flex-none text-base font-bold">{formatPrice(product?.price)}</p>
@@ -473,16 +473,12 @@ const CheckoutPage = () => {
                   <dd>{formatPrice(total)}</dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-gray-600 dark:text-gray-400">Shipping</dt>
-                  <dd>{formatPrice(5)}</dd>
-                </div>
-                <div className="flex items-center justify-between">
-                  <dt className="text-gray-600 dark:text-gray-400">Taxes</dt>
-                  <dd>{formatPrice(total / 5)}</dd>
+                  <dt className="text-gray-600 dark:text-gray-400">Pajak</dt>
+                  <dd>{formatPrice(0)}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4 text-base font-bold">
-                  <dt>Order Total</dt>
-                  <dd>{formatPrice(total === 0 ? 0 : Math.round(total + total / 5 + 5))}</dd>
+                  <dt>Total Pesanan</dt>
+                  <dd>{formatPrice(total === 0 ? 0 : Math.round(total))}</dd>
                 </div>
               </dl>
             </div>
@@ -501,7 +497,7 @@ const CheckoutPage = () => {
                   id="contact-info-heading"
                   className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
                 >
-                  Contact Information
+                  Penerima
                 </h2>
 
                 <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
@@ -510,7 +506,7 @@ const CheckoutPage = () => {
                       htmlFor="name-input"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      First Name *
+                      Nama Depan *
                     </label>
                     <div className="mt-1">
                       <input
@@ -527,7 +523,7 @@ const CheckoutPage = () => {
                         autoComplete="given-name"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -537,7 +533,7 @@ const CheckoutPage = () => {
                       htmlFor="lastname-input"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Last Name *
+                      Nama Belakang *
                     </label>
                     <div className="mt-1">
                       <input
@@ -554,7 +550,7 @@ const CheckoutPage = () => {
                         autoComplete="family-name"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -564,7 +560,7 @@ const CheckoutPage = () => {
                       htmlFor="phone-input"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Phone Number *
+                      Nomor WhatsApp / HP *
                     </label>
                     <div className="mt-1">
                       <input
@@ -581,7 +577,7 @@ const CheckoutPage = () => {
                         autoComplete="tel"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -591,7 +587,7 @@ const CheckoutPage = () => {
                       htmlFor="email-address"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Email Address *
+                      Alamat Email *
                     </label>
                     <div className="mt-1">
                       <input
@@ -608,7 +604,7 @@ const CheckoutPage = () => {
                         autoComplete="email"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -617,11 +613,11 @@ const CheckoutPage = () => {
 
               {/* Payment Notice */}
               <section className="mt-10">
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-4">
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
-                        className="h-5 w-5 text-indigo-400 dark:text-indigo-300"
+                        className="h-5 w-5 text-orange-400 dark:text-orange-300"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -633,13 +629,13 @@ const CheckoutPage = () => {
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-indigo-800 dark:text-indigo-300">
-                        Payment Information
+                      <h3 className="text-sm font-medium text-orange-800 dark:text-orange-300">
+                        Informasi Pembayaran
                       </h3>
-                      <div className="mt-2 text-sm text-indigo-700 dark:text-indigo-400">
+                      <div className="mt-2 text-sm text-orange-700 dark:text-orange-400">
                         <p>
-                          Payment will be processed after order confirmation.
-                          You will be contacted for payment details.
+                          Pembayaran akan diproses setelah konfirmasi pesanan.
+                          Kami akan menghubungi Anda untuk detail pembayaran.
                         </p>
                       </div>
                     </div>
@@ -653,7 +649,7 @@ const CheckoutPage = () => {
                   id="shipping-heading"
                   className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
                 >
-                  Shipping Address
+                  Lokasi Pengiriman & Alamat
                 </h2>
 
                 <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
@@ -662,7 +658,7 @@ const CheckoutPage = () => {
                       htmlFor="company"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Company *
+                      Kecamatan *
                     </label>
                     <div className="mt-1">
                       <input
@@ -671,7 +667,7 @@ const CheckoutPage = () => {
                         name="company"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         value={checkoutForm.company}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -688,17 +684,18 @@ const CheckoutPage = () => {
                       htmlFor="address"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Address *
+                      Alamat Lengkap *
                     </label>
                     <div className="mt-1">
-                      <input
-                        type="text"
+                      <textarea
                         id="address"
                         name="address"
                         autoComplete="street-address"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        rows={3}
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        placeholder="Contoh: Jl. Merdeka No. 10, RT 01/RW 02 (Samping Toko Berkah)"
                         value={checkoutForm.adress}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -715,7 +712,7 @@ const CheckoutPage = () => {
                       htmlFor="apartment"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Apartment, suite, etc. *
+                      Detail Lainnya / Patokan Tambahan *
                     </label>
                     <div className="mt-1">
                       <input
@@ -724,7 +721,7 @@ const CheckoutPage = () => {
                         name="apartment"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         value={checkoutForm.apartment}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -741,7 +738,7 @@ const CheckoutPage = () => {
                       htmlFor="city"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      City *
+                      Kota / Kabupaten *
                     </label>
                     <div className="mt-1">
                       <input
@@ -751,7 +748,7 @@ const CheckoutPage = () => {
                         autoComplete="address-level2"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         value={checkoutForm.city}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -768,7 +765,7 @@ const CheckoutPage = () => {
                       htmlFor="region"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Country *
+                      Provinsi *
                     </label>
                     <div className="mt-1">
                       <input
@@ -778,7 +775,7 @@ const CheckoutPage = () => {
                         autoComplete="address-level1"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         value={checkoutForm.country}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -795,7 +792,7 @@ const CheckoutPage = () => {
                       htmlFor="postal-code"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Postal Code *
+                      Kode Pos *
                     </label>
                     <div className="mt-1">
                       <input
@@ -805,7 +802,7 @@ const CheckoutPage = () => {
                         autoComplete="postal-code"
                         required
                         disabled={isSubmitting}
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         value={checkoutForm.postalCode}
                         onChange={(e) =>
                           setCheckoutForm({
@@ -826,7 +823,7 @@ const CheckoutPage = () => {
                     </label>
                     <div className="mt-1">
                       <textarea
-                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                        className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                         id="order-notice"
                         name="order-notice"
                         autoComplete="order-notice"
@@ -850,9 +847,9 @@ const CheckoutPage = () => {
                   type="button"
                   onClick={makePurchase}
                   disabled={isSubmitting}
-                  className="w-full rounded-md border border-transparent bg-indigo-600 px-20 py-3 text-lg font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                  className="w-full rounded-md border border-transparent bg-orange-600 px-20 py-3 text-lg font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
                 >
-                  {isSubmitting ? 'Processing Order...' : 'Place Order'}
+                  {isSubmitting ? 'Memproses Pesanan...' : 'Buat Pesanan'}
                 </button>
               </div>
             </div>

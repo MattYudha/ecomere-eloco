@@ -289,61 +289,61 @@ const AdminSingleOrder = () => {
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InputField
                   icon={<Edit size={16} />}
-                  label="Name"
+                  label="Nama Depan"
                   value={order.name}
                   field="name"
                 />
                 <InputField
                   icon={<Edit size={16} />}
-                  label="Lastname"
+                  label="Nama Belakang"
                   value={order.lastname}
                   field="lastname"
                 />
                 <InputField
                   icon={<Mail size={16} />}
-                  label="Email"
+                  label="Alamat Email"
                   value={order.email}
                   field="email"
                 />
                 <InputField
                   icon={<Phone size={16} />}
-                  label="Phone"
+                  label="Nomor WhatsApp / HP"
                   value={order.phone}
                   field="phone"
                 />
                 <InputField
                   icon={<Building size={16} />}
-                  label="Company"
+                  label="Kecamatan"
                   value={order.company}
                   field="company"
                 />
                 <InputField
                   icon={<MapPin size={16} />}
-                  label="Address"
+                  label="Alamat Lengkap"
                   value={order.adress}
                   field="adress"
                 />
                 <InputField
                   icon={<MapPin size={16} />}
-                  label="Apartment"
+                  label="Detail Lainnya / Patokan Tambahan"
                   value={order.apartment}
                   field="apartment"
                 />
                 <InputField
                   icon={<MapPin size={16} />}
-                  label="City"
+                  label="Kota / Kabupaten"
                   value={order.city}
                   field="city"
                 />
                 <InputField
                   icon={<MapPin size={16} />}
-                  label="Country"
+                  label="Provinsi"
                   value={order.country}
                   field="country"
                 />
                 <InputField
                   icon={<Hash size={16} />}
-                  label="Postal Code"
+                  label="Kode Pos"
                   value={order.postalCode}
                   field="postalCode"
                 />

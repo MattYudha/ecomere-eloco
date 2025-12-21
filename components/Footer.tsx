@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext'; // Pastikan path ini sesuai
 
@@ -21,14 +21,14 @@ const Footer = () => {
   const footerBgStyle =
     theme === 'dark'
       ? {
-          background:
-            'radial-gradient(ellipse at bottom, rgba(203,97,18,0.2), #0f172a 80%)',
-          backgroundColor: '#0f172a',
-        }
+        background:
+          'radial-gradient(ellipse at bottom, rgba(203,97,18,0.2), #0f172a 80%)',
+        backgroundColor: '#0f172a',
+      }
       : {
-          background: 'linear-gradient(to top, #ffffff, rgba(203,97,18,0.05))',
-          backgroundColor: '#ffffff',
-        };
+        background: 'linear-gradient(to top, #ffffff, rgba(203,97,18,0.05))',
+        backgroundColor: '#ffffff',
+      };
 
   return (
     <footer
@@ -50,17 +50,14 @@ const Footer = () => {
               quality and taste in every bite, crafted for perfection.
             </p>
             <div className="flex space-x-5 pt-2">
-              {[FaFacebook, FaInstagram, FaTwitter, FaYoutube].map(
-                (Icon, index) => (
-                  <Link
-                    key={index}
-                    href="#"
-                    className="text-gray-400 hover:text-[#cb6112] dark:hover:text-[#cb6112] transition-all transform hover:scale-110"
-                  >
-                    <Icon size={22} />
-                  </Link>
-                ),
-              )}
+              <Link
+                href="https://www.instagram.com/eloqo.co/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-[#cb6112] dark:hover:text-[#cb6112] transition-all transform hover:scale-110"
+              >
+                <FaInstagram size={22} />
+              </Link>
             </div>
           </div>
 

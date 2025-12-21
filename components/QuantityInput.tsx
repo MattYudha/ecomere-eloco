@@ -38,7 +38,7 @@ const QuantityInput = ({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          className="size-10 leading-10 text-gray-600 transition hover:opacity-75 flex justify-center items-center border"
+          className="size-10 leading-10 text-gray-600 dark:text-gray-300 transition hover:opacity-75 flex justify-center items-center border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-slate-800"
           onClick={() => handleQuantityChange('minus')}
         >
           <FaMinus />
@@ -49,12 +49,12 @@ const QuantityInput = ({
           id="Quantity"
           disabled={true}
           value={quantityCount}
-          className="h-10 w-24 rounded border-gray-200 sm:text-sm"
+          className="h-10 w-24 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-800 text-black dark:text-white text-center sm:text-sm"
         />
 
         <button
           type="button"
-          className="size-10 leading-10 text-gray-600 transition hover:opacity-75 flex justify-center items-center border"
+          className="size-10 leading-10 text-gray-600 dark:text-gray-300 transition hover:opacity-75 flex justify-center items-center border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-slate-800"
           onClick={() => handleQuantityChange('plus')}
         >
           <FaPlus />

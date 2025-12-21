@@ -4,8 +4,12 @@ const authMiddleware = (req, res, next) => {
   // Get token from header
   let token = req.header('Authorization');
 
+  console.log('[AUTH_DEBUG] Authorization Header:', token ? 'PRESENT' : 'MISSING');
+  console.log('[AUTH_DEBUG] Cookies:', req.cookies ? Object.keys(req.cookies) : 'NONE');
+
   // Check cookies if no header
   if (!token && req.cookies && req.cookies.eloco_session) {
+    console.log('[AUTH_DEBUG] Found eloco_session cookie');
     token = req.cookies.eloco_session;
   } else if (token) {
     // If header exists, split "Bearer TOKEN"
@@ -14,6 +18,7 @@ const authMiddleware = (req, res, next) => {
 
   // Check if no token
   if (!token) {
+    console.log('[AUTH_DEBUG] No token found in header or cookies');
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
@@ -38,8 +43,8 @@ const authMiddleware = (req, res, next) => {
     const decoded = jwt.verify(tokenString, jwtSecret);
 
     // Attach user to the request object
-    // Assuming the JWT payload contains a 'userId' field
-    req.user = decoded.user;
+    // Payload is { id, role } directly
+    req.user = decoded;
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });

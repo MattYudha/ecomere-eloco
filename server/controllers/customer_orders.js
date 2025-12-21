@@ -302,9 +302,21 @@ async function updateCustomerOrder(request, response) {
     // Create notification for status update if status changed
     if (existingOrder.status !== validatedData.status) {
       try {
-        const user = await prisma.user.findUnique({
+        // Robust user lookup (consistent with createCustomerOrder)
+        let user = await prisma.user.findUnique({
           where: { email: validatedData.email },
         });
+
+        if (!user) {
+          user = await prisma.user.findFirst({
+            where: {
+              email: {
+                equals: validatedData.email,
+                mode: 'insensitive' // For TiDB/MySQL compatibility if needed, though usually default
+              }
+            }
+          });
+        }
 
         if (user) {
           await createOrderUpdateNotification(
@@ -418,6 +430,13 @@ async function getCustomerOrder(request, response) {
         id: id,
         isDeleted: false,
       },
+      include: {
+        products: {
+          include: {
+            product: true
+          }
+        }
+      }
     });
 
     if (!order) {

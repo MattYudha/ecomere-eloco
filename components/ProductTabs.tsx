@@ -13,40 +13,59 @@
 import React, { useState } from 'react';
 import { formatCategoryName } from '@/utils/categoryFormating';
 import { sanitize, sanitizeHtml } from '@/lib/sanitize';
-import { BookOpen, Info } from 'lucide-react';
+import { BookOpen, Info, MessageSquare } from 'lucide-react';
+import StarRatingInput from './StarRatingInput';
+import ReviewList from './ReviewList';
+import { useReviewStore } from '@/app/_zustand/reviewStore';
+import { useAuth } from '@/hooks/useAuth';
+import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 const ProductTabs = ({ product }: { product: Product }) => {
   const [currentProductTab, setCurrentProductTab] = useState<number>(0);
 
+  // Review Form State
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const { createReview, isLoading } = useReviewStore();
+  const { data: session } = useAuth();
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating === 0) return toast.error('Please select a rating');
+    const success = await createReview(product.id, rating, comment);
+    if (success) {
+      toast.success('Review submitted!');
+      setRating(0);
+      setComment('');
+    }
+  };
+
   const tabs = [
     { id: 0, label: 'Description', icon: BookOpen },
-    {
-      id: 1,
-      label: 'Additional Info',
-      icon: Info,
-    },
+    { id: 1, label: 'Additional Info', icon: Info },
+    { id: 2, label: 'Reviews', icon: MessageSquare },
   ];
 
   return (
     <div className="w-full">
       {/* Tabs Navigation - Modern & Bold */}
       <div className="border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-x-8">
+        <div className="flex items-center gap-x-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setCurrentProductTab(tab.id)}
               className={`
-                flex items-center gap-x-2 px-1 py-4 text-base text-black dark:text-white transition-colors duration-300
-                focus:outline-none
-                ${
-                  currentProductTab === tab.id
-                    ? 'font-semibold border-b-[3px] border-blue-600'
-                    : 'font-normal'
+                flex items-center gap-x-2 px-1 py-4 text-sm md:text-base text-black dark:text-white transition-colors duration-300
+                focus:outline-none whitespace-nowrap
+                ${currentProductTab === tab.id
+                  ? 'font-semibold border-b-[3px] border-[#cb6112] text-[#cb6112] dark:text-[#cb6112]'
+                  : 'font-normal hover:text-[#cb6112] dark:hover:text-[#cb6112]'
                 }
               `}
             >
-              <tab.icon className="w-5 h-5" />
+              <tab.icon className="w-4 h-4 md:w-5 md:h-5" />
               <span>{tab.label}</span>
             </button>
           ))}
@@ -54,7 +73,7 @@ const ProductTabs = ({ product }: { product: Product }) => {
       </div>
 
       {/* Tab Content - Premium Card */}
-      <div className="mt-6 bg-white shadow-md rounded-xl dark:bg-gray-900/50 dark:border dark:border-gray-700/50">
+      <div className="mt-6 bg-white shadow-sm rounded-xl dark:bg-gray-900/50 dark:border dark:border-gray-700/50">
         <div className="p-6 md:p-8">
           {/* Description Tab */}
           {currentProductTab === 0 && (
@@ -112,6 +131,84 @@ const ProductTabs = ({ product }: { product: Product }) => {
                   </span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Reviews Tab */}
+          {currentProductTab === 2 && (
+            <div className="animate-fadeIn">
+              <div className="flex flex-col md:flex-row gap-8 justify-between items-start mb-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
+                    Customer Reviews
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-md">
+                    Read what other customers are saying about {product.title}. Only verified purchases can supply reviews.
+                  </p>
+                </div>
+
+                {/* Summary Rating Badge (Optional: Using product.rating if available) */}
+                {product.rating > 0 && (
+                  <div className="bg-orange-50 dark:bg-orange-900/20 px-4 py-2 rounded-xl flex items-center gap-2 border border-orange-100 dark:border-orange-800/30">
+                    <span className="text-3xl font-bold text-[#cb6112]">{product.rating.toFixed(1)}</span>
+                    <div className="flex flex-col">
+                      <div className="flex text-[#fbbf24] text-xs">
+                        {[...Array(5)].map((_, i) => (
+                          <StarRatingInput key={i} rating={product.rating} onRatingChange={() => { }} disabled />
+                        ))}
+                        {/* Using Input as display or FaStar directly */}
+                      </div>
+                      <span className="text-xs text-gray-500">{product.reviewCount || 0} reviews</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Write Review Section */}
+              <div className="mb-10 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 transition-all focus-within:ring-2 focus-within:ring-[#cb6112]/20">
+                {!session?.user ? (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-500">
+                      Please <Link href="/login" className="text-[#cb6112] font-semibold underline hover:text-orange-700">login</Link> to write a review.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmitReview} className="space-y-4">
+                    <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      Write a Review
+                      <span className="text-xs font-normal text-gray-400 bg-white dark:bg-black/20 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700">Verified Purchase Required</span>
+                    </h4>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Rating</label>
+                      <StarRatingInput rating={rating} onRatingChange={setRating} />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Your Review</label>
+                      <textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="w-full rounded-xl border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-sm p-4 focus:ring-2 focus:ring-[#cb6112] focus:border-transparent transition-all shadow-sm"
+                        rows={4}
+                        placeholder="What did you like or dislike? What did you use this product for?"
+                      />
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="px-8 py-3 bg-[#cb6112] text-white rounded-xl font-bold text-sm hover:bg-orange-700 active:scale-95 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isLoading ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+
+              <ReviewList productId={product.id} />
             </div>
           )}
         </div>

@@ -2,6 +2,8 @@
 
 const express = require('express');
 const path = require('path');
+const http = require('http');
+const socketIo = require('./utils/socket');
 
 // =========================
 // Environment (LOCAL ONLY)
@@ -45,6 +47,7 @@ const merchantRouter = require('./routes/merchant');
 const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
+const reviewsRouter = require('./routes/reviews');
 
 // =========================
 // Middleware & Utils
@@ -73,7 +76,12 @@ const { handleServerError } = require('./utils/errorHandler');
 // =========================
 // App Init
 // =========================
+// =========================
+// App Init
+// =========================
 const app = express();
+const server = http.createServer(app);
+socketIo.init(server);
 
 // Railway / reverse proxy (penting untuk ip/secure cookies jika ada)
 app.set('trust proxy', 1);
@@ -195,6 +203,7 @@ app.use('/api/merchants', merchantRouter);
 app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/reviews', reviewsRouter);
 
 // =========================
 // 404 Handler
@@ -237,7 +246,7 @@ const PORT =
   3001;
 
 // bind ke 0.0.0.0 supaya accessible via Railway proxy
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`NODE_ENV=${process.env.NODE_ENV || 'undefined'}`);
   console.log(`ENV PORT=${process.env.PORT || 'undefined'}`);

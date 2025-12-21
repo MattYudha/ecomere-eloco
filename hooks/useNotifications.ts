@@ -4,6 +4,7 @@ import { useNotificationStore } from '@/app/_zustand/notificationStore';
 import notificationApi from '@/lib/notification-api';
 import { NotificationFilters } from '@/types/notification';
 import toast from 'react-hot-toast';
+import { useSocket } from './useSocket';
 
 /**
  * Custom hook for managing notifications
@@ -28,6 +29,7 @@ export const useNotifications = () => {
     deleteNotification,
     clearSelection,
     setUnreadCount,
+    addNotification,
   } = useNotificationStore();
 
   // Get current user ID
@@ -45,6 +47,10 @@ export const useNotifications = () => {
       return null;
     }
   }, [session?.user?.email]);
+
+
+
+
 
   // Fetch notifications
   const fetchNotifications = useCallback(
@@ -86,6 +92,26 @@ export const useNotifications = () => {
       console.error('Error fetching unread count:', error);
     }
   }, [getCurrentUserId, setUnreadCount]);
+
+  // Socket Integration
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('notification', (newNotification) => {
+      // Optimistic Update
+      addNotification(newNotification);
+      toast.success(newNotification.title);
+
+      // Sync unread count
+      fetchUnreadCount();
+    });
+
+    return () => {
+      socket.off('notification');
+    };
+  }, [socket, addNotification, fetchUnreadCount]);
 
   // Mark single notification as read
   const markNotificationAsRead = useCallback(
@@ -299,6 +325,20 @@ export const useUnreadCount = () => {
       console.error('Error fetching unread count:', error);
     }
   }, [session?.user?.email, setUnreadCount]);
+
+
+
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on('notification', () => {
+      fetchUnreadCount();
+    });
+    return () => {
+      socket.off('notification');
+    }
+  }, [socket, fetchUnreadCount]);
 
   // Auto-refresh unread count every 30 seconds
   useEffect(() => {

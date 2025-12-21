@@ -143,15 +143,23 @@ const createNotification = async (req, res) => {
 const updateNotification = async (req, res) => {
   try {
     const { id } = req.params;
-    const { isRead } = req.body;
+    const { isRead, metadata } = req.body;
 
-    if (typeof isRead !== 'boolean') {
-      return res.status(400).json({ error: 'isRead must be a boolean value' });
+    const updateData = {};
+    if (typeof isRead === 'boolean') {
+      updateData.isRead = isRead;
+    }
+    if (metadata) {
+      updateData.metadata = metadata;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
     }
 
     const notification = await prisma.notification.update({
       where: { id },
-      data: { isRead },
+      data: updateData,
     });
 
     res.json(notification);

@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { formatPrice } = require('./format.js');
 const { logDebug } = require('../utils/debug');
+const socketIo = require('./socket');
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,7 @@ const createOrderUpdateNotification = async (
   try {
     const statusMessages = {
       pending: {
-        title: 'Pesanan Diterima',
+        title: 'Pesanan Dibuat',
         message: `Terima kasih! Pesanan Anda #${orderId} telah diterima dan sedang diproses.`,
         priority: 'NORMAL',
       },
@@ -54,8 +55,8 @@ const createOrderUpdateNotification = async (
         priority: 'HIGH',
       },
       delivered: {
-        title: 'Pesanan Diterima',
-        message: `Pesanan Anda #${orderId} telah berhasil dikirim. Kami harap Anda menyukai barang baru Anda!`,
+        title: 'Pesanan Selesai',
+        message: `Hore! Pesanan Anda #${orderId} telah sampai. Jangan lupa beri ulasan ya!`,
         priority: 'HIGH',
       },
       cancelled: {
@@ -90,6 +91,15 @@ const createOrderUpdateNotification = async (
         },
       },
     });
+
+    // Emit Real-time Notification
+    try {
+      const io = socketIo.getIO();
+      io.to(`user_${userId}`).emit('notification', notification);
+      logDebug(`📡 Socket event emitted to user_${userId}`);
+    } catch (socketError) {
+      console.error('Socket emit error:', socketError.message);
+    }
 
     // If order is delivered, send a professional email
     if (orderStatus.toLowerCase() === 'delivered') {

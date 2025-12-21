@@ -19,7 +19,8 @@ model Product {
   title          String
   mainImage      String
   price          Int                      @default(0)
-  rating         Int                      @default(0)
+  rating         Float                    @default(0) // Changed to Float for average rating
+  reviewCount    Int                      @default(0) // Cache review count
   description    String
   manufacturer   String
   inStock        Int                      @default(1)
@@ -27,11 +28,12 @@ model Product {
   category       Category                 @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   customerOrders customer_order_product[]
   Wishlist       Wishlist[]
+  reviews        Review[] // Relation to reviews
 
-  merchantId     String
-  merchant       Merchant @relation(fields: [merchantId], references: [id])
+  merchantId      String
+  merchant        Merchant           @relation(fields: [merchantId], references: [id])
   // Back relation for bulk upload items
-  bulkUploadItems bulk_upload_item[]      @relation("ProductBulkItems")
+  bulkUploadItems bulk_upload_item[] @relation("ProductBulkItems")
 }
 
 model Image {
@@ -41,14 +43,32 @@ model Image {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  password      String?
-  role          String?        @default("user")
-  Wishlist      Wishlist[]
-  notifications Notification[]
+  id                String              @id @default(uuid())
+  name              String?
+  email             String              @unique
+  password          String?
+  role              String?             @default("user")
+  Wishlist          Wishlist[]
+  notifications     Notification[]
+  reviews           Review[] // Relation to reviews
   // Back relation for bulk upload batches
   bulkUploadBatches bulk_upload_batch[] @relation("UserBatches")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
 }
 
 model Customer_order {
@@ -127,6 +147,7 @@ model Notification {
   @@index([userId, type])
   @@index([createdAt])
 }
+
 model Merchant {
   id          String   @id @default(uuid())
   name        String
@@ -143,47 +164,47 @@ model Merchant {
 }
 
 model bulk_upload_batch {
-  id         String              @id @default(uuid())
+  id         String             @id @default(uuid())
   fileName   String?
-  createdAt  DateTime            @default(now())
-  status     BulkUploadStatus    @default(PENDING)
-  itemCount  Int                 @default(0)
-  errorCount Int                 @default(0)
+  createdAt  DateTime           @default(now())
+  status     BulkUploadStatus   @default(PENDING)
+  itemCount  Int                @default(0)
+  errorCount Int                @default(0)
   items      bulk_upload_item[]
 
   // optional uploader link if you later associate sessions/users
   userId String?
-  user   User?                  @relation(name: "UserBatches", fields: [userId], references: [id])
+  user   User?   @relation(name: "UserBatches", fields: [userId], references: [id])
 }
 
 model bulk_upload_item {
-  id        String            @id @default(uuid())
-  batchId   String
-  batch     bulk_upload_batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  id      String            @id @default(uuid())
+  batchId String
+  batch   bulk_upload_batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
   // created product reference
   productId String?
-  product   Product?          @relation(name: "ProductBulkItems", fields: [productId], references: [id], onDelete: SetNull)
+  product   Product? @relation(name: "ProductBulkItems", fields: [productId], references: [id], onDelete: SetNull)
 
   // snapshot fields for auditing and re-commit edits
-  title         String
-  slug          String
-  price         Int
-  manufacturer  String?
-  description   String?
-  mainImage     String?
-  categoryId    String
-  inStock       Int
+  title        String
+  slug         String
+  price        Int
+  manufacturer String?
+  description  String?
+  mainImage    String?
+  categoryId   String
+  inStock      Int
 
-  status        BulkUploadItemStatus @default(CREATED)
-  error         String?
+  status BulkUploadItemStatus @default(CREATED)
+  error  String?
 }
 
 model Visitor {
   id        String   @id @default(uuid())
   ip        String
   userAgent String?
-  userId    String?  // Optional link to user if logged in
+  userId    String? // Optional link to user if logged in
   createdAt DateTime @default(now())
 
   // We could add an index on createdAt for faster range queries
