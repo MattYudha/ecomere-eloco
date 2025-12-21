@@ -444,3 +444,30 @@ Data: {
 --------------------------------------------------
 [2025-12-21T12:33:51.501Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
 --------------------------------------------------
+[2025-12-21T14:38:25.902Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "lutfiganteng@gmail.com",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-21T14:38:26.438Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T14:38:26.501Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-21T14:38:26.502Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "713554cd-da87-4719-a7cf-b90d660729c3"
+}
+--------------------------------------------------
+[2025-12-21T14:38:26.987Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-21T14:38:26.987Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Dibuat
+Data: {
+  "notificationId": "ZKvVcQaIwDjvgZdHZ0JUo"
+}
+--------------------------------------------------
+[2025-12-21T14:38:26.987Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------

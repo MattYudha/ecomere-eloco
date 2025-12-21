@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   return (
     <motion.div
-      className="relative group h-full z-10"
+      className="relative group h-full z-10 w-full md:w-[350px]"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
@@ -293,7 +293,7 @@ const IntroducingSection = () => {
 
         {/* 6. PRODUCTS GRID 
             UPDATED: 'grid-cols-2' untuk mobile, 'gap-3' agar muat */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 w-full max-w-6xl">
+        <div className="grid grid-cols-2 md:flex md:justify-center md:flex-wrap gap-3 md:gap-8 w-full max-w-6xl">
           <ProductCard
             title="Eloqo Cookies"
             description="Kukis premium renyah dengan coklat lumer."
@@ -309,14 +309,6 @@ const IntroducingSection = () => {
             price="Rp 15.000"
             rating="4.0"
             sold="20+"
-          />
-          <ProductCard
-            title="Cilok Bumbu Seblak"
-            description="Rasakan cita rasa Cilok yang enak dan Lezat"
-            imageUrl="/assets/cilok.png"
-            price="Rp 15.000"
-            rating="4.7"
-            sold="30+"
           />
         </div>
       </div>
