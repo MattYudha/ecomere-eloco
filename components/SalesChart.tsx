@@ -93,7 +93,10 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
                 borderRadius: '0.5rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
-              formatter={(value: number) => [`Rp ${value.toLocaleString()}`, 'Revenue']}
+              formatter={(value: number | undefined) => [
+                `Rp ${value?.toLocaleString() ?? 0}`,
+                'Revenue',
+              ]}
             />
             <Area
               type="monotone"
