@@ -8,7 +8,10 @@ const {
   updateCustomerOrder,
   deleteCustomerOrder,
   getAllOrders,
+  bulkDeleteOrders,
 } = require('../controllers/customer_orders');
+
+router.route('/bulk').delete(bulkDeleteOrders);
 
 router.route('/').get(getAllOrders).post(createCustomerOrder);
 

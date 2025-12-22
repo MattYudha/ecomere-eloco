@@ -78,7 +78,9 @@ class NotificationAPI {
     notificationIds: string[];
     userId: string;
   }) {
-    const response = await this.apiClient.post('/api/notifications/bulk/delete', payload);
+    const response = await this.apiClient.delete('/api/notifications/bulk', {
+      body: JSON.stringify(payload)
+    });
     if (!response.ok) throw new Error('Failed to bulk delete notifications');
     return response.json();
   }

@@ -16,6 +16,26 @@ import BuyNowSingleProductBtn from './BuyNowSingleProductBtn';
 
 const SingleProductDynamicFields = ({ product }: { product: Product }) => {
   const [quantityCount, setQuantityCount] = useState<number>(1);
+
+  if (product.inStock !== 1) {
+    return (
+      <div className="w-full">
+        <button
+          onClick={() => {
+            // In the future this could open a modal or subscribe user
+            // For now just a toast
+          }}
+          className="w-full py-4 rounded-2xl border-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold text-sm uppercase tracking-wider hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+        >
+          <span>Notify Me When Available</span>
+        </button>
+        <p className="text-center text-xs text-gray-400 mt-2">
+          We'll email you when this item is back in stock.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <QuantityInput

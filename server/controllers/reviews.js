@@ -7,7 +7,7 @@ const createReview = async (req, res) => {
         console.log("Req Body:", req.body);
         console.log("Req User:", req.user);
 
-        const { productId, rating, comment } = req.body;
+        const { productId, rating, comment, orderId } = req.body;
 
         if (!req.user || !req.user.id) {
             console.error("❌ User not found in request (Auth middleware failed or skipped?)");
@@ -27,32 +27,32 @@ const createReview = async (req, res) => {
 
         const userEmail = user.email;
 
-        // DEBUG: List all orders for this email to diagnose mismatch
-        const debugOrders = await prisma.customer_order.findMany({
-            where: { email: userEmail },
-            select: { id: true, status: true, email: true, products: { select: { productId: true } } }
-        });
-        console.log("DEBUG: Found orders for email:", JSON.stringify(debugOrders, null, 2));
-
         // 1. Verified Purchase Check
         // Bypass for Admin
         if (req.user.role === 'admin') {
             console.log("⚠️ Admin skipping verified purchase check.");
         } else {
-            // Check if there is a delivered order for this user containing the product
-            console.log(`Checking verified purchase for email: ${userEmail}, product: ${productId}`);
-            const purchase = await prisma.customer_order.findFirst({
-                where: {
-                    email: userEmail, // MySQL is case insensitive by default usually
-                    status: {
-                        in: ['Delivered', 'Completed', 'COMPLETED', 'DELIVERED', 'Pesanan Diterima', 'Pesanan Telah Terkirim', 'delivered', 'completed']
-                    },
-                    products: {
-                        some: {
-                            productId: productId,
-                        },
+            console.log(`Checking verified purchase for email: ${userEmail}, product: ${productId}, orderId: ${orderId || 'ANY'}`);
+
+            const whereClause = {
+                email: userEmail,
+                status: {
+                    in: ['Delivered', 'Completed', 'COMPLETED', 'DELIVERED', 'Pesanan Diterima', 'Pesanan Telah Terkirim', 'delivered', 'completed']
+                },
+                products: {
+                    some: {
+                        productId: productId,
                     },
                 },
+            };
+
+            // If orderId is provided, strictly check against that order
+            if (orderId) {
+                whereClause.id = orderId;
+            }
+
+            const purchase = await prisma.customer_order.findFirst({
+                where: whereClause
             });
 
             console.log("Purchase result:", purchase ? purchase.id : "NONE");
@@ -65,29 +65,54 @@ const createReview = async (req, res) => {
             }
         }
 
-        // 2. Check if already reviewed
-        const existingReview = await prisma.review.findFirst({
-            where: {
-                userId: userId,
-                productId: productId,
-            },
-        });
+        // 2. Check if already reviewed (Scoped by Order ID if available)
+        let existingReview;
 
-        if (existingReview) {
-            console.log("❌ Already reviewed.");
-            return res.status(400).json({ message: 'You have already reviewed this product.' });
+        if (orderId) {
+            // Check if THIS order item has been reviewed
+            existingReview = await prisma.review.findFirst({
+                where: {
+                    userId: userId,
+                    productId: productId,
+                    orderId: orderId
+                },
+            });
+        } else {
+            // Fallback: Check if user ever reviewed this product (legacy behavior)
+            // Note: This prevents multiple reviews even from different orders if orderId isn't sent
+            existingReview = await prisma.review.findFirst({
+                where: {
+                    userId: userId,
+                    productId: productId,
+                },
+            });
         }
 
-        // 3. Create Review
-        const newReview = await prisma.review.create({
-            data: {
-                userId,
-                productId,
-                rating: Number(rating),
-                comment,
-            },
-        });
-        console.log("✅ Review created:", newReview.id);
+        let newReview;
+        if (existingReview) {
+            console.log("⚠️ Review exists for this order/product, updating...");
+            newReview = await prisma.review.update({
+                where: { id: existingReview.id },
+                data: {
+                    rating: Number(rating),
+                    comment,
+                }
+            });
+            console.log("✅ Review updated:", newReview.id);
+        } else {
+            console.log("✨ Creating new review...");
+            // 3. Create Review
+            newReview = await prisma.review.create({
+                data: {
+                    userId,
+                    productId,
+                    rating: Number(rating),
+                    comment,
+                    orderId: orderId || null, // Allow null for legacy compatibility
+                },
+            });
+            console.log("✅ Review created:", newReview.id);
+        }
 
         // 4. Auto-Recalculate Product Rating
         const aggregations = await prisma.review.aggregate({

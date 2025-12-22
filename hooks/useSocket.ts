@@ -9,12 +9,16 @@ export const useSocket = () => {
 
     useEffect(() => {
         if (user && !socketRef.current) {
-            // Determine Socket URL (Fallback to same origin for relative paths or specific env var)
-            const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || '';
-            // In dev: often http://localhost:3001 if separate. If proxied by Next, can be empty string.
-            // Given your setup seems to proxy /api, but socket.io typically needs its own port or path unless configured on same server port.
-            // Since backend runs on 3001 and frontend on 3000, we should point to backend.
-            const url = socketUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+            // Determine Socket URL
+            let url = process.env.NEXT_PUBLIC_SOCKET_URL || '';
+
+            if (!url && typeof window !== 'undefined') {
+                if (window.location.hostname === 'localhost') {
+                    url = 'http://localhost:3001';
+                } else {
+                    url = window.location.origin;
+                }
+            }
 
             socketRef.current = io(url, {
                 // path: '/socket.io', // Default

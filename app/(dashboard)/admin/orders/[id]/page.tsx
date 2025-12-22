@@ -409,7 +409,9 @@ const AdminSingleOrder = () => {
                     <Image
                       src={
                         op.product?.mainImage
-                          ? `/${op.product.mainImage.replace(/^\//, '')}`
+                          ? op.product.mainImage.startsWith('http')
+                            ? op.product.mainImage
+                            : `/${op.product.mainImage.replace(/^\//, '')}`
                           : '/product_placeholder.jpg'
                       }
                       alt={op.product?.title}

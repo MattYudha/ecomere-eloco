@@ -57,18 +57,18 @@ const DashboardCreateNewUser = () => {
   };
 
   return (
-    <div className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
+    <div className="bg-white dark:bg-gray-900 flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
       <DashboardSidebar />
       <div className="flex flex-col gap-y-7 xl:pl-5 max-xl:px-5 w-full">
-        <h1 className="text-3xl font-semibold">Add new user</h1>
+        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Add new user</h1>
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Email:</span>
+              <span className="label-text text-gray-700 dark:text-gray-300">Email:</span>
             </div>
             <input
               type="email"
-              className="input input-bordered w-full max-w-xs"
+              className="input input-bordered w-full max-w-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
               value={userInput.email}
               onChange={(e) =>
                 setUserInput({ ...userInput, email: e.target.value })
@@ -80,11 +80,11 @@ const DashboardCreateNewUser = () => {
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Password:</span>
+              <span className="label-text text-gray-700 dark:text-gray-300">Password:</span>
             </div>
             <input
               type="password"
-              className="input input-bordered w-full max-w-xs"
+              className="input input-bordered w-full max-w-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
               value={userInput.password}
               onChange={(e) =>
                 setUserInput({ ...userInput, password: e.target.value })
@@ -96,10 +96,10 @@ const DashboardCreateNewUser = () => {
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">User role: </span>
+              <span className="label-text text-gray-700 dark:text-gray-300">User role: </span>
             </div>
             <select
-              className="select select-bordered"
+              className="select select-bordered bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
               value={userInput.role} // Use value instead of defaultValue for controlled component
               onChange={(e) =>
                 setUserInput({ ...userInput, role: e.target.value })

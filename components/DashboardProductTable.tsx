@@ -17,12 +17,14 @@ import CustomButton from './CustomButton';
 import apiClient from '@/lib/api';
 import { sanitize } from '@/lib/sanitize';
 import { formatPrice } from '@/lib/utils'; // Import formatPrice from utils
+import toast from 'react-hot-toast';
 
 const DashboardProductTable = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-  useEffect(() => {
+  const fetchProducts = () => {
     setLoading(true);
     apiClient
       .get('/api/products?mode=admin', { cache: 'no-store' })
@@ -31,11 +33,57 @@ const DashboardProductTable = () => {
       })
       .then((data) => {
         setProducts(data);
+        setSelectedProducts([]); // Reset selection on refresh
       })
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedProducts(products.map((p) => p.id));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleSelectProduct = (id: string) => {
+    if (selectedProducts.includes(id)) {
+      setSelectedProducts(selectedProducts.filter((pid) => pid !== id));
+    } else {
+      setSelectedProducts([...selectedProducts, id]);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (
+      !confirm(
+        `Are you sure you want to delete ${selectedProducts.length} products?`,
+      )
+    )
+      return;
+
+    try {
+      const response = await apiClient.delete('/api/products/bulk', {
+        body: JSON.stringify({ ids: selectedProducts }),
+      });
+
+      if (response.ok) {
+        toast.success('Products deleted successfully');
+        fetchProducts(); // Refresh list
+      } else {
+        toast.error('Failed to delete products');
+      }
+    } catch (error) {
+      console.error('Error deleting products:', error);
+      toast.error('An error occurred while deleting products');
+    }
+  };
 
   if (loading) {
     return (
@@ -114,17 +162,14 @@ const DashboardProductTable = () => {
             </div>
           </div>
 
-          {/* Add Button */}
-          <Link href="/admin/products/new">
-            <button className="group relative overflow-hidden rounded-xl backdrop-blur-sm bg-slate-900 px-6 py-3 border border-slate-800 shadow-[0_4px_16px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-0.5">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"
-                style={{ transition: 'transform 0.8s, opacity 0.5s' }}
-              />
-
-              <div className="relative flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {selectedProducts.length > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="group relative overflow-hidden rounded-xl backdrop-blur-sm bg-red-600 px-6 py-3 border border-red-500 shadow-[0_4px_16px_rgba(220,38,38,0.2)] hover:shadow-[0_8px_24px_rgba(220,38,38,0.3)] hover:-translate-y-0.5 transition-all text-white font-semibold flex items-center gap-2"
+              >
                 <svg
-                  className="w-5 h-5 text-white"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -133,13 +178,40 @@ const DashboardProductTable = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 4v16m8-8H4"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                   />
                 </svg>
-                <span className="font-semibold text-white">Add Product</span>
-              </div>
-            </button>
-          </Link>
+                Delete Selected ({selectedProducts.length})
+              </button>
+            )}
+
+            {/* Add Button */}
+            <Link href="/admin/products/new">
+              <button className="group relative overflow-hidden rounded-xl backdrop-blur-sm bg-slate-900 px-6 py-3 border border-slate-800 shadow-[0_4px_16px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-0.5">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"
+                  style={{ transition: 'transform 0.8s, opacity 0.5s' }}
+                />
+
+                <div className="relative flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span className="font-semibold text-white">Add Product</span>
+                </div>
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -156,6 +228,11 @@ const DashboardProductTable = () => {
                   <label className="flex items-center cursor-pointer group">
                     <input
                       type="checkbox"
+                      checked={
+                        products.length > 0 &&
+                        selectedProducts.length === products.length
+                      }
+                      onChange={handleSelectAll}
                       className="w-5 h-5 rounded-lg border-2 border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-400 focus:ring-offset-0 transition-all duration-200 cursor-pointer"
                     />
                   </label>
@@ -189,7 +266,10 @@ const DashboardProductTable = () => {
                 products.map((product, index) => (
                   <tr
                     key={nanoid()}
-                    className="group border-b border-white/30 hover:bg-white/40 transition-all duration-200"
+                    className={`group border-b border-white/30 transition-all duration-200 ${selectedProducts.includes(product.id)
+                        ? 'bg-blue-50/50 hover:bg-blue-50/70'
+                        : 'hover:bg-white/40'
+                      }`}
                     style={{
                       animation: `fadeInUp 0.4s ease-out ${index * 0.05}s backwards`,
                     }}
@@ -199,6 +279,8 @@ const DashboardProductTable = () => {
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="checkbox"
+                          checked={selectedProducts.includes(product.id)}
+                          onChange={() => handleSelectProduct(product.id)}
                           className="w-5 h-5 rounded-lg border-2 border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-400 focus:ring-offset-0 transition-all duration-200 cursor-pointer"
                         />
                       </label>

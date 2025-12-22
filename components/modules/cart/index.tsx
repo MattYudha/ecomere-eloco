@@ -126,38 +126,8 @@ export const CartModule = () => {
             <dd className="text-sm font-medium text-gray-900">{formatPrice(total)}</dd>
           </div>
           <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-            <dt className="flex items-center text-sm text-gray-600">
-              <span>Shipping estimate</span>
-              <a
-                href="#"
-                className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-              >
-                <span className="sr-only">
-                  Learn more about how shipping is calculated
-                </span>
-                <FaCircleQuestion className="h-5 w-5" aria-hidden="true" />
-              </a>
-            </dt>
-            <dd className="text-sm font-medium text-gray-900">{formatPrice(5)}</dd>
-          </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-            <dt className="flex text-sm text-gray-600">
-              <span>Tax estimate</span>
-              <a
-                href="#"
-                className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-              >
-                <span className="sr-only">
-                  Learn more about how tax is calculated
-                </span>
-                <FaCircleQuestion className="h-5 w-5" aria-hidden="true" />
-              </a>
-            </dt>
-            <dd className="text-sm font-medium text-gray-900">{formatPrice(total / 5)}</dd>
-          </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-4">
             <dt className="text-base font-medium text-gray-900">Order total</dt>
-            <dd className="text-base font-medium text-gray-900">{formatPrice(total === 0 ? 0 : Math.round(total + total / 5 + 5))}</dd>
+            <dd className="text-base font-medium text-gray-900">{formatPrice(total)}</dd>
           </div>
         </dl>
         {products.length > 0 && (

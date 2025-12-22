@@ -35,6 +35,7 @@ const CheckoutPage = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const { products, total, clearCart } = useProductStore();
   // The router declaration is already above, so no need to redeclare here.
 
@@ -293,6 +294,8 @@ const CheckoutPage = () => {
 
       console.log(' All products added successfully!');
 
+      setIsSuccess(true); // Mark as success to prevent empty cart error
+
       // Clear form and cart
       setCheckoutForm({
         name: '',
@@ -392,7 +395,7 @@ const CheckoutPage = () => {
   };
 
   useEffect(() => {
-    if (products.length === 0) {
+    if (products.length === 0 && !isSuccess) {
       toast.error("You don't have items in your cart");
       router.push('/cart');
     }

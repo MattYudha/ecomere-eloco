@@ -21,7 +21,7 @@ const newCategories = [
   },
   {
     id: 3,
-    title: 'Seblak Lewu',
+    title: 'Keripik Lewu',
     href: '/shop',
     icon: '🌶️',
     description: 'Pedas mantap, kuah kental',

@@ -7,16 +7,17 @@ module.exports = {
         io = new Server(httpServer, {
             cors: {
                 origin: [
+                    'https://elloco.vercel.app',
                     'http://localhost:3000',
                     'http://localhost:3001',
                     'https://eloco.vercel.app',
-                    'https://elloco.vercel.app',
                     process.env.FRONTEND_URL,
                     process.env.NEXTAUTH_URL,
                 ].filter(Boolean),
                 methods: ['GET', 'POST'],
                 credentials: true
             },
+            transports: ['websocket'],
         });
 
         io.on('connection', (socket) => {

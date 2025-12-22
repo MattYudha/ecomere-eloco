@@ -1,9 +1,12 @@
 const prisma = require('../utils/db');
 const cloudinary = require('../utils/cloudinary');
-const { nanoid } = require('nanoid');
+const crypto = require('crypto');
 
 async function uploadMainImage(req, res) {
   try {
+    console.log('[DEBUG] Upload Request Body:', req.body);
+    console.log('[DEBUG] Upload Request Files Keys:', req.files ? Object.keys(req.files) : 'No files');
+
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
@@ -11,25 +14,35 @@ async function uploadMainImage(req, res) {
     const uploadedFile = req.files.uploadedFile;
     const { productID } = req.body;
 
+    if (!uploadedFile) {
+      return res.status(400).json({ message: 'File with key "uploadedFile" is missing.' });
+    }
+
     if (!productID) {
       return res.status(400).json({ message: 'Product ID is required.' });
     }
+
+    // Generate unique ID safely without nanoid dependency issues
+    const uniqueId = crypto.randomBytes(8).toString('hex');
+    const safeFileName = uploadedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const publicId = `${uniqueId}_${safeFileName.replace(/\.[^/.]+$/, "")}`;
 
     // Upload to Cloudinary using stream
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: 'eloco/products',
-        public_id: `${nanoid()}_${uploadedFile.name.replace(/\.[^/.]+$/, "")}`, // Remove extension for public_id
+        public_id: publicId,
         resource_type: 'auto',
       },
       async (error, result) => {
         if (error) {
-          console.error('Cloudinary upload error:', error);
-          return res.status(500).json({ error: 'Error uploading image to Cloudinary' });
+          console.error('[Cloudinary Error] Upload failed:', error);
+          return res.status(500).json({ error: 'Error uploading image to Cloudinary', details: error.message });
         }
 
         try {
           const imagePath = result.secure_url; // Use the secure URL from Cloudinary
+          console.log('[DEBUG] Cloudinary Upload Success:', imagePath);
 
           await prisma.product.update({
             where: { id: productID },
@@ -41,23 +54,26 @@ async function uploadMainImage(req, res) {
             imagePath: imagePath,
           });
         } catch (dbError) {
-          console.error('Database error:', dbError);
+          console.error('[Database Error] Update failed:', dbError);
           // Try to delete from Cloudinary if DB update fails
           await cloudinary.uploader.destroy(result.public_id);
 
           return res
             .status(500)
-            .json({ error: 'Error updating product main image in database' });
+            .json({ error: 'Error updating product main image in database', details: dbError.message });
         }
       }
     );
 
     // Write buffer to stream
+    if (!uploadedFile.data) {
+      throw new Error('File buffer (data) is empty. Check express-fileupload config.');
+    }
     uploadStream.end(uploadedFile.data);
 
   } catch (error) {
-    console.error('Error in uploadMainImage:', error);
-    return res.status(500).json({ error: 'Unexpected error during upload' });
+    console.error('[Controller Error] uploadMainImage:', error);
+    return res.status(500).json({ error: 'Unexpected error during upload', details: error.message });
   }
 }
 

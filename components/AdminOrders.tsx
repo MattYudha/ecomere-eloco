@@ -22,8 +22,10 @@ import {
   Eye,
   ChevronDown,
   Filter,
+  Trash,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 interface Order {
   id: string;
@@ -75,6 +77,32 @@ const AdminOrders = () => {
     setSelectedOrders(newSelected);
   };
 
+
+
+  const handleBulkDelete = async () => {
+    if (selectedOrders.size === 0) return;
+
+    if (!confirm('Are you sure you want to delete selected orders?')) return;
+
+    try {
+      const orderIds = Array.from(selectedOrders);
+      const response = await apiClient.delete('/api/orders/bulk', {
+        body: JSON.stringify({ orderIds }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete orders');
+      }
+
+      toast.success(`Successfully deleted ${selectedOrders.size} orders`);
+      setOrders(orders.filter((o) => !selectedOrders.has(o.id)));
+      setSelectedOrders(new Set());
+    } catch (error) {
+      console.error('Error deleting orders:', error);
+      toast.error('Failed to delete selected orders');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       Delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -111,13 +139,22 @@ const AdminOrders = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
+                {selectedOrders.size > 0 && (
+                  <button
+                    onClick={handleBulkDelete}
+                    className="flex items-center gap-2 px-6 py-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl border border-red-200 dark:border-red-900 font-semibold transition-all hover:bg-red-200 dark:hover:bg-red-900/50"
+                  >
+                    <Trash className="w-4 h-4" />
+                    Delete Selected ({selectedOrders.size})
+                  </button>
+                )}
                 <div className="backdrop-blur-md bg-white/50 rounded-2xl px-6 py-3 border border-gray-200">
-                                  <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
-                                    Total Orders
-                                  </p>
-                                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {orders.length}
-                                  </p>                </div>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
+                    Total Orders
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {orders.length}
+                  </p>                </div>
               </div>
             </div>
           </div>

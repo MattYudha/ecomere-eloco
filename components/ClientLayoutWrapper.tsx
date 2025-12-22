@@ -24,7 +24,7 @@ const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
   }, [pathname, theme]);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <motion.div
         key={pathname}
         className={
@@ -35,7 +35,7 @@ const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {children}
       </motion.div>

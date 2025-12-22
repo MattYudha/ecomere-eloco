@@ -72,6 +72,15 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
             {/* Quick Action Overlay (Optional) */}
             <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            {/* Out of Stock Overlay - Elegant & Modern */}
+            {product.inStock !== 1 && (
+              <div className="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10 transition-all duration-300">
+                <div className="px-5 py-2 bg-black/80 dark:bg-white/90 text-white dark:text-black text-[10px] tracking-[0.2em] font-bold uppercase rounded-full shadow-2xl transform hover:scale-105 transition-transform border border-white/20 dark:border-black/10 backdrop-blur-md">
+                  Sold Out
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Content Section */}
@@ -97,22 +106,33 @@ const ProductItem = ({ product }: ProductItemProps) => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 mt-auto">
-              <button
-                onClick={handleAddToCart}
-                className="flex items-center justify-center gap-1 h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <ShoppingCart size={12} />
-                Add
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(`/product/${product.slug}`);
-                }}
-                className="flex items-center justify-center h-8 px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20"
-              >
-                Buy Now
-              </button>
+              {product.inStock === 1 ? (
+                <>
+                  <button
+                    onClick={handleAddToCart}
+                    className="flex items-center justify-center gap-1 h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <ShoppingCart size={12} />
+                    Add
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/product/${product.slug}`);
+                    }}
+                    className="flex items-center justify-center h-8 px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20"
+                  >
+                    Buy Now
+                  </button>
+                </>
+              ) : (
+                <button
+                  disabled
+                  className="col-span-2 flex items-center justify-center h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-medium text-[10px] uppercase tracking-wider cursor-not-allowed border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Sold Out
+                </button>
+              )}
             </div>
           </div>
         </motion.div>

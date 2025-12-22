@@ -69,9 +69,10 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
         if (!activeProductId) return;
         if (rating === 0) return toast.error('Please select a rating');
 
-        const success = await createReview(activeProductId, rating, comment);
+        const success = await createReview(activeProductId, rating, comment, orderId);
+
         if (success) {
-            toast.success('Review submitted successfully!');
+            toast.success('Review published successfully!');
             setRating(0);
             setComment('');
             setActiveProductId(null); // Close form
@@ -79,6 +80,13 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
             if (onReviewSuccess) {
                 onReviewSuccess();
             }
+        } else {
+            // Error is already set in store, but we can toast it here too if we want immediate feedback
+            // The store sets 'error' state, let's grab it or just use a generic message if we don't have access to the specific error string easily here without subscribing
+            // But waitFor... createReview returns boolean. 
+            // We can assume useReviewStore holds the error now.
+            const currentError = useReviewStore.getState().error;
+            toast.error(currentError || 'Failed to submit review');
         }
     };
 

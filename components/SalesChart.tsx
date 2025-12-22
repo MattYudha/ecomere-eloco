@@ -39,6 +39,19 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, loading }) => {
     );
   }
 
+  if (!data || data.length === 0) {
+    return (
+      <div
+        className="w-full min-h-96 flex flex-col justify-center items-center gap-y-2
+                      bg-white/10 backdrop-blur-md border border-white/20 shadow-lg rounded-lg p-4 text-gray-900 dark:text-white
+                      dark:bg-black/20 dark:border-gray-700 mt-4"
+      >
+        <h4 className="text-xl font-bold mb-4">Daily Revenue</h4>
+        <p className="text-gray-500">No data available for this week</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-96">
       {!loading && data && (

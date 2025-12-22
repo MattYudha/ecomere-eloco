@@ -201,6 +201,7 @@ export const useNotifications = () => {
       try {
         await notificationApi.deleteNotification(notificationId, userId);
         deleteNotification(notificationId);
+        await fetchUnreadCount(); // Sync badge
         toast.success('Notification deleted');
       } catch (error) {
         const errorMessage =
@@ -231,6 +232,9 @@ export const useNotifications = () => {
       // Update local state - remove deleted notifications
       idsToDelete.forEach((id) => deleteNotification(id));
       clearSelection();
+
+      // Sync badge
+      await fetchUnreadCount();
 
       // Refresh data to ensure consistency
       await fetchNotifications();

@@ -31,11 +31,11 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
 
 
   // sending API request for a single product with a given product slug
-  const data = await apiClient.get(`/api/slugs/${productSlug}`);
+  const data = await apiClient.get(`/api/slugs/${productSlug}`, { cache: 'no-store' });
   const product = await data.json();
 
   // sending API request for more than 1 product image if it exists
-  const imagesData = await apiClient.get(`/api/images/${id}`);
+  const imagesData = await apiClient.get(`/api/images/${id}`, { cache: 'no-store' });
   const images: ImageItem[] = (await imagesData.json()) || [];
 
   if (!product || product.error) {

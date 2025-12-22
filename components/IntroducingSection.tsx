@@ -154,7 +154,7 @@ const IntroducingSection = () => {
       style={theme === 'dark' ? darkModeBg : lightModeBg}
     >
       {/* --- DECORATIVE ELEMENTS --- */}
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/assets/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
 
       <div className="absolute top-0 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#cb6112] rounded-full blur-[80px] md:blur-[120px] opacity-20 dark:opacity-10 animate-pulse"></div>
       <div
@@ -169,6 +169,7 @@ const IntroducingSection = () => {
           alt=""
           fill
           className="object-contain"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
       <div
@@ -180,6 +181,7 @@ const IntroducingSection = () => {
           alt=""
           fill
           className="object-contain"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
 

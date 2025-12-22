@@ -301,24 +301,39 @@ async function updateCustomerOrder(request, response) {
 
     // Create notification for status update if status changed
     if (existingOrder.status !== validatedData.status) {
+      console.log(`📝 Status change detected: ${existingOrder.status} -> ${validatedData.status}`);
       try {
-        // Robust user lookup (consistent with createCustomerOrder)
+        // Robust user lookup strategy
+        // 1. Try email from request
+        let targetEmail = validatedData.email;
         let user = await prisma.user.findUnique({
-          where: { email: validatedData.email },
+          where: { email: targetEmail },
         });
 
+        // 2. If not found, try existing order email (fallback)
+        if (!user && existingOrder.email && existingOrder.email !== targetEmail) {
+          console.log(`⚠️ User not found for ${targetEmail}, trying existing order email: ${existingOrder.email}`);
+          targetEmail = existingOrder.email;
+          user = await prisma.user.findUnique({
+            where: { email: targetEmail },
+          });
+        }
+
+        // 3. Case-insensitive search
         if (!user) {
+          console.log(`⚠️ User not found via findUnique for ${targetEmail}, trying case-insensitive search...`);
           user = await prisma.user.findFirst({
             where: {
               email: {
-                equals: validatedData.email,
-                mode: 'insensitive' // For TiDB/MySQL compatibility if needed, though usually default
+                equals: targetEmail,
+                mode: 'insensitive' // For TiDB/MySQL compatibility if needed
               }
             }
           });
         }
 
         if (user) {
+          console.log(`✅ User found for notification: ${user.email} (ID: ${user.id})`);
           await createOrderUpdateNotification(
             user.id,
             validatedData.status,
@@ -328,6 +343,8 @@ async function updateCustomerOrder(request, response) {
           console.log(
             `📧 Status update notification sent to user: ${user.email} - Status: ${validatedData.status}`,
           );
+        } else {
+          console.log(`❌ Notification SKIPPED: No user account found for email: ${targetEmail}`);
         }
       } catch (notificationError) {
         console.error(
@@ -335,6 +352,8 @@ async function updateCustomerOrder(request, response) {
           notificationError,
         );
       }
+    } else {
+      console.log('ℹ️ Status unchanged, skipping notification.');
     }
 
     console.log(`Order updated successfully: ID ${updatedOrder.id}`);
@@ -360,6 +379,39 @@ async function updateCustomerOrder(request, response) {
     return response.status(500).json({
       error: 'Internal server error',
       details: 'Failed to update order. Please try again later.',
+    });
+  }
+}
+
+async function bulkDeleteOrders(request, response) {
+  try {
+    const { orderIds } = request.body;
+
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      return response.status(400).json({
+        error: 'Invalid request',
+        details: 'orderIds must be a non-empty array',
+      });
+    }
+
+    const updateResult = await prisma.customer_order.updateMany({
+      where: {
+        id: {
+          in: orderIds,
+        },
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    console.log(`Bulk deleted ${updateResult.count} orders.`);
+    return response.status(200).json({ message: 'Orders deleted successfully', count: updateResult.count });
+  } catch (error) {
+    console.error('Error bulk deleting orders:', error);
+    return response.status(500).json({
+      error: 'Internal server error',
+      details: 'Failed to delete orders.',
     });
   }
 }
@@ -513,6 +565,7 @@ module.exports = {
   createCustomerOrder,
   updateCustomerOrder,
   deleteCustomerOrder,
+  bulkDeleteOrders,
   getCustomerOrder,
   getAllOrders,
 };

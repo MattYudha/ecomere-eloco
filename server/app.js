@@ -1,18 +1,43 @@
 'use strict';
 
-const express = require('express');
+// Load env vars immediately
 const path = require('path');
+const fs = require('fs');
+
+const envPath = path.join(__dirname, '.env');
+console.log('[DEBUG] Loading .env from:', envPath);
+
+try {
+  if (fs.existsSync(envPath)) {
+    console.log('[DEBUG] .env file exists. Readable:', fs.accessSync(envPath, fs.constants.R_OK) === undefined);
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    console.log('[DEBUG] .env content check:', envContent ? `Valid content (${envContent.length} bytes)` : 'Empty content');
+    console.log('[DEBUG] .env keys found in file:', envContent.split('\n').filter(line => line.includes('=') && !line.startsWith('#')).map(line => line.split('=')[0].trim()));
+  } else {
+    console.error('[DEBUG] .env file NOT FOUND at:', envPath);
+  }
+} catch (err) {
+  console.error('[DEBUG] Error checking .env file:', err.message);
+}
+
+const result = require('dotenv').config({ path: envPath });
+if (result.error) {
+  console.error('[DEBUG] Dotenv loading error:', result.error);
+} else {
+  console.log('[DEBUG] Dotenv parsed keys:', Object.keys(result.parsed || {}));
+}
+
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
+const express = require('express');
+// path is already required above
 const http = require('http');
 const socketIo = require('./utils/socket');
 
 // =========================
 // Environment (LOCAL ONLY)
 // =========================
-// Railway inject env via Variables. .env hanya untuk local/dev.
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: path.join(__dirname, '.env') });
-  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
-}
+// (Moved to top)
 
 // =========================
 // Crash visibility (biar kelihatan di Railway logs)
@@ -166,9 +191,12 @@ app.use(cookieParser());
 // upload: limit biar aman
 app.use(
   fileUpload({
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
     abortOnLimit: true,
     createParentPath: true,
+    limitHandler: (req, res, next) => {
+      res.status(413).json({ error: 'File too large. Maximum size is 50MB.' });
+    },
   })
 );
 

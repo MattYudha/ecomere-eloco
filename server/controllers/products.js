@@ -108,16 +108,16 @@ const getAllProducts = asyncHandler(async (request, response) => {
     const validatedPage = page && page > 0 ? page : 1;
 
     if (dividerLocation !== -1) {
-      const queryArray = request.url
-        .substring(dividerLocation + 1, request.url.length)
-        .split('&');
+      const queryArray = decodeURIComponent(
+        request.url.substring(dividerLocation + 1, request.url.length),
+      ).split('&');
 
-      let filterType;
       let filterArray = [];
 
       for (let i = 0; i < queryArray.length; i++) {
         // Security: Use more robust parsing with validation
         const queryParam = queryArray[i];
+        let filterType = null; // Reset filterType for each parameter
 
         // Extract filter type safely
         if (queryParam.includes('filters')) {
@@ -185,6 +185,7 @@ const getAllProducts = asyncHandler(async (request, response) => {
 
       // Security: Build filter object using safe function
       filterObj = buildSafeFilterObject(filterArray);
+      console.log('Parsed Filter Object:', JSON.stringify(filterObj, null, 2));
     }
 
     let whereClause = { ...filterObj };
@@ -408,6 +409,24 @@ const deleteProduct = asyncHandler(async (request, response) => {
   return response.status(204).send();
 });
 
+const bulkDeleteProducts = asyncHandler(async (request, response) => {
+  const { ids } = request.body;
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    throw new AppError('Product IDs array is required', 400);
+  }
+
+  await prisma.product.deleteMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+
+  return response.status(200).json({ message: 'Products deleted successfully' });
+});
+
 const searchProducts = asyncHandler(async (request, response) => {
   const { query } = request.query;
 
@@ -463,6 +482,7 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  bulkDeleteProducts,
   searchProducts,
   getProductById,
 };

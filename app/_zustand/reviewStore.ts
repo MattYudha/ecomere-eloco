@@ -18,7 +18,7 @@ interface ReviewStore {
     isLoading: boolean;
     error: string | null;
     fetchReviews: (productId: string) => Promise<void>;
-    createReview: (productId: string, rating: number, comment: string) => Promise<boolean>;
+    createReview: (productId: string, rating: number, comment: string, orderId?: string) => Promise<boolean>;
     deleteReview: (reviewId: string) => Promise<boolean>;
 }
 
@@ -46,10 +46,10 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         }
     },
 
-    createReview: async (productId, rating, comment) => {
+    createReview: async (productId, rating, comment, orderId) => {
         set({ isLoading: true });
         try {
-            const response = await apiClient.post('/api/reviews', { productId, rating, comment });
+            const response = await apiClient.post('/api/reviews', { productId, rating, comment, orderId });
 
             if (response.ok) {
                 // Refresh reviews
