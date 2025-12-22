@@ -84,9 +84,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
           </div>
 
           {/* Content Section */}
-          <div className="flex-1 p-3 flex flex-col gap-2">
+          <div className="flex-1 p-2 sm:p-3 flex flex-col gap-1.5 sm:gap-2">
             <div className="flex-1 space-y-1">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2 group-hover:text-[#cb6112] transition-colors">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2 group-hover:text-[#cb6112] transition-colors min-h-[2.5em]">
                 {sanitize(product.title)}
               </h3>
 
@@ -100,27 +100,27 @@ const ProductItem = ({ product }: ProductItemProps) => {
                 <span className="text-[10px] text-gray-400 dark:text-gray-500">({product.reviewCount || 0})</span>
               </div>
 
-              <p className="text-lg font-bold text-[#cb6112]">
+              <p className="text-sm sm:text-lg font-bold text-[#cb6112]">
                 {formatPrice(product.price)}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mt-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-auto">
               {product.inStock === 1 ? (
                 <>
                   <button
                     onClick={handleAddToCart}
-                    className="flex items-center justify-center gap-1 h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center justify-center gap-1 h-7 sm:h-8 px-1 sm:px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors w-full"
                   >
-                    <ShoppingCart size={12} />
-                    Add
+                    <ShoppingCart size={12} className="shrink-0" />
+                    <span className="truncate">Add</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       router.push(`/product/${product.slug}`);
                     }}
-                    className="flex items-center justify-center h-8 px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20"
+                    className="flex items-center justify-center h-7 sm:h-8 px-1 sm:px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20 w-full truncate"
                   >
                     Buy Now
                   </button>
@@ -128,7 +128,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               ) : (
                 <button
                   disabled
-                  className="col-span-2 flex items-center justify-center h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-medium text-[10px] uppercase tracking-wider cursor-not-allowed border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="col-span-1 sm:col-span-2 flex items-center justify-center h-7 sm:h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-medium text-[10px] uppercase tracking-wider cursor-not-allowed border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   Sold Out
                 </button>

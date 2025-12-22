@@ -66,7 +66,7 @@ const Filters = () => {
   };
 
   return (
-    <div className="sticky top-24 h-fit">
+    <div className="relative md:sticky md:top-24 h-fit z-40">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex items-center gap-3">
@@ -245,8 +245,8 @@ const Filters = () => {
                       updateSearchParams('rating', val);
                     }}
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${inputCategory.ratingFilter.value >= val
-                        ? 'bg-orange-100 text-[#cb6112] dark:bg-orange-900/40 dark:text-orange-400 scale-110'
-                        : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'bg-orange-100 text-[#cb6112] dark:bg-orange-900/40 dark:text-orange-400 scale-110'
+                      : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                   >
                     {val}

@@ -14,7 +14,7 @@ const newCategories = [
   },
   {
     id: 2,
-    title: 'Makaroni',
+    title: 'Keripik Makaroni',
     href: '/shop',
     icon: '🍝',
     description: 'Bumbu premium, bikin nagih',

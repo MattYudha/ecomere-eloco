@@ -5,50 +5,78 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoArrowDown, IoChevronBack, IoChevronForward } from 'react-icons/io5';
+import { useTheme } from 'next-themes';
 
 // Data Slide (Tidak ada perubahan)
-const slides = [
-  {
-    id: 1,
-    bgImage: '/assets/eloqo.png',
-    subtitle: 'Renyah & Tak Tertandingi',
-    title: 'Sensasi Dalam <br/> Setiap Gigitan',
-    text: 'Nikmati rangkaian keripik premium kami—perpaduan rasa autentik dan inovasi yang menciptakan pengalaman ngemil tak terlupakan.',
-    buttonText: 'Lihat Varian Keripik',
-    buttonLink: '/shop',
-  },
+
+// --- Theme Definitions ---
+const THEMES = {
+  goldBright: 'linear-gradient(180deg, #F59E0B 0%, #D97706 55%, #B45309 100%)', // Standard Premium
+  goldWarm: 'linear-gradient(180deg, #D97706 0%, #B45309 55%, #92400E 100%)',   // Deep Amber
+  goldDeep: 'linear-gradient(180deg, #C2410C 0%, #9A3412 55%, #7C2D12 100%)',   // Rust/Burnt
+};
+
+export const slides = [
+
   {
     id: 2,
     bgImage: '/assets/eloqo.png',
+    theme: 'goldWarm',
     subtitle: 'Cookies yang Menggugah Selera',
-    title: 'Upgrade mood <br/> Cookies & varian baru kita.',
-    text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
-    buttonText: 'Jelajahi Makaroni',
-    buttonLink: '/shop',
+    title: {
+      normal: 'Upgrade Mood',
+      highlight: 'Cookies & Varian Baru',
+    },
+    text:
+      'Temukan cookies premium dengan rasa lembut, manis seimbang, dan dibuat dari bahan pilihan berkualitas tinggi.',
+    cta: {
+      label: 'Jelajahi Makaroni',
+      href: '/shop',
+    },
   },
   {
     id: 3,
     bgImage: '/uploads/5.jpg',
+    theme: 'goldWarm',
     subtitle: 'Manis, Lembut, & Memikat',
-    title: 'Upgrade mood <br/> Cilok Gurih dan Nikmat',
-    text: 'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
-    buttonText: 'Cicipi Kukis Premium',
-    buttonLink: '/shop',
+    title: {
+      normal: 'Upgrade Mood',
+      highlight: 'Cilok Gurih & Nikmat',
+    },
+    text:
+      'Cilok khas ELOQO dengan tekstur lembut dan rasa gurih yang bikin nagih sejak gigitan pertama.',
+    cta: {
+      label: 'Cicipi Kukis Premium',
+      href: '/shop',
+    },
   },
   {
     id: 4,
     bgImage: '/uploads/seragam.png',
+    theme: 'goldDeep',
     subtitle: 'Kualitas Terbaik, Rasa Juara',
-    title: 'PKKMB season?  <br/> Tenang, kebutuhan kamu lengkap di sini!',
-    text: 'Jelajahi dunia rasa ELOQO, tempat setiap produk dibuat dengan bahan-bahan pilihan untuk kepuasan maksimal.',
-    buttonText: 'Belanja Semua Produk',
-    buttonLink: '/shop',
+    title: {
+      normal: 'PKKMB Season?',
+      highlight: 'Tenang, Semua Ada di Sini',
+    },
+    text:
+      'ELOQO hadir menemani momen kampusmu dengan pilihan camilan lengkap dan berkualitas.',
+    cta: {
+      label: 'Belanja Semua Produk',
+      href: '/shop',
+    },
   },
 ];
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const length = slides.length;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const nextSlide = useCallback(() => {
     setCurrent(current === length - 1 ? 0 : current + 1);
@@ -97,6 +125,11 @@ const Hero = () => {
     }),
   };
 
+  // Helper to safely get theme gradient
+  const getMobileGradient = (themeKey: string) => {
+    return THEMES[themeKey as keyof typeof THEMES] || THEMES.goldBright;
+  };
+
   return (
     <section className="relative w-full h-screen min-h-[500px] md:min-h-[700px] overflow-hidden bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
       {/* --- SLIDER CONTENT --- */}
@@ -108,9 +141,9 @@ const Hero = () => {
           animate="visible"
           exit="exit"
         >
-          {/* 1. Background Image */}
+          {/* 1. Background Image (Desktop Only) */}
           <motion.div
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full hidden md:block" // Hidden on mobile, visible on desktop
             variants={slideVariants}
           >
             <div className="relative w-full h-full">
@@ -122,8 +155,35 @@ const Hero = () => {
                 className="object-cover object-center"
                 quality={90}
               />
-
             </div>
+          </motion.div>
+
+          {/* 1.b Background Image (Mobile Only) */}
+          <motion.div
+            className="absolute inset-0 w-full h-full md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="relative w-full h-full bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
+              {/* Mobile Image - Visible in BOTH Light and Dark nodes now as per 'image saja' request */}
+              <Image
+                src="/assets/eloqomobile.png"
+                alt="Eloqo Mobile Background"
+                fill
+                className="object-cover object-center"
+                quality={90}
+                priority={current === 0}
+              />
+            </div>
+
+            {/* Grain/Noise Texture Overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-[0.04] dark:opacity-[0.02]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")`
+              }}
+            ></div>
           </motion.div>
 
           {/* 3. Content Text */}
@@ -134,7 +194,7 @@ const Hero = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-[#cb6112] font-bold tracking-[0.2em] uppercase text-xs md:text-base mb-3 md:mb-4 drop-shadow-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm px-3 py-1 md:px-4 md:py-1 rounded-full border border-[#cb6112]/20 dark:border-[#cb6112]/30"
+              className="text-white md:text-gray-900 dark:text-white font-bold tracking-[0.2em] uppercase text-xs md:text-base mb-3 md:mb-4 drop-shadow-sm bg-white/20 md:bg-white/60 dark:bg-white/5 dark:md:bg-white/10 backdrop-blur-sm px-3 py-1 md:px-4 md:py-1 rounded-full border border-white/20 md:border-gray-900/10 dark:border-white/10"
             >
               {slides[current].subtitle}
             </motion.p>
@@ -145,9 +205,13 @@ const Hero = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="font-['Forum'] text-4xl md:text-7xl lg:text-8xl text-gray-900 dark:text-white leading-[1.1] mb-4 md:mb-6 drop-shadow-lg transition-colors duration-300"
-              dangerouslySetInnerHTML={{ __html: slides[current].title }}
-            />
+              className="font-['Forum'] text-[clamp(1.8rem,5vw,2.2rem)] md:text-7xl lg:text-8xl leading-[1.15] tracking-[-0.02em] text-white md:text-gray-900 dark:text-white mb-4 md:mb-6 drop-shadow-lg transition-colors duration-300"
+            >
+              {slides[current].title.normal} <br />
+              <strong className="font-semibold text-inherit">
+                {slides[current].title.highlight}
+              </strong>
+            </motion.h1>
 
             {/* Description */}
             <motion.p
@@ -155,7 +219,7 @@ const Hero = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-gray-800 dark:text-gray-200 text-sm md:text-xl max-w-xs md:max-w-2xl mb-8 md:mb-10 leading-relaxed font-['DM_Sans'] drop-shadow-md transition-colors duration-300"
+              className="text-white md:text-gray-800 dark:text-gray-200 text-sm md:text-xl max-w-xs md:max-w-2xl mb-8 md:mb-10 leading-relaxed font-['DM_Sans'] drop-shadow-md transition-colors duration-300"
             >
               {slides[current].text}
             </motion.p>
@@ -168,16 +232,22 @@ const Hero = () => {
               animate="visible"
             >
               <Link
-                href={slides[current].buttonLink}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent overflow-hidden rounded-full transition-all duration-300"
+                href={slides[current].cta.href}
+                className={`group relative inline-flex items-center gap-3 px-8 py-4 overflow-hidden rounded-[14px] transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.25)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] md:bg-transparent ${mounted && resolvedTheme === 'dark' ? 'bg-[#D97706]' : 'bg-white'
+                  }`}
               >
-                <div className="absolute inset-0 bg-[#cb6112] opacity-90 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(203,97,18,0.4)] group-hover:shadow-[0_0_50px_rgba(203,97,18,0.7)]" />
+                {/* Desktop Fill Animation */}
+                <div className="hidden md:block absolute inset-0 bg-[#cb6112] opacity-90 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(203,97,18,0.4)] group-hover:shadow-[0_0_50px_rgba(203,97,18,0.7)]" />
 
-                <span className="relative text-white font-bold uppercase tracking-widest text-sm z-10 group-hover:translate-x-[-5px] transition-transform">
-                  {slides[current].buttonText}
+                {/* Mobile Text (Dynamic) / Desktop Text (White) */}
+                <span className={`relative z-10 font-bold uppercase tracking-widest text-sm transition-transform group-hover:translate-x-[-5px] md:text-white ${mounted && resolvedTheme === 'dark' ? 'text-white' : 'text-[#D97706]'
+                  }`}>
+                  {slides[current].cta.label}
                 </span>
 
-                <span className="relative z-10 bg-white text-[#cb6112] rounded-full p-1 group-hover:translate-x-1 transition-transform">
+                {/* Mobile Icon (Dynamic) OR Simple Icon */}
+                <span className={`relative z-10 rounded-full p-1 group-hover:translate-x-1 transition-transform md:bg-white text-[#D97706] ${mounted && resolvedTheme === 'dark' ? 'bg-white/20 text-white' : 'bg-[#D97706]/10 text-[#D97706]'
+                  }`}>
                   <IoChevronForward />
                 </span>
               </Link>
@@ -241,9 +311,9 @@ const Hero = () => {
       {/* --- SCROLL DOWN BUTTON --- */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: 0.6, y: 0 }} // Lower opacity
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
       >
         <Link
           href="#featured-products"

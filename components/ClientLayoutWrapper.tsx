@@ -1,46 +1,42 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 
 const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
-  const pathname = usePathname();
-  const { theme } = useTheme();
+    const pathname = usePathname();
+    const { theme } = useTheme();
 
-  useEffect(() => {
-    const isAdminPage = pathname.startsWith('/admin');
-    if (isAdminPage && theme === 'light') {
-      document.body.classList.add('admin-light-mode');
-    } else {
-      document.body.classList.remove('admin-light-mode');
-    }
-
-    // Cleanup function to remove the class when the component unmounts or dependencies change
-    return () => {
-      document.body.classList.remove('admin-light-mode');
-    };
-  }, [pathname, theme]);
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        key={pathname}
-        className={
-          theme === 'dark'
-            ? 'background-gradient-dark'
-            : 'background-gradient-light'
+    useEffect(() => {
+        const isAdminPage = pathname?.startsWith('/admin');
+        if (isAdminPage && theme === 'light') {
+            document.body.classList.add('admin-light-mode');
+        } else {
+            document.body.classList.remove('admin-light-mode');
         }
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
+
+        return () => {
+            document.body.classList.remove('admin-light-mode');
+        };
+    }, [pathname, theme]);
+
+    return (
+        <motion.div
+            key={pathname}
+            className={
+                theme === 'dark'
+                    ? 'background-gradient-dark'
+                    : 'background-gradient-light'
+            }
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+            {children}
+        </motion.div>
+    );
 };
 
 export default ClientLayoutWrapper;

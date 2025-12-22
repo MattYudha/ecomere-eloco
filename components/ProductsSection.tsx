@@ -49,7 +49,7 @@ const ProductsSection = () => {
             Loading featured products...
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
             {products.length > 0 ? (
               products.map((product: Product) => (
                 <ProductItem key={product.id} product={product} />
