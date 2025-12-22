@@ -399,7 +399,7 @@ const CheckoutPage = () => {
             toast.error("You don't have items in your cart");
             router.push('/cart');
         }
-    }, [products.length, router]);
+    }, [products.length, router, isSuccess]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 relative overflow-hidden">
