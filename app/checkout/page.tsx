@@ -449,7 +449,9 @@ const CheckoutPage = () => {
                                         <Image
                                             src={
                                                 product?.image
-                                                    ? `/${product.image.replace(/^\//, '')}`
+                                                    ? product.image.startsWith('http')
+                                                        ? product.image
+                                                        : `/${product.image.replace(/^\//, '')}`
                                                     : '/product_placeholder.jpg'
                                             }
                                             alt={product?.title}

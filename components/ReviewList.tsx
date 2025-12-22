@@ -72,7 +72,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                             </div>
                         </div>
 
-                        {(isAdmin || currentUserEmail === review.user?.email) && (
+                        {isAdmin && (
                             <button
                                 onClick={() => deleteReview(review.id)}
                                 className="text-gray-400 hover:text-red-500 transition-colors p-2 opacity-0 group-hover:opacity-100"

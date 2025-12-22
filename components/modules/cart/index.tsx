@@ -43,7 +43,9 @@ export const CartModule = () => {
                                     height={192}
                                     src={
                                         product?.image
-                                            ? `/${product.image.replace(/^\//, '')}`
+                                            ? product.image.startsWith('http')
+                                                ? product.image
+                                                : `/${product.image.replace(/^\//, '')}`
                                             : '/product_placeholder.jpg'
                                     }
                                     alt={sanitize(product.title)}
