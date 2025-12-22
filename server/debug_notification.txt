@@ -599,4 +599,71 @@ Data: {
 Data: {
   "notificationId": "9le4WMw5BOCGirJy7aM-t"
 }
+--------------------------------------------------[2025-12-22T13:57:57.608Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat123345@gmail.com",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2025-12-22T13:57:57.951Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-22T13:57:58.029Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2025-12-22T13:57:58.030Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "0a636ebb-2e32-4cfc-94a0-4ecbe1e8b690"
+}
+--------------------------------------------------
+[2025-12-22T13:57:58.564Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Dibuat
+Data: {
+  "notificationId": "sg5hm8tuoCT9tgUVXIk1E"
+}
+--------------------------------------------------
+[2025-12-22T13:57:58.564Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2025-12-22T13:57:58.565Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2025-12-22T13:58:21.907Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-22T13:58:22.015Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Selesai
+Data: {
+  "notificationId": "oUmYappwShIUYGFZpD_dY"
+}
+--------------------------------------------------
+[2025-12-22T14:00:51.120Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat123345@gmail.com",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-22T14:00:51.338Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-22T14:00:51.372Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-22T14:00:51.373Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "ebbda3a3-6f2a-4224-95c7-1922b98aa1f0"
+}
+--------------------------------------------------
+[2025-12-22T14:00:51.544Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-22T14:00:51.544Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Dibuat
+Data: {
+  "notificationId": "D2lZNaY5p5KTBM1k4qOsM"
+}
+--------------------------------------------------
+[2025-12-22T14:00:51.545Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-22T14:01:53.801Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-22T14:01:53.841Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Selesai
+Data: {
+  "notificationId": "QAryETXR8eHYKFVZcG8-S"
+}
 --------------------------------------------------

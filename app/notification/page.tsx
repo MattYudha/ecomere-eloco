@@ -129,8 +129,10 @@ const NotificationsPage = () => {
     );
   }
 
+  // Not authenticated
   // Not authenticated - show loading instead of blank while redirecting
   if (!session) {
+    return null;
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <FaSpinner className="animate-spin text-4xl text-[#cb6112]" />
