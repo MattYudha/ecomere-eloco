@@ -30,7 +30,7 @@ const SingleProductDynamicFields = ({ product }: { product: Product }) => {
           <span>Notify Me When Available</span>
         </button>
         <p className="text-center text-xs text-gray-400 mt-2">
-          We'll email you when this item is back in stock.
+          We&apos;ll email you when this item is back in stock.
         </p>
       </div>
     );
