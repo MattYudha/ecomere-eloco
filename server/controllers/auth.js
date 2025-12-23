@@ -8,13 +8,14 @@ const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 
 // Helper to set cookie
 const setCookie = (req, res, token) => {
-    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+    // Simplify production check: Trust NODE_ENV.
+    // In Railway/Vercel (Production), we MUST use Secure + SameSite: None for cross-origin cookies.
+    const isProduction = process.env.NODE_ENV === 'production';
 
     const options = {
         httpOnly: true,
-        secure: isProduction, // True in Prod (HTTPS), False in Dev (HTTP or Localhost)
-        sameSite: isProduction ? 'none' : 'lax', // None for cross-site (Prod), Lax for Localhost
+        secure: isProduction, // Always true in production (HTTPS)
+        sameSite: isProduction ? 'none' : 'lax', // 'none' is required for cross-site (Vercel -> Railway)
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: '/',
     };
@@ -118,14 +119,14 @@ const login = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/logout
 // @access  Private
 const logout = asyncHandler(async (req, res) => {
-    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+    const isProduction = process.env.NODE_ENV === 'production';
 
     res.cookie('eloco_session', '', {
         expires: new Date(0), // Expire immediately
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
+        path: '/', // Ensure path matches creation
     });
 
     res.status(200).json({ success: true, data: {} });
@@ -136,22 +137,24 @@ const logout = asyncHandler(async (req, res) => {
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
     let token;
+    let authSource = 'none';
 
-    // DEBUG: Check incoming cookies
-    console.log('[Auth] getMe - Cookies received:', req.cookies);
-    console.log('[Auth] getMe - Headers received:', req.headers.authorization ? 'Has Auth Header' : 'No Auth Header');
-
+    // 1. Try Cookie
     if (req.cookies.eloco_session) {
         token = req.cookies.eloco_session;
+        authSource = 'cookie';
     }
 
-    //   // Allow Bearer token as fallback?
-    //   if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    //     token = req.headers.authorization.split(' ')[1];
-    //   }
+    // 2. Try Bearer Token (Fallback for mobile/API/cross-origin issues)
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+        authSource = 'header';
+    }
 
+    // DEBUG: Helpful logs for auth failures
     if (!token) {
-        // Return null or 401? useAuth expects 401/error to set user null
+        console.warn('[Auth] getMe - 401 Unauthorized. No token in Cookie or Header.');
+        console.warn('Checks -> Cookie:', !!req.cookies.eloco_session, '| Header:', !!req.headers.authorization);
         throw new AppError('Not authorized to access this route', 401);
     }
 
