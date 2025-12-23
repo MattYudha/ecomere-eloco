@@ -132,6 +132,9 @@ const deleteNotification = async (req, res) => {
         });
         res.status(204).send();
     } catch (error) {
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: 'Notification not found' });
+        }
         console.error('Error deleting notification:', error);
         res.status(500).json({ error: 'Error deleting notification' });
     }

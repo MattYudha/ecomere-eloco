@@ -53,13 +53,15 @@ class NotificationAPI {
   }
 
   async bulkMarkAsRead(payload: { notificationIds: string[]; userId: string }) {
-    const response = await this.apiClient.put('/api/notifications/bulk/mark-as-read', payload);
+    const response = await this.apiClient.post('/api/notifications/mark-read', payload);
     if (!response.ok) throw new Error('Failed to bulk mark as read');
     return response.json();
   }
 
   async markAllAsRead(userId: string) {
-    const response = await this.apiClient.put(`/api/notifications/${userId}/mark-all-read`);
+    const response = await this.apiClient.post('/api/notifications/mark-read', {
+      userId,
+    });
     if (!response.ok) throw new Error('Failed to mark all as read');
     return response.json();
   }
@@ -71,7 +73,8 @@ class NotificationAPI {
     }
     const response = await this.apiClient.delete(url);
     if (!response.ok) throw new Error('Failed to delete notification');
-    return response.json(); // Assuming delete endpoint returns the deleted item or success message
+    if (response.status === 204) return;
+    return response.json();
   }
 
   async bulkDeleteNotifications(payload: {
@@ -82,6 +85,7 @@ class NotificationAPI {
       body: JSON.stringify(payload)
     });
     if (!response.ok) throw new Error('Failed to bulk delete notifications');
+    if (response.status === 204) return;
     return response.json();
   }
 }

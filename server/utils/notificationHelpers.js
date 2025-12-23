@@ -35,23 +35,23 @@ const createOrderUpdateNotification = async (
   try {
     const statusMessages = {
       pending: {
-        title: 'Pesanan Dibuat',
-        message: `Terima kasih! Pesanan Anda #${orderId} telah diterima dan sedang diproses.`,
+        title: 'Pesanan Update: Pending ⏳',
+        message: `Asyik, pesanan hari ini! Pesanan nomor #${orderId} kamu sudah masuk nih dan statusnya Pending. Tim kami akan segera cek, mohon ditunggu sebentar ya!`,
         priority: 'NORMAL',
       },
       confirmed: {
-        title: 'Pesanan Dikonfirmasi',
-        message: `Pesanan Anda dengan nomor #${orderId} telah berhasil dikonfirmasi. Kami akan segera menghubungi Anda untuk proses selanjutnya dan mempersiapkan pengiriman.`,
+        title: 'Pesanan Dikonfirmasi ✅',
+        message: `Pesanan nomor #${orderId} kamu sudah dikonfirmasi nih! Kami akan segera menghubungi kamu buat proses selanjutnya. Stay tuned ya!`,
         priority: 'HIGH',
       },
       processing: {
-        title: 'Pesanan Diproses',
-        message: `Pesanan Anda #${orderId} sedang diproses dan akan segera dikirim.`,
+        title: 'Pesanan Update: Processing 🛠️',
+        message: `Kabar baik! Pesanan nomor #${orderId} kamu lagi kami proses dengan teliti. Kami pastikan semuanya aman sebelum dikirim. Harap bersabar ya!`,
         priority: 'NORMAL',
       },
       shipped: {
-        title: 'Pesanan Dikirim',
-        message: `Kabar baik! Pesanan Anda #${orderId} telah dikirim dan sedang dalam perjalanan.`,
+        title: 'Pesanan Update: Shipped 🚚',
+        message: `Yeay! Pesanan nomor #${orderId} sudah meluncur 🚀 dan dalam perjalanan ke alamatmu. Siap-siap terima paket kebahagiaan ya!`,
         priority: 'HIGH',
       },
       delivered: {
@@ -60,8 +60,8 @@ const createOrderUpdateNotification = async (
         priority: 'HIGH',
       },
       cancelled: {
-        title: 'Pesanan Dibatalkan',
-        message: `Pesanan Anda #${orderId} telah dibatalkan. Jika Anda memiliki pertanyaan, silakan hubungi dukungan kami.`,
+        title: 'Pesanan Update: Cancelled 🚫',
+        message: `Yah, mohon maaf banget ya 🙏. Pesanan nomor #${orderId} kamu statusnya jadi Cancelled nih. Tapi jangan sedih, kamu bisa tanya admin kami kalau bingung. Yuk belanja lagi!`,
         priority: 'URGENT',
       },
     };

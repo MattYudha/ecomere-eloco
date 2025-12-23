@@ -439,16 +439,9 @@ const AdminSingleOrder = () => {
                                     Subtotal:{' '}
                                     <span className="font-semibold">{formatPrice(order?.total)}</span>
                                 </div>
-                                <div className="text-lg">
-                                    Tax (20%):{' '}
-                                    <span className="font-semibold">{formatPrice(order?.total / 5)}</span>
-                                </div>
-                                <div className="text-lg">
-                                    Shipping: <span className="font-semibold">{formatPrice(5)}</span>
-                                </div>
                                 <div className="text-2xl font-bold mt-2">
                                     Total:{' '}
-                                    <span className="text-purple-700 dark:text-purple-400">{formatPrice(order?.total + order?.total / 5 + 5)}</span>
+                                    <span className="text-purple-700 dark:text-purple-400">{formatPrice(order?.total)}</span>
                                 </div>
                             </div>
                         </GlassPanel>

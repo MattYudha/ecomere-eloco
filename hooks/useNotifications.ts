@@ -38,7 +38,7 @@ export const useNotifications = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/email/${session.user.email}`,
+        `/api/users/email/${session.user.email}`,
       );
       const userData = await response.json();
       return userData?.id || null;
@@ -313,17 +313,28 @@ export const useUnreadCount = () => {
     if (!session?.user?.email) return;
 
     try {
-      // Get user ID first
+      // Use relative path to avoid CORS/Env issues if on same origin, or fallback to simple fetch
+      console.log('[useUnreadCount] Fetching user ID for email:', session.user.email);
       const userResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/email/${session.user.email}`,
+        `/api/users/email/${session.user.email}`,
       );
+
+      if (!userResponse.ok) {
+        console.error('[useUnreadCount] Failed to fetch user ID', userResponse.status);
+        return;
+      }
+
       const userData = await userResponse.json();
+      console.log('[useUnreadCount] User ID fetched:', userData?.id);
 
       if (userData?.id) {
-        const { unreadCount } = await notificationApi.getUnreadCount(
+        const response = await notificationApi.getUnreadCount(
           userData.id,
         );
-        setUnreadCount(unreadCount);
+        // Backend returns { count: number }, support both just in case
+        const count = response.count ?? response.unreadCount ?? 0;
+
+        setUnreadCount(count);
       }
     } catch (error) {
       console.error('Error fetching unread count:', error);

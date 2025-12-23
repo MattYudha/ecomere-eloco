@@ -163,7 +163,12 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
               <h3 className={`text-base font-bold pr-4 ${notification.isRead ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
                 {displayTitle}
                 {status && !isReviewsAllowed && orderId && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500">
+                  <span
+                    className={`ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${status === 'cancelled'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500'
+                      }`}
+                  >
                     {status}
                   </span>
                 )}
@@ -252,8 +257,17 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
                   )}
                 </>
               ) : orderId ? (
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-xs font-semibold rounded-lg cursor-not-allowed">
-                  <FaBoxOpen size={12} />
+                <div
+                  className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg cursor-not-allowed ${status === 'cancelled'
+                    ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                    }`}
+                >
+                  {status === 'cancelled' ? (
+                    <FaExclamationTriangle size={12} />
+                  ) : (
+                    <FaBoxOpen size={12} />
+                  )}
                   {status || 'Pending'}
                 </div>
               ) : null}
@@ -275,10 +289,10 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
             </div>
           </div>
         </div>
-      </motion.div>
+      </motion.div >
 
       {/* Review Modal */}
-      <ReviewOrderModal
+      < ReviewOrderModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         orderId={orderId as string}

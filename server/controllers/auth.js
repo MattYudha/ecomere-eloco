@@ -168,6 +168,19 @@ const getMe = asyncHandler(async (req, res) => {
 
         res.status(200).json(excludePassword(user));
     } catch (err) {
+        console.error('[Auth] getMe - Verification Error:', err.message);
+
+        // Clear the invalid cookie so the browser stops sending it
+        const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+        const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+        res.cookie('eloco_session', '', {
+            expires: new Date(0),
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            path: '/',
+        });
+
         throw new AppError('Not authorized to access this route', 401);
     }
 });

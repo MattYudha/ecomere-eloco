@@ -185,7 +185,7 @@ const getAllProducts = asyncHandler(async (request, response) => {
 
             // Security: Build filter object using safe function
             filterObj = buildSafeFilterObject(filterArray);
-            console.log('Parsed Filter Object:', JSON.stringify(filterObj, null, 2));
+            // console.log('Parsed Filter Object:', JSON.stringify(filterObj, null, 2));
         }
 
         let whereClause = { ...filterObj };

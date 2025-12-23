@@ -21,6 +21,7 @@ export const slides = [
   {
     id: 2,
     bgImage: '/assets/eloqo.png',
+    bgImageMobile: '/assets/eloqomobile.png',
     theme: 'goldWarm',
     subtitle: 'Cookies yang Menggugah Selera',
     title: {
@@ -37,32 +38,34 @@ export const slides = [
   {
     id: 3,
     bgImage: '/uploads/5.jpg',
+    bgImageMobile: '/assets/CILOKmobile.png',
     theme: 'goldWarm',
-    subtitle: 'Manis, Lembut, & Memikat',
+    subtitle: 'PEDAS, NIKMAT, & GURIH',
     title: {
-      normal: 'Upgrade Mood',
-      highlight: 'Cilok Gurih & Nikmat',
+      normal: 'Upgrade Mood?',
+      highlight: 'Coba cilok rasa & varian baru kita.',
     },
     text:
-      'Cilok khas ELOQO dengan tekstur lembut dan rasa gurih yang bikin nagih sejak gigitan pertama.',
+      'Bunderan Telkom University, Jl. Telekomunikasi, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
     cta: {
-      label: 'Cicipi Kukis Premium',
+      label: 'JELAJAHI CILOK SETAN',
       href: '/shop',
     },
   },
   {
     id: 4,
     bgImage: '/uploads/seragam.png',
+    bgImageMobile: '/assets/PKKMBmobile.png',
     theme: 'goldDeep',
-    subtitle: 'Kualitas Terbaik, Rasa Juara',
+    subtitle: 'KUALITAS TERBAIK, BAHAN PREMIUM',
     title: {
       normal: 'PKKMB Season?',
       highlight: 'Tenang, Semua Ada di Sini',
     },
     text:
-      'ELOQO hadir menemani momen kampusmu dengan pilihan camilan lengkap dan berkualitas.',
+      'Savora Craft, Sedia Perlengkapan PKKMB Solusi Lengkap Atribut PKKMB Telkom University,Hemat waktu, lengkap, & sesuai spek! Siap Kirim / COD Area Telkom University',
     cta: {
-      label: 'Belanja Semua Produk',
+      label: 'KUNJUNGI INSTAGRAM SAVORA',
       href: '/shop',
     },
   },
@@ -168,8 +171,8 @@ const Hero = () => {
             <div className="relative w-full h-full bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
               {/* Mobile Image - Visible in BOTH Light and Dark nodes now as per 'image saja' request */}
               <Image
-                src="/assets/eloqomobile.png"
-                alt="Eloqo Mobile Background"
+                src={slides[current].bgImageMobile || slides[current].bgImage}
+                alt={slides[current].subtitle}
                 fill
                 className="object-cover object-center"
                 quality={90}

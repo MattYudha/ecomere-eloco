@@ -229,12 +229,15 @@ const Header = () => {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Link
-                  href="/login"
+                <button
+                  onClick={() => {
+                    // Force hard navigation
+                    window.location.href = '/login';
+                  }}
                   className="px-4 py-1.5 rounded-full border border-[#cb6112]/50 text-[#cb6112] hover:border-[#cb6112] hover:bg-[#cb6112] hover:text-white transition-all text-sm font-medium"
                 >
                   Login
-                </Link>
+                </button>
               </div>
             )}
 
@@ -390,13 +393,15 @@ const Header = () => {
                       </button>
                     ) : (
                       <div className="grid grid-cols-2 gap-4">
-                        <Link
-                          href="/login"
-                          onClick={closeMobileMenu}
-                          className="py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-center font-bold hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                        <button
+                          onClick={() => {
+                            closeMobileMenu();
+                            window.location.href = '/login';
+                          }}
+                          className="py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-center font-bold hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors w-full"
                         >
                           Login
-                        </Link>
+                        </button>
                         <Link
                           href="/register"
                           onClick={closeMobileMenu}
