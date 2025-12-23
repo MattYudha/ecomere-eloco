@@ -145,6 +145,24 @@ const wishlistLimiter = rateLimit({
   }
 });
 
+// Relaxed rate limiter for simple lookups (email checks for notifications)
+const lookupLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 1000, // High limit for frequent polls
+  message: {
+    error: 'Too many lookup requests, please try again later.',
+    retryAfter: '1 minute'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Too many lookup requests, please try again later.',
+      retryAfter: '1 minute'
+    });
+  }
+});
+
 module.exports = {
   generalLimiter,
   authLimiter,
