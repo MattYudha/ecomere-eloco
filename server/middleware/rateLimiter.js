@@ -153,5 +153,6 @@ module.exports = {
   uploadLimiter,
   searchLimiter,
   orderLimiter,
-  wishlistLimiter
+  wishlistLimiter,
+  lookupLimiter
 };

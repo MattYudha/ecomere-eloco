@@ -89,6 +89,7 @@ const {
     searchLimiter,
     orderLimiter,
     wishlistLimiter,
+    lookupLimiter,
 } = require('./middleware/rateLimiter');
 
 const { handleServerError } = require('./utils/errorHandler');
@@ -206,7 +207,7 @@ app.use('/api/images', uploadLimiter);
 app.use('/api/main-image', uploadLimiter);
 app.use('/api/wishlist', wishlistLimiter);
 app.use('/api/bulk-upload', uploadLimiter);
-app.use('/api/users/email', authLimiter);
+app.use('/api/users/email', lookupLimiter);
 
 // =========================
 // API Routes
