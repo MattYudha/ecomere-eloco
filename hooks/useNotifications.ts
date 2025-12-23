@@ -307,63 +307,88 @@ export const useNotifications = () => {
  */
 export const useUnreadCount = () => {
   const { unreadCount, setUnreadCount } = useNotificationStore();
-  const { data: session } = useAuth();
+  const { data: session, status } = useAuth(); // Get status to ensure we are truly authenticated
 
   const fetchUnreadCount = useCallback(async () => {
-    if (!session?.user?.email) return;
+    // strict check: must be authenticated and have email
+    if (status !== 'authenticated' || !session?.user?.email) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
     try {
-      // Use relative path to avoid CORS/Env issues if on same origin, or fallback to simple fetch
-      console.log('[useUnreadCount] Fetching user ID for email:', session.user.email);
+      // Use relative path to avoid CORS/Env issues if on same origin
+      // console.log('[useUnreadCount] Fetching user ID for email:', session.user.email);
+
       const userResponse = await fetch(
         `/api/users/email/${session.user.email}`,
+        { signal: controller.signal }
       );
 
+      clearTimeout(timeoutId);
+
       if (!userResponse.ok) {
-        console.error('[useUnreadCount] Failed to fetch user ID', userResponse.status);
+        // If 502/503/504 (Gateway/Proxy errors) or 404, stop noisy logging
+        if (userResponse.status === 502 || userResponse.status === 503 || userResponse.status === 504) {
+          console.warn(`[useUnreadCount] Backend unavailable (${userResponse.status}). Retrying later.`);
+          return;
+        }
+
+        // Only log actual errors
+        if (userResponse.status !== 404) {
+          console.error('[useUnreadCount] Failed to fetch user ID', userResponse.status);
+        }
         return;
       }
 
       const userData = await userResponse.json();
-      console.log('[useUnreadCount] User ID fetched:', userData?.id);
 
       if (userData?.id) {
-        const response = await notificationApi.getUnreadCount(
-          userData.id,
-        );
+        const response = await notificationApi.getUnreadCount(userData.id);
         // Backend returns { count: number }, support both just in case
         const count = response.count ?? response.unreadCount ?? 0;
-
         setUnreadCount(count);
       }
     } catch (error) {
-      console.error('Error fetching unread count:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Ignore aborts
+        return;
+      }
+      // console.error('Error fetching unread count:', error);
+    } finally {
+      clearTimeout(timeoutId);
     }
-  }, [session?.user?.email, setUnreadCount]);
-
-
+  }, [session?.user?.email, status, setUnreadCount]); // Dependency on status is key
 
   const socket = useSocket();
 
   useEffect(() => {
-    if (!socket) return;
-    socket.on('notification', () => {
+    if (!socket || status !== 'authenticated') return;
+
+    // Only listen if we are authenticated
+    const handleNotification = () => {
       fetchUnreadCount();
-    });
+    };
+
+    socket.on('notification', handleNotification);
+
     return () => {
-      socket.off('notification');
+      socket.off('notification', handleNotification);
     }
-  }, [socket, fetchUnreadCount]);
+  }, [socket, fetchUnreadCount, status]);
 
   // Auto-refresh unread count every 30 seconds
   useEffect(() => {
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 5000); // 5 seconds for snappier updates
+    if (status !== 'authenticated') return;
 
-    // Listen for order completed events to refresh immediately
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 10000); // Relax to 10s to reduce load
+
     const handleOrderCompleted = () => {
       console.log('Order completed - refreshing notifications');
-      setTimeout(fetchUnreadCount, 1000); // Slight delay to ensure notification is created
+      setTimeout(fetchUnreadCount, 1000);
     };
 
     window.addEventListener('orderCompleted', handleOrderCompleted);
@@ -372,7 +397,7 @@ export const useUnreadCount = () => {
       clearInterval(interval);
       window.removeEventListener('orderCompleted', handleOrderCompleted);
     };
-  }, [fetchUnreadCount]);
+  }, [fetchUnreadCount, status]);
 
   return {
     unreadCount,
