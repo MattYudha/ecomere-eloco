@@ -18,6 +18,13 @@ const transporter = nodemailer.createTransport({
  * @param {string} html - HTML body of the email
  */
 async function sendMail({ to, subject, html }) {
+  // Graceful fallback if SMTP is not configured
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
+    console.warn(`[WARN] SMTP not configured. Skipping email to ${to}`);
+    // Return mock info so the caller doesn't fail
+    return { messageId: 'skipped-no-config' };
+  }
+
   try {
     const info = await transporter.sendMail({
       from: `"Your Shop" <${process.env.SMTP_FROM_EMAIL || 'noreply@yourshop.com'}>`, // sender address
@@ -35,8 +42,9 @@ async function sendMail({ to, subject, html }) {
 
     return info;
   } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
+    // Log error but do NOT throw, so we don't crash the order process
+    console.error('Error sending email (gracefully handled):', error.message);
+    return null;
   }
 }
 

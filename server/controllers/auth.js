@@ -76,7 +76,7 @@ const register = asyncHandler(async (req, res) => {
 
     setCookie(req, res, token);
 
-    res.status(201).json(excludePassword(user));
+    res.status(201).json({ user: excludePassword(user), token });
 });
 
 // @desc    Login user
@@ -112,7 +112,7 @@ const login = asyncHandler(async (req, res) => {
 
     setCookie(req, res, token);
 
-    res.status(200).json(excludePassword(user));
+    res.status(200).json({ user: excludePassword(user), token });
 });
 
 // @desc    Log user out / clear cookie

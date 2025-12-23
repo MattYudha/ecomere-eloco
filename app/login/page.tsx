@@ -59,6 +59,11 @@ const LoginForm = () => {
         setError(data.message || 'Invalid email or password');
         toast.error(data.message || 'Invalid email or password');
       } else {
+        // Save token fallback for Cross-Origin setups
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+        }
+
         setError('');
         toast.success('Successful login');
         await checkAuth(); // Manually update auth context state

@@ -21,9 +21,16 @@ export const apiClient = {
       ...(options.headers as Record<string, string> || {}),
     };
 
-    // Token ONLY applied if passed manually
+    // Token logic:
+    // 1. Manually passed token takes precedence
+    // 2. Fallback to localStorage 'auth_token' (Browser only)
     if (token) {
       defaultHeaders['Authorization'] = `Bearer ${token}`;
+    } else if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('auth_token');
+      if (storedToken) {
+        defaultHeaders['Authorization'] = `Bearer ${storedToken}`;
+      }
     }
 
     const defaultOptions: RequestInit = {
