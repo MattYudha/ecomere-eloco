@@ -9,17 +9,24 @@ const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 // Helper to set cookie
 // Helper to set cookie
 const setCookie = (req, res, token) => {
-    // Check if we are in a production-like environment (Railway or explicitly set to production)
+    // Robust check for production/HTTPS environment
+    // 1. Explicit Env vars
+    // 2. Railway specific vars
+    // 3. Request is HTTPS (x-forwarded-proto) - this is crucial for Railway/Vercel cross-site
+    const isSecureRequest = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
     const isProduction = process.env.NODE_ENV === 'production' ||
         process.env.RAILWAY_ENVIRONMENT ||
-        process.env.RAILWAY_TCP_APPLICATION_PORT;
+        process.env.RAILWAY_TCP_APPLICATION_PORT ||
+        isSecureRequest;
 
     // Strict config for cross-site (Vercel -> Railway)
-    // If we are in production, we MUST use Secure + SameSite: None
+    // If request came over HTTPS (isProduction/isSecureRequest), we MUST use Secure + SameSite: None 
+    // to allow the cookie to be sent back in cross-origin requests.
     const options = {
         httpOnly: true,
-        secure: !!isProduction, // Force true in production
-        sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-site
+        secure: !!isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: '/',
     };
@@ -29,6 +36,7 @@ const setCookie = (req, res, token) => {
         hostname: req.hostname,
         NODE_ENV: process.env.NODE_ENV,
         isProduction: !!isProduction,
+        isSecureRequest: !!isSecureRequest,
         options
     });
 
@@ -123,9 +131,11 @@ const login = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/logout
 // @access  Private
 const logout = asyncHandler(async (req, res) => {
+    const isSecureRequest = req.secure || req.headers['x-forwarded-proto'] === 'https';
     const isProduction = process.env.NODE_ENV === 'production' ||
         process.env.RAILWAY_ENVIRONMENT ||
-        process.env.RAILWAY_TCP_APPLICATION_PORT;
+        process.env.RAILWAY_TCP_APPLICATION_PORT ||
+        isSecureRequest;
 
     res.cookie('eloco_session', '', {
         expires: new Date(0), // Expire immediately
@@ -181,9 +191,12 @@ const getMe = asyncHandler(async (req, res) => {
 
         // Clear the invalid cookie so the browser stops sending it
         const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+        const isSecureRequest = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
         const isProduction = (process.env.NODE_ENV === 'production' ||
             process.env.RAILWAY_ENVIRONMENT ||
-            process.env.RAILWAY_TCP_APPLICATION_PORT) && !isLocalhost;
+            process.env.RAILWAY_TCP_APPLICATION_PORT ||
+            isSecureRequest) && !isLocalhost;
 
         res.cookie('eloco_session', '', {
             expires: new Date(0),
