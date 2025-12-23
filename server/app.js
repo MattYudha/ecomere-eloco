@@ -5,28 +5,23 @@ const path = require('path');
 const fs = require('fs');
 
 const envPath = path.join(__dirname, '.env');
-console.log('[DEBUG] Loading .env from:', envPath);
 
-try {
-    if (fs.existsSync(envPath)) {
-        console.log('[DEBUG] .env file exists. Readable:', fs.accessSync(envPath, fs.constants.R_OK) === undefined);
-        const envContent = fs.readFileSync(envPath, 'utf8');
-        console.log('[DEBUG] .env content check:', envContent ? `Valid content (${envContent.length} bytes)` : 'Empty content');
-        console.log('[DEBUG] .env keys found in file:', envContent.split('\n').filter(line => line.includes('=') && !line.startsWith('#')).map(line => line.split('=')[0].trim()));
-    } else {
-        console.error('[DEBUG] .env file NOT FOUND at:', envPath);
-    }
-} catch (err) {
-    console.error('[DEBUG] Error checking .env file:', err.message);
-}
-
+// Coba load .env
 const result = require('dotenv').config({ path: envPath });
+
 if (result.error) {
-    console.error('[DEBUG] Dotenv loading error:', result.error);
+    // Di production (Railway), .env file mungkin tidak ada karena variables di-inject langsung.
+    // Kita suppress error ENOENT agar logs tidak penuh error palsu.
+    if (result.error.code === 'ENOENT') {
+        console.log('[INFO] .env file not found (likely production environment). Using system environment variables.');
+    } else {
+        console.error('[WARN] Failed to load .env file:', result.error);
+    }
 } else {
-    console.log('[DEBUG] Dotenv parsed keys:', Object.keys(result.parsed || {}));
+    console.log('[INFO] Loaded environment variables from .env file.');
 }
 
+// Opsional: Load parent .env jika ada (setup monorepo lokal)
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require('express');
