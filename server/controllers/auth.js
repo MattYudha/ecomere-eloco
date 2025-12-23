@@ -7,24 +7,28 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-me-in-prod'
 const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 
 // Helper to set cookie
+// Helper to set cookie
 const setCookie = (req, res, token) => {
-    // Simplify production check: Trust NODE_ENV.
-    // In Railway/Vercel (Production), we MUST use Secure + SameSite: None for cross-origin cookies.
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Check if we are in a production-like environment (Railway or explicitly set to production)
+    const isProduction = process.env.NODE_ENV === 'production' ||
+        process.env.RAILWAY_ENVIRONMENT ||
+        process.env.RAILWAY_TCP_APPLICATION_PORT;
 
+    // Strict config for cross-site (Vercel -> Railway)
+    // If we are in production, we MUST use Secure + SameSite: None
     const options = {
         httpOnly: true,
-        secure: isProduction, // Always true in production (HTTPS)
-        sameSite: isProduction ? 'none' : 'lax', // 'none' is required for cross-site (Vercel -> Railway)
+        secure: !!isProduction, // Force true in production
+        sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-site
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: '/',
     };
 
-    // DEBUG: Print cookie settings
+    // DEBUG: Print cookie settings so we can verify in logs
     console.log('[Auth] Setting Cookie:', {
         hostname: req.hostname,
         NODE_ENV: process.env.NODE_ENV,
-        isProduction,
+        isProduction: !!isProduction,
         options
     });
 
@@ -119,12 +123,14 @@ const login = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/logout
 // @access  Private
 const logout = asyncHandler(async (req, res) => {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production' ||
+        process.env.RAILWAY_ENVIRONMENT ||
+        process.env.RAILWAY_TCP_APPLICATION_PORT;
 
     res.cookie('eloco_session', '', {
         expires: new Date(0), // Expire immediately
         httpOnly: true,
-        secure: isProduction,
+        secure: !!isProduction,
         sameSite: isProduction ? 'none' : 'lax',
         path: '/', // Ensure path matches creation
     });
@@ -175,11 +181,14 @@ const getMe = asyncHandler(async (req, res) => {
 
         // Clear the invalid cookie so the browser stops sending it
         const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-        const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost;
+        const isProduction = (process.env.NODE_ENV === 'production' ||
+            process.env.RAILWAY_ENVIRONMENT ||
+            process.env.RAILWAY_TCP_APPLICATION_PORT) && !isLocalhost;
+
         res.cookie('eloco_session', '', {
             expires: new Date(0),
             httpOnly: true,
-            secure: isProduction,
+            secure: !!isProduction,
             sameSite: isProduction ? 'none' : 'lax',
             path: '/',
         });
