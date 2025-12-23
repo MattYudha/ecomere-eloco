@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import ProductItem, { Product } from './ProductItem';
+import Image from 'next/image';
 import apiClient from '@/lib/api';
+
 
 const ProductsSection = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -29,7 +31,7 @@ const ProductsSection = () => {
   return (
     <div
       id="featured-products"
-      className="relative py-24 bg-white dark:bg-dark-bg isolate"
+      className="relative py-24 bg-white dark:bg-dark-bg isolate overflow-hidden"
     >
       {/* Subtle background glow for light mode */}
       <div className="absolute inset-0 overflow-hidden -z-10 dark:hidden">
@@ -38,6 +40,7 @@ const ProductsSection = () => {
           style={{ opacity: '0.03' }}
         ></div>
       </div>
+
 
       <div className="max-w-screen-xl mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-gray-800 to-brand text-transparent bg-clip-text dark:from-white dark:to-brand">

@@ -163,7 +163,7 @@ const IntroducingSection = () => {
       ></div>
 
       {/* Decorative Shapes Wrapper for Next/Image */}
-      <div className="absolute top-[10%] left-[5%] w-32 md:w-[500px] h-32 md:h-[500px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none">
+      <div className="absolute top-[10%] left-[5%] w-32 md:w-[500px] h-32 md:h-[500px] opacity-30 dark:opacity-30 dark:invert animate-float-slow pointer-events-none select-none">
         <Image
           src="/assets/shape-5.png"
           alt=""
@@ -173,7 +173,7 @@ const IntroducingSection = () => {
         />
       </div>
       <div
-        className="absolute bottom-[10%] right-[5%] w-24 md:w-[400px] h-24 md:h-[400px] opacity-30 dark:opacity-10 animate-float-slow pointer-events-none select-none"
+        className="absolute bottom-[10%] right-[5%] w-24 md:w-[400px] h-24 md:h-[400px] opacity-30 dark:opacity-30 dark:invert animate-float-slow pointer-events-none select-none"
         style={{ animationDelay: '-3s' }}
       >
         <Image

@@ -11,6 +11,7 @@ interface Review {
         email: string;
         role?: string;
     };
+    images?: string[]; // Array of image URLs
 }
 
 interface ReviewStore {
@@ -18,7 +19,7 @@ interface ReviewStore {
     isLoading: boolean;
     error: string | null;
     fetchReviews: (productId: string) => Promise<void>;
-    createReview: (productId: string, rating: number, comment: string, orderId?: string) => Promise<boolean>;
+    createReview: (productId: string, rating: number, comment: string, orderId?: string, images?: File[]) => Promise<boolean>;
     deleteReview: (reviewId: string) => Promise<boolean>;
 }
 
@@ -46,10 +47,23 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         }
     },
 
-    createReview: async (productId, rating, comment, orderId) => {
+    createReview: async (productId, rating, comment, orderId, images) => {
         set({ isLoading: true });
         try {
-            const response = await apiClient.post('/api/reviews', { productId, rating, comment, orderId });
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('rating', String(rating));
+            formData.append('comment', comment);
+            if (orderId) formData.append('orderId', orderId);
+
+            if (images && images.length > 0) {
+                images.forEach((image) => {
+                    formData.append('images', image);
+                });
+            }
+
+            // Client handles FormData content-type automatically (multipart/form-data)
+            const response = await apiClient.post('/api/reviews', formData);
 
             if (response.ok) {
                 // Refresh reviews

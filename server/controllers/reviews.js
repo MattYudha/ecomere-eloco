@@ -4,8 +4,12 @@ const prisma = new PrismaClient();
 const createReview = async (req, res) => {
     try {
         console.log("=== CREATE REVIEW DEBUG ===");
+        console.log("Content-Type:", req.headers['content-type']);
         console.log("Req Body:", req.body);
-        console.log("Req User:", req.user);
+        console.log("Req Files Keys:", req.files ? Object.keys(req.files) : "NO FILES");
+        if (req.files && req.files.images) {
+            console.log("Images found:", Array.isArray(req.files.images) ? "Array" : "Single", req.files.images);
+        }
 
         const { productId, rating, comment, orderId } = req.body;
 
@@ -79,7 +83,6 @@ const createReview = async (req, res) => {
             });
         } else {
             // Fallback: Check if user ever reviewed this product (legacy behavior)
-            // Note: This prevents multiple reviews even from different orders if orderId isn't sent
             existingReview = await prisma.review.findFirst({
                 where: {
                     userId: userId,
@@ -88,14 +91,59 @@ const createReview = async (req, res) => {
             });
         }
 
+        // --- HANDLE IMAGE UPLOADS ---
+        const uploadedImages = [];
+        if (req.files && req.files.images) {
+            console.log("📸 Processing review images...");
+            const files = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
+            const cloudinary = require('../utils/cloudinary');
+            const { nanoid } = require('nanoid');
+
+            for (const file of files) {
+                try {
+                    // Upload stream to Cloudinary
+                    const result = await new Promise((resolve, reject) => {
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            {
+                                folder: 'eloco/reviews',
+                                public_id: `${nanoid()}_review`,
+                                resource_type: 'auto',
+                            },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+                        uploadStream.end(file.data);
+                    });
+                    uploadedImages.push(result.secure_url);
+                } catch (uploadErr) {
+                    console.error("❌ Error uploading review image:", uploadErr);
+                    // Continue with other images or handle error (optional: fail whole request)
+                }
+            }
+            console.log(`✅ Uploaded ${uploadedImages.length} images.`);
+        }
+
         let newReview;
         if (existingReview) {
             console.log("⚠️ Review exists for this order/product, updating...");
+            // Retrieve existing images to potentially merge or replace (for now, we'll append or just use new ones if provided)
+            // Simple logic: If new images provided, add them to existing? Or replace? 
+            // Let's assume we append if new ones exist, or strictly update if we want.
+            // For simplicity in this edit: We'll just ADD new ones to the list if they exist.
+
+            let currentImages = existingReview.images || [];
+            if (uploadedImages.length > 0) {
+                currentImages = [...currentImages, ...uploadedImages];
+            }
+
             newReview = await prisma.review.update({
                 where: { id: existingReview.id },
                 data: {
                     rating: Number(rating),
                     comment,
+                    images: currentImages
                 }
             });
             console.log("✅ Review updated:", newReview.id);
@@ -108,7 +156,8 @@ const createReview = async (req, res) => {
                     productId,
                     rating: Number(rating),
                     comment,
-                    orderId: orderId || null, // Allow null for legacy compatibility
+                    orderId: orderId || null,
+                    images: uploadedImages // Save array of URLs
                 },
             });
             console.log("✅ Review created:", newReview.id);

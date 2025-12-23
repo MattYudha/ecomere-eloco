@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ProductItem from './ProductItem';
+import ProductSkeleton from './ProductSkeleton';
 import apiClient from '@/lib/api';
 import { useSortStore } from '@/app/_zustand/sortStore';
 import { usePaginationStore } from '@/app/_zustand/paginationStore';
@@ -87,8 +88,12 @@ export default function Products({ params }: { params?: { slug?: string[] } }) {
 
   if (loading) {
     return (
-      <div className="text-3xl mt-5 text-center w-full col-span-full max-[1000px]:text-2xl max-[500px]:text-lg text-gray-900 dark:text-white">
-        Loading products...
+      <div className="grid grid-cols-4 justify-items-center gap-x-2 gap-y-3 sm:gap-x-3 sm:gap-y-4 max-2xl:grid-cols-3 max-lg:grid-cols-2 grid-cols-2">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="w-full h-full">
+            <ProductSkeleton />
+          </div>
+        ))}
       </div>
     );
   }

@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
+import Image from 'next/image';
 import { useReviewStore } from '@/app/_zustand/reviewStore';
 import { FaStar, FaCheckCircle, FaTrash } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
@@ -86,6 +87,23 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed pl-[3.25rem]">
                         {review.comment}
                     </p>
+
+                    {/* Review Images */}
+                    {review.images && review.images.length > 0 && (
+                        <div className="pl-[3.25rem] mt-3 flex flex-wrap gap-2">
+                            {review.images.map((imgUrl, idx) => (
+                                <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer hover:opacity-90 active:scale-95 transition-all">
+                                    <Image
+                                        src={imgUrl}
+                                        alt={`Review image ${idx + 1}`}
+                                        fill
+                                        className="object-cover"
+                                        onClick={() => window.open(imgUrl, '_blank')}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

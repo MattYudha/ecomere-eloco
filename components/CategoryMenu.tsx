@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Slider from 'react-slick'; // Import Slider
 
 const newCategories = [
@@ -40,13 +41,8 @@ const newCategories = [
     icon: '🍪',
     description: 'Manis sempurna, lumer di mulut',
   },
-  {
-    id: 6,
-    title: 'Minuman',
-    href: '/shop',
-    icon: '🍹',
-    description: 'Segar dan melegakan dahaga',
-  },
+
+
 ];
 
 const CategoryMenu = () => {
@@ -94,8 +90,28 @@ const CategoryMenu = () => {
   };
 
   return (
-    <div className="py-20 bg-white dark:bg-dark-bg">
-      <div className="max-w-screen-xl mx-auto px-6">
+    <div className="py-20 bg-white dark:bg-dark-bg relative overflow-hidden">
+      {/* Decorative Shape 1 (Top Left) */}
+      <div className="absolute top-0 left-0 w-32 md:w-48 h-32 md:h-48 opacity-20 dark:opacity-30 dark:invert pointer-events-none select-none animate-float-slow">
+        <Image
+          src="/assets/shape-1.png"
+          alt=""
+          fill
+          className="object-contain"
+        />
+      </div>
+
+      {/* Decorative Shape 2 (Bottom Right) */}
+      <div className="absolute bottom-10 right-0 w-40 md:w-64 h-40 md:h-64 opacity-20 dark:opacity-30 dark:invert pointer-events-none select-none animate-float-slow" style={{ animationDelay: '2s' }}>
+        <Image
+          src="/assets/shape-2.png"
+          alt=""
+          fill
+          className="object-contain"
+        />
+      </div>
+
+      <div className="max-w-screen-xl mx-auto px-6 relative z-10">
         <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 text-gray-800 dark:text-white">
           Jelajahi Varian Rasa
         </h2>

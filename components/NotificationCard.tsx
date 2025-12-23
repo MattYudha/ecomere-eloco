@@ -91,6 +91,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 
   // Extract Metadata securely
   const metadata = notification.metadata as any || {};
+  console.log(`[Card] ID: ${notification.id}, isReviewed: ${metadata.isReviewed}, type: ${typeof metadata.isReviewed}`);
+
   const orderId = metadata.orderId || metadata.order_id; // Handle possible casing
   const amount = metadata.amount || metadata.totalAmount;
   const status = metadata.status ? metadata.status.toLowerCase() : '';
@@ -107,7 +109,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     setHasReviewed(true);
     try {
       // Update notification metadata on backend to persist "reviewed" state
-      await apiClient.put(`/notifications/${notification.id}`, {
+      await apiClient.put(`/api/notifications/${notification.id}`, {
         metadata: {
           ...metadata,
           isReviewed: true

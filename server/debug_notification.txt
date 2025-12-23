@@ -763,3 +763,105 @@ Data: {
   "notificationId": "kyqxpusr-B2g2u3QCVJiM"
 }
 --------------------------------------------------
+[2025-12-23T06:42:18.150Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "jhoncena@gmail.com",
+  "userIdFromBody": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a"
+}
+--------------------------------------------------
+[2025-12-23T06:42:18.606Z] 🔍 Using provided userId: 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T06:42:18.682Z] ✅ Found user by ID: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T06:42:18.683Z] Attempting to create notification
+Data: {
+  "userId": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a",
+  "status": "pending",
+  "orderId": "ee25e9aa-3b5e-4c64-99c8-183023edac17"
+}
+--------------------------------------------------
+[2025-12-23T06:42:19.121Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T06:42:19.121Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Dibuat
+Data: {
+  "notificationId": "M5iRi7PL0QxhWeEFajx6A"
+}
+--------------------------------------------------
+[2025-12-23T06:42:19.121Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:03:12.036Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:03:12.188Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "dgMbZHijfDe4LVcNBs_kf"
+}
+--------------------------------------------------
+[2025-12-23T07:11:41.246Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "jhoncena@gmail.com",
+  "userIdFromBody": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a"
+}
+--------------------------------------------------
+[2025-12-23T07:11:41.497Z] 🔍 Using provided userId: 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:11:41.557Z] ✅ Found user by ID: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T07:11:41.558Z] Attempting to create notification
+Data: {
+  "userId": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a",
+  "status": "pending",
+  "orderId": "e840fed3-5b61-4954-98d7-564bd7f65764"
+}
+--------------------------------------------------
+[2025-12-23T07:11:41.936Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Dibuat
+Data: {
+  "notificationId": "G2nBVb6p2YSkfPb3AHLZl"
+}
+--------------------------------------------------
+[2025-12-23T07:11:41.936Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T07:11:41.935Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:12:19.268Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:12:19.349Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "_mPypI84ew4zljI5ipDWY"
+}
+--------------------------------------------------
+[2025-12-23T07:55:15.389Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "jhoncena@gmail.com",
+  "userIdFromBody": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a"
+}
+--------------------------------------------------
+[2025-12-23T07:55:16.127Z] 🔍 Using provided userId: 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:55:16.183Z] ✅ Found user by ID: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T07:55:16.184Z] Attempting to create notification
+Data: {
+  "userId": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a",
+  "status": "pending",
+  "orderId": "53b2e640-14a7-4078-83ed-6fae9d498265"
+}
+--------------------------------------------------
+[2025-12-23T07:55:16.739Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:55:16.739Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Update: Pending ⏳
+Data: {
+  "notificationId": "42eGaUhWlPWWu4ohdA0on"
+}
+--------------------------------------------------
+[2025-12-23T07:55:16.740Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-23T07:57:22.070Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-23T07:57:22.224Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "xHyHBfApQ9_8oLQjYbxD7"
+}
+--------------------------------------------------

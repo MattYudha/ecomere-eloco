@@ -37,7 +37,20 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
     // Form State
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
+    const [reviewImages, setReviewImages] = useState<File[]>([]);
     const { createReview, isLoading: isSubmitting } = useReviewStore();
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const newFiles = Array.from(e.target.files);
+            // Limit to 3 images total
+            setReviewImages((prev) => [...prev, ...newFiles].slice(0, 3));
+        }
+    };
+
+    const removeImage = (index: number) => {
+        setReviewImages((prev) => prev.filter((_, i) => i !== index));
+    };
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -69,7 +82,7 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
         if (!activeProductId) return;
         if (rating === 0) return toast.error('Please select a rating');
 
-        const success = await createReview(activeProductId, rating, comment, orderId);
+        const success = await createReview(activeProductId, rating, comment, orderId, reviewImages);
 
         if (success) {
             toast.success('Review published successfully!');
@@ -198,6 +211,44 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
                                                                     rows={3}
                                                                     placeholder="Write your review here..."
                                                                 />
+                                                            </div>
+
+                                                            {/* Image Upload Section */}
+                                                            <div>
+                                                                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Add Photos</label>
+                                                                <div className="flex items-center gap-3 flex-wrap">
+                                                                    {reviewImages.map((file, idx) => (
+                                                                        <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 group">
+                                                                            <Image
+                                                                                src={URL.createObjectURL(file)}
+                                                                                alt="preview"
+                                                                                fill
+                                                                                className="object-cover"
+                                                                            />
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => removeImage(idx)}
+                                                                                className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                            >
+                                                                                <FaTimes className="text-white text-xs" />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+
+                                                                    {reviewImages.length < 3 && (
+                                                                        <label className="w-16 h-16 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-[#cb6112] hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all text-gray-400 hover:text-[#cb6112]">
+                                                                            <div className="text-xl">+</div>
+                                                                            <span className="text-[9px] uppercase font-bold">Photo</span>
+                                                                            <input
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                multiple
+                                                                                onChange={handleImageChange}
+                                                                                className="hidden"
+                                                                            />
+                                                                        </label>
+                                                                    )}
+                                                                </div>
                                                             </div>
 
                                                             <div className="flex justify-end">

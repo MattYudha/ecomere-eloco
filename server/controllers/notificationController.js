@@ -21,6 +21,7 @@ const getUnreadCount = async (req, res) => {
 // Get user notifications
 const getUserNotifications = async (req, res) => {
     try {
+        res.set('Cache-Control', 'no-store');
         const { userId } = req.params;
         const { page = 1, limit = 10, type, isRead } = req.query;
 
@@ -86,11 +87,18 @@ const createNotification = async (req, res) => {
 const updateNotification = async (req, res) => {
     try {
         const { id } = req.params;
-        const { isRead } = req.body;
+        const { isRead, metadata } = req.body;
+        console.log(`[UPDATE NOTIF] ID: ${id}`);
+        console.log(`[UPDATE NOTIF] Body:`, req.body);
+
+
+        const updateData = {};
+        if (isRead !== undefined) updateData.isRead = isRead;
+        if (metadata !== undefined) updateData.metadata = metadata;
 
         const notification = await prisma.notification.update({
             where: { id },
-            data: { isRead },
+            data: updateData,
         });
 
         res.json(notification);

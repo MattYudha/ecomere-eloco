@@ -63,6 +63,7 @@ model Review {
   rating    Int
   comment   String   @db.Text
   createdAt DateTime @default(now())
+  images    Json?    // Store array of image URLs
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
