@@ -865,3 +865,51 @@ Data: {
   "notificationId": "xHyHBfApQ9_8oLQjYbxD7"
 }
 --------------------------------------------------
+[2025-12-23T09:34:11.470Z] 📡 Socket event emitted to user_olPFljmT5Bc4OIOvnKcbr
+--------------------------------------------------
+[2025-12-23T09:34:11.470Z] ✅ Notification created for user olPFljmT5Bc4OIOvnKcbr: Pesanan Update: Cancelled 🚫
+Data: {
+  "notificationId": "-J_vhAZwUc1_tvvwXt5eD"
+}
+--------------------------------------------------
+[2025-12-23T09:35:24.711Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "dewarahmat123345@gmail.com",
+  "userIdFromBody": "K2TErBE8nhoLblawxU2in"
+}
+--------------------------------------------------
+[2025-12-23T09:35:24.938Z] 🔍 Using provided userId: K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-23T09:35:24.996Z] ✅ Found user by ID: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-23T09:35:24.997Z] Attempting to create notification
+Data: {
+  "userId": "K2TErBE8nhoLblawxU2in",
+  "status": "pending",
+  "orderId": "d3a0251e-5400-48b7-a731-1985336ffaba"
+}
+--------------------------------------------------
+[2025-12-23T09:35:25.149Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-23T09:35:25.150Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Update: Pending ⏳
+Data: {
+  "notificationId": "fOUz-J7hnxsLtq8gv6pNN"
+}
+--------------------------------------------------
+[2025-12-23T09:35:25.151Z] 📧 Order confirmation notification sent to user: dewarahmat123345@gmail.com
+--------------------------------------------------
+[2025-12-23T09:36:58.579Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Update: Cancelled 🚫
+Data: {
+  "notificationId": "yQN4M2TDtfkqjZ-HIIdKY"
+}
+--------------------------------------------------
+[2025-12-23T09:36:58.579Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-23T09:38:42.591Z] 📡 Socket event emitted to user_K2TErBE8nhoLblawxU2in
+--------------------------------------------------
+[2025-12-23T09:38:42.745Z] ✅ Notification created for user K2TErBE8nhoLblawxU2in: Pesanan Selesai
+Data: {
+  "notificationId": "Z2h66al6Dm6WKIBREWK4l"
+}
+--------------------------------------------------

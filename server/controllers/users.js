@@ -149,11 +149,24 @@ const getUserByEmail = asyncHandler(async (request, response) => {
     throw new AppError('Email is required', 400);
   }
 
-  const user = await prisma.user.findUnique({
+  // Try exact match first
+  let user = await prisma.user.findUnique({
     where: {
       email: email,
     },
   });
+
+  // Fallback: Case-insensitive search if strict match fails
+  if (!user) {
+    user = await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive' // Requires Prisma support for the DB provider
+        }
+      }
+    });
+  }
 
   if (!user) {
     throw new AppError('User not found', 404);

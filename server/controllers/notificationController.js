@@ -28,6 +28,8 @@ const getUserNotifications = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const where = { userId };
 
+        console.log(`[GET NOTIFICATIONS] Fetching for userId: ${userId}, Page: ${page}`);
+
         if (type) where.type = type;
         if (isRead !== undefined) where.isRead = isRead === 'true';
 
