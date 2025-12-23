@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './useAuth';
+import config from '@/lib/config';
 
 export const useSocket = () => {
     const { data } = useAuth();
@@ -10,15 +11,28 @@ export const useSocket = () => {
     useEffect(() => {
         if (user && !socketRef.current) {
             // Determine Socket URL
-            let url = process.env.NEXT_PUBLIC_SOCKET_URL || '';
+            let url = process.env.NEXT_PUBLIC_SOCKET_URL;
 
-            if (!url && typeof window !== 'undefined') {
-                if (window.location.hostname === 'localhost') {
-                    url = 'http://localhost:3001';
+            // If no explicit socket URL env var, derive from config or defaults
+            if (!url) {
+                // In production, config.apiBaseUrl is 'https://eloco.up.railway.app' (or similar)
+                // In development, it might be empty (relative proxy).
+                // We prefer the full backend URL if available.
+                if (config.apiBaseUrl && !config.apiBaseUrl.startsWith('/')) {
+                    url = config.apiBaseUrl;
                 } else {
-                    url = window.location.origin;
+                    // Fallback for local development or if config is relative
+                    // Connect directly to backend port to avoid proxy issues with sockets
+                    url = 'http://localhost:3001';
                 }
             }
+
+            // Fallback safety for production if config failed somehow
+            if (!url && typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+                url = 'https://eloco.up.railway.app';
+            }
+
+            console.log('[useSocket] Connecting to:', url);
 
             socketRef.current = io(url, {
                 // path: '/socket.io', // Default
