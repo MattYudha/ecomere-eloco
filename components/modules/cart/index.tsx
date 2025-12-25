@@ -1,6 +1,5 @@
 'use client';
 
-import { useProductStore } from '@/app/_zustand/store';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,28 +12,23 @@ import CheckoutStepper from '@/components/CheckoutStepper';
 import StickyOrderSummary from '@/components/StickyOrderSummary';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useCart } from '@/hooks/useCart';
 
 import { useEffect, useMemo } from 'react';
 
 export const CartModule = () => {
-    const { products, removeFromCart, calculateTotals, total } = useProductStore();
+    const { cart, removeFromCart, updateQuantity } = useCart();
     const router = useRouter();
 
-    useEffect(() => {
-        calculateTotals();
-    }, [calculateTotals]);
-
-    const handleRemoveItem = (id: string, title: string) => {
+    const handleRemoveItem = (id: string, name: string) => {
         removeFromCart(id);
-        calculateTotals();
-        toast.success(`${title} dihapus dari keranjang`);
+        toast.success(`${name} dihapus dari keranjang`);
     };
 
-    const handleMoveToWishlist = (id: string, title: string) => {
+    const handleMoveToWishlist = (id: string, name: string) => {
         // TODO: Implement move to wishlist functionality
         removeFromCart(id);
-        calculateTotals();
-        toast.success(`${title} dipindahkan ke wishlist`, {
+        toast.success(`${name} dipindahkan ke wishlist`, {
             icon: '❤️',
         });
     };
@@ -43,21 +37,26 @@ export const CartModule = () => {
         router.push('/checkout');
     };
 
-    // Transform products for StickyOrderSummary
+    // Calculate totals
+    const subtotal = useMemo(() => {
+        return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }, [cart]);
+
+    // Transform cart for StickyOrderSummary
     const cartItems = useMemo(() => {
-        return products.map((product) => ({
-            id: product.id,
-            title: product.title,
-            mainImage: product.image?.startsWith('http')
-                ? product.image
-                : `/${product.image?.replace(/^\//, '') || 'product_placeholder.jpg'}`,
-            price: product.price,
-            quantity: product.amount, // Use 'amount' from ProductInCart type
+        return cart.map((item) => ({
+            id: item.id,
+            title: item.name,
+            mainImage: item.image?.startsWith('http')
+                ? item.image
+                : `/${item.image?.replace(/^\//, '') || 'product_placeholder.jpg'}`,
+            price: item.price,
+            quantity: item.quantity,
         }));
-    }, [products]);
+    }, [cart]);
 
     // Show empty state if cart is empty
-    if (products.length === 0) {
+    if (cart.length === 0) {
         return (
             <div className="min-h-screen">
                 <EmptyState
@@ -85,8 +84,8 @@ export const CartModule = () => {
                             {/* Header */}
                             <div className="p-6 border-b border-gray-100 dark:border-gray-700">
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    Keranjang Belanja ({products.length}{' '}
-                                    {products.length > 1 ? 'Items' : 'Item'})
+                                    Keranjang Belanja ({cart.length}{' '}
+                                    {cart.length > 1 ? 'Items' : 'Item'})
                                 </h2>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     Review dan edit pesanan Anda sebelum checkout
@@ -95,9 +94,9 @@ export const CartModule = () => {
 
                             {/* Cart Items List */}
                             <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                                {products.map((product, index) => (
+                                {cart.map((item, index) => (
                                     <motion.div
-                                        key={product.id}
+                                        key={item.id}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -100 }}
@@ -107,7 +106,7 @@ export const CartModule = () => {
                                         <div className="flex gap-6">
                                             {/* Product Image */}
                                             <Link
-                                                href={`/products/${product.id}`}
+                                                href={`/products/${item.id}`}
                                                 className="relative flex-shrink-0 group"
                                             >
                                                 <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden">
@@ -115,13 +114,13 @@ export const CartModule = () => {
                                                         width={128}
                                                         height={128}
                                                         src={
-                                                            product?.image
-                                                                ? product.image.startsWith('http')
-                                                                    ? product.image
-                                                                    : `/${product.image.replace(/^\//, '')}`
+                                                            item?.image
+                                                                ? item.image.startsWith('http')
+                                                                    ? item.image
+                                                                    : `/${item.image.replace(/^\//, '')}`
                                                                 : '/product_placeholder.jpg'
                                                         }
-                                                        alt={sanitize(product.title)}
+                                                        alt={sanitize(item.name)}
                                                         className="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                                                     />
                                                 </div>
@@ -132,10 +131,10 @@ export const CartModule = () => {
                                                 <div className="flex justify-between items-start">
                                                     <div className="flex-1 pr-4">
                                                         <Link
-                                                            href={`/products/${product.id}`}
+                                                            href={`/products/${item.id}`}
                                                             className="text-base sm:text-lg font-bold text-gray-900 dark:text-white hover:text-grilli-gold transition-colors line-clamp-2"
                                                         >
-                                                            {sanitize(product.title)}
+                                                            {sanitize(item.name)}
                                                         </Link>
 
                                                         {/* Stock Status */}
@@ -150,7 +149,7 @@ export const CartModule = () => {
                                                     {/* Remove Button */}
                                                     <button
                                                         onClick={() =>
-                                                            handleRemoveItem(product.id, product.title)
+                                                            handleRemoveItem(item.id, item.name)
                                                         }
                                                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                         title="Hapus dari keranjang"
@@ -163,7 +162,7 @@ export const CartModule = () => {
                                                 <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                                     {/* Quantity Input */}
                                                     <div className="flex items-center gap-4">
-                                                        <QuantityInputCart product={product} />
+                                                        <QuantityInputCart product={{ ...item, title: item.name, amount: item.quantity }} />
                                                     </div>
 
                                                     {/* Price */}
@@ -173,7 +172,7 @@ export const CartModule = () => {
                                                                 Harga Satuan
                                                             </p>
                                                             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                                                {formatPrice(product.price)}
+                                                                {formatPrice(item.price)}
                                                             </p>
                                                         </div>
                                                         <div className="text-right">
@@ -181,7 +180,7 @@ export const CartModule = () => {
                                                                 Subtotal
                                                             </p>
                                                             <p className="text-lg font-bold text-grilli-gold">
-                                                                {formatPrice(product.price * product.amount)}
+                                                                {formatPrice(item.price * item.quantity)}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -191,7 +190,7 @@ export const CartModule = () => {
                                                 <div className="mt-4 flex items-center gap-4">
                                                     <button
                                                         onClick={() =>
-                                                            handleMoveToWishlist(product.id, product.title)
+                                                            handleMoveToWishlist(item.id, item.name)
                                                         }
                                                         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                                                     >
@@ -221,10 +220,10 @@ export const CartModule = () => {
                     <div className="lg:col-span-4 mt-8 lg:mt-0">
                         <StickyOrderSummary
                             items={cartItems}
-                            subtotal={total}
+                            subtotal={subtotal}
                             shipping={0}
                             tax={0}
-                            total={total}
+                            total={subtotal}
                             showWhatsApp={true}
                             whatsAppNumber="6281234567890"
                         />
