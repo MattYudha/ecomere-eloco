@@ -8,12 +8,14 @@ import { formatPrice } from '@/lib/utils';
 import OrderStatusBadge from '@/components/OrderStatusBadge';
 import EmptyState from '@/components/EmptyState';
 import { motion } from 'framer-motion';
-import { FaBox, FaCalendar, FaEye, FaShoppingBag, FaRedo, FaMapPin } from 'react-icons/fa';
+import { FaBox, FaCalendar, FaEye, FaShoppingBag, FaRedo, FaMapPin, FaStar } from 'react-icons/fa';
 import { BsPinAngleFill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useCart } from '@/hooks/useCart';
+import ReviewModal from '@/components/ReviewModal';
+import RatingButton from '@/components/RatingButton';
 
 interface OrderProduct {
     id: string;
@@ -25,6 +27,8 @@ interface OrderProduct {
         price: number;
         slug: string;
     };
+    hasReview?: boolean;
+    reviewRating?: number;
 }
 
 interface Order {
@@ -47,6 +51,15 @@ const MyOrdersPage = () => {
     const [filter, setFilter] = useState<string>('active'); // Default to 'active'
     const [reorderingId, setReorderingId] = useState<string | null>(null);
     const { addToCart } = useCart();
+
+    // Review modal state
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<{
+        id: string;
+        title: string;
+        image: string;
+        orderId: string;
+    } | null>(null);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -149,6 +162,29 @@ const MyOrdersPage = () => {
         } finally {
             setReorderingId(null);
         }
+    };
+
+    // Handle open review modal
+    const handleOpenReviewModal = (product: OrderProduct, orderId: string) => {
+        setSelectedProduct({
+            id: product.product.id,
+            title: product.product.title,
+            image: product.product.mainImage,
+            orderId: orderId,
+        });
+        setReviewModalOpen(true);
+    };
+
+    // Handle review submitted
+    const handleReviewSubmitted = () => {
+        // Refresh orders to update review status
+        if (session?.user?.email) {
+            window.location.reload();
+        }
+    };
+
+    // Continue with existing code
+    const continueHere = () => {
     };
 
     // Filter orders with 'active' support
@@ -299,6 +335,35 @@ const MyOrdersPage = () => {
                 </p>
             </div>
 
+            {/* Rating Section - Only for delivered orders */}
+            {order.status === 'delivered' && order.products && order.products.length > 0 && (
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-yellow-50 dark:bg-yellow-900/10">
+                    <div className="flex items-center gap-2 mb-3">
+                        <FaStar className="text-yellow-500" />
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                            Beri Rating Produk:
+                        </h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {order.products.map((product) => (
+                            <div key={product.id} className="flex items-center gap-2">
+                                <span className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                                    {product.product.title}
+                                </span>
+                                <RatingButton
+                                    product={product.product}
+                                    orderId={order.id}
+                                    hasReview={product.hasReview || false}
+                                    reviewRating={product.reviewRating}
+                                    onClick={() => handleOpenReviewModal(product, order.id)}
+                                    isCompact={true}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Order Actions */}
             <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
                 <div className="flex gap-3">
@@ -426,6 +491,20 @@ const MyOrdersPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Review Modal */}
+            {selectedProduct && (
+                <ReviewModal
+                    isOpen={reviewModalOpen}
+                    onClose={() => {
+                        setReviewModalOpen(false);
+                        setSelectedProduct(null);
+                    }}
+                    product={selectedProduct}
+                    orderId={selectedProduct.orderId}
+                    onReviewSubmitted={handleReviewSubmitted}
+                />
+            )}
         </div>
     );
 };
