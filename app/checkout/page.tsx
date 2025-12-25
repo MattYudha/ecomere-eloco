@@ -19,6 +19,10 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaCheck, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
+// Force dynamic rendering (required for useSearchParams)
+export const dynamic = 'force-dynamic';
+
+
 // Validation
 import {
     createValidationRules,
