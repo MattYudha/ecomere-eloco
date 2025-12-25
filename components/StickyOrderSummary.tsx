@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
+import TrustBadges from './TrustBadges';
 
 interface CartItem {
     id: string;
@@ -162,6 +163,11 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
                                             {formatPrice(total)}
                                         </span>
                                     </div>
+                                </div>
+
+                                {/* Trust Badges */}
+                                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+                                    <TrustBadges variant="compact" />
                                 </div>
 
                                 {/* WhatsApp Contact */}

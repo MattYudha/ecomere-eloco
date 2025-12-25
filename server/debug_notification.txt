@@ -1090,3 +1090,10 @@ Data: {
   "notificationId": "xeHPeC-Wy1OaVzssLGhNv"
 }
 --------------------------------------------------
+[2025-12-25T12:21:05.472Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-25T12:21:05.626Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "fcFMVQegHvuesCzcgqmUV"
+}
+--------------------------------------------------
