@@ -109,6 +109,9 @@ const getProductOrder = asyncHandler(async (request, response) => {
     throw new AppError('Order ID is required', 400);
   }
 
+  // Get user from auth middleware (if authenticated)
+  const userId = request.user?.id;
+
   const order = await prisma.customer_order_product.findMany({
     where: {
       customerOrderId: id,
@@ -120,6 +123,31 @@ const getProductOrder = asyncHandler(async (request, response) => {
 
   if (!order || order.length === 0) {
     throw new AppError('Order not found', 404);
+  }
+
+  // Add review status for each product
+  if (userId) {
+    const productsWithReviewStatus = await Promise.all(
+      order.map(async (item) => {
+        const existingReview = await prisma.review.findFirst({
+          where: {
+            userId: userId,
+            productId: item.productId,
+            orderId: id
+          },
+          select: {
+            rating: true
+          }
+        });
+
+        return {
+          ...item,
+          hasReview: !!existingReview,
+          reviewRating: existingReview?.rating || undefined
+        };
+      })
+    );
+    return response.status(200).json(productsWithReviewStatus);
   }
 
   return response.status(200).json(order);

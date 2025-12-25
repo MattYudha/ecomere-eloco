@@ -22,6 +22,7 @@ export type State = {
   allQuantity: number;
   total: number;
   wishlist: WishlistedProduct[];
+  selectedItems: string[]; // IDs of selected items for checkout
 };
 
 export type Actions = {
@@ -36,6 +37,10 @@ export type Actions = {
   removeFromWishlistLocal: (productId: string) => void;
   isProductInWishlist: (productId: string) => boolean;
   clearWishlist: () => void;
+  setSelectedItems: (ids: string[]) => void;
+  toggleSelectItem: (id: string) => void;
+  selectAllItems: () => void;
+  clearSelectedItems: () => void;
 };
 
 export const useProductStore = create<State & Actions>()(
@@ -45,6 +50,7 @@ export const useProductStore = create<State & Actions>()(
       allQuantity: 0,
       total: 0,
       wishlist: [],
+      selectedItems: [],
       addToCart: (newProduct) => {
         set((state) => {
           const cartItem = state.products.find(
@@ -87,6 +93,7 @@ export const useProductStore = create<State & Actions>()(
             products: [],
             allQuantity: 0,
             total: 0,
+            selectedItems: [], // Also clear selected items
           };
         });
       },
@@ -160,6 +167,28 @@ export const useProductStore = create<State & Actions>()(
         return get().wishlist.some((product) => product.id === productId);
       },
       clearWishlist: () => set({ wishlist: [] }),
+      // Selected items actions
+      setSelectedItems: (ids) => set({ selectedItems: ids }),
+      toggleSelectItem: (id) => {
+        set((state) => {
+          const isSelected = state.selectedItems.includes(id);
+          if (isSelected) {
+            return {
+              selectedItems: state.selectedItems.filter((itemId) => itemId !== id),
+            };
+          } else {
+            return {
+              selectedItems: [...state.selectedItems, id],
+            };
+          }
+        });
+      },
+      selectAllItems: () => {
+        set((state) => ({
+          selectedItems: state.products.map((p) => p.id),
+        }));
+      },
+      clearSelectedItems: () => set({ selectedItems: [] }),
     }),
     {
       name: 'products-storage', // name of the item in the storage (must be unique)

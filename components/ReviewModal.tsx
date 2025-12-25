@@ -45,7 +45,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
         for (let i = 0; i < filesToAdd; i++) {
             const file = files[i];
-            
+
             // Validate file type
             if (!file.type.startsWith('image/')) {
                 toast.error('Hanya file gambar yang diperbolehkan');
@@ -73,7 +73,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     const handleRemoveImage = (index: number) => {
         // Revoke object URL to free memory
         URL.revokeObjectURL(imagePreviews[index]);
-        
+
         setImages(images.filter((_, i) => i !== index));
         setImagePreviews(imagePreviews.filter((_, i) => i !== index));
     };
@@ -109,17 +109,27 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
             if (!response.ok) {
                 const error = await response.json();
+
+                // Handle duplicate review error specifically
+                if (response.status === 409) {
+                    toast.error(error.message || 'Anda sudah memberikan rating untuk produk ini pada order tersebut.', {
+                        duration: 5000
+                    });
+                } else {
+                    toast.error(error.message || 'Gagal mengirim review');
+                }
+
                 throw new Error(error.message || 'Gagal mengirim review');
             }
 
             toast.success('Terima kasih atas review Anda! 🌟');
-            
+
             // Clean up
             imagePreviews.forEach(url => URL.revokeObjectURL(url));
-            
+
             onReviewSubmitted();
             onClose();
-            
+
             // Reset form
             setRating(5);
             setComment('');
@@ -231,7 +241,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Foto Produk (Opsional, max 3)
                                 </label>
-                                
+
                                 {/* Image Previews */}
                                 {imagePreviews.length > 0 && (
                                     <div className="grid grid-cols-3 gap-3 mb-3">

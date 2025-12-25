@@ -50,7 +50,12 @@ const CheckoutPage = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session, status } = useAuth();
-    const { products, total, clearCart, calculateTotals } = useProductStore();
+    const { products: allProducts, total, clearCart, calculateTotals, selectedItems } = useProductStore();
+
+    // Filter products to only show selected items
+    const products = useMemo(() => {
+        return allProducts.filter(p => selectedItems.includes(p.id));
+    }, [allProducts, selectedItems]);
 
     // Get step from URL or default to 1
     const [currentStep, setCurrentStep] = useState<number>(
@@ -97,12 +102,18 @@ const CheckoutPage = () => {
         }
     }, [status, router]);
 
-    // Redirect to cart if empty
+    // Redirect to cart if empty (after a brief moment to allow state to settle)
     useEffect(() => {
-        if (products.length === 0 && !showSuccessModal) {
-            router.push('/cart');
-        }
-    }, [products.length, showSuccessModal, router]);
+        if (status === 'loading') return; // Don't redirect while auth is loading
+
+        const timer = setTimeout(() => {
+            if (products.length === 0 && !showSuccessModal) {
+                router.push('/cart');
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [products.length, showSuccessModal, router, status]);
 
     // Update URL when step changes
     useEffect(() => {
@@ -291,9 +302,16 @@ const CheckoutPage = () => {
         }
     };
 
-    // Show empty state if no products
-    if (products.length === 0 && !showSuccessModal) {
-        return null; // Will redirect to cart
+    // Show loading state if still checking
+    if (status === 'loading' || (products.length === 0 && !showSuccessModal)) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-grilli-gold mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-400">Memuat...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

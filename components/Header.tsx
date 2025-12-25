@@ -15,9 +15,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { CiShoppingBasket, CiUser } from 'react-icons/ci';
 import { IoIosLogOut } from 'react-icons/io';
 import { LuLayoutDashboard } from 'react-icons/lu';
-import { Menu, X, Store, Heart } from 'lucide-react';
+import { Menu, X, Store } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
-import { useWishlist } from '@/hooks/useWishlist';
 
 import SearchInput from './SearchInput';
 
@@ -33,7 +32,6 @@ const Header = () => {
     console.log('[Header] Mounted, Session:', !!session);
   }, [session]);
   const { cart } = useCart();
-  const { wishlist } = useWishlist();
 
   const { theme } = useTheme();
 
@@ -264,19 +262,6 @@ const Header = () => {
               <ThemeToggle />
             </div>
 
-            {/* Wishlist Link */}
-            <Link
-              href="/wishlist"
-              className="relative hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-1"
-              title="Wishlist"
-            >
-              <Heart size={24} />
-              {wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-sm">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
 
             <Link
               href="/cart"
@@ -337,6 +322,11 @@ const Header = () => {
                 {/* Mobile Menu Content */}
                 <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
                   <SearchInput />
+
+                  {/* Notification Bell for Mobile */}
+                  <div className="flex justify-center">
+                    <NotificationBell />
+                  </div>
 
                   <div className="flex flex-col gap-2">
                     {/* User Info Card */}

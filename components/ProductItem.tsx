@@ -37,10 +37,21 @@ const ProductItem = ({ product }: ProductItemProps) => {
     : '/product_placeholder.jpg';
   const router = useRouter();
   const { addToCart } = useProductStore();
+  const { data: session } = useAuth();
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent link navigation
+
+    // Check if user is logged in
+    if (!session) {
+      showErrorToast('Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang');
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
+      return;
+    }
+
     setIsAdding(true);
 
     try {

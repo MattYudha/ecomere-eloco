@@ -8,12 +8,14 @@ export const showSuccessToast = (message: string, options?: any) => {
         style: {
             background: '#10B981',
             color: 'white',
-            fontWeight: '600',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            boxShadow: '0 10px 40px rgba(16, 185, 129, 0.3)',
+            fontWeight: '500',
+            fontSize: '14px',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+            maxWidth: '400px',
         },
-        duration: 3000,
+        duration: 2500,
         ...options,
     });
 };
@@ -24,12 +26,14 @@ export const showErrorToast = (message: string, options?: any) => {
         style: {
             background: '#EF4444',
             color: 'white',
-            fontWeight: '600',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            boxShadow: '0 10px 40px rgba(239, 68, 68, 0.3)',
+            fontWeight: '500',
+            fontSize: '14px',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
+            maxWidth: '400px',
         },
-        duration: 4000,
+        duration: 3000,
         ...options,
     });
 };
@@ -40,12 +44,14 @@ export const showWarningToast = (message: string, options?: any) => {
         style: {
             background: '#F59E0B',
             color: 'white',
-            fontWeight: '600',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            boxShadow: '0 10px 40px rgba(245, 158, 11, 0.3)',
+            fontWeight: '500',
+            fontSize: '14px',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.25)',
+            maxWidth: '400px',
         },
-        duration: 3500,
+        duration: 3000,
         ...options,
     });
 };
@@ -56,12 +62,14 @@ export const showInfoToast = (message: string, options?: any) => {
         style: {
             background: '#3B82F6',
             color: 'white',
-            fontWeight: '600',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            boxShadow: '0 10px 40px rgba(59, 130, 246, 0.3)',
+            fontWeight: '500',
+            fontSize: '14px',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
+            maxWidth: '400px',
         },
-        duration: 3000,
+        duration: 2500,
         ...options,
     });
 };
@@ -93,12 +101,14 @@ export const showCartToast = (message: string, action?: 'add' | 'remove' | 'upda
         style: {
             background: '#DCCA87', // grilli-gold
             color: 'white',
-            fontWeight: '600',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            boxShadow: '0 10px 40px rgba(220, 202, 135, 0.4)',
+            fontWeight: '500',
+            fontSize: '14px',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(220, 202, 135, 0.3)',
+            maxWidth: '400px',
         },
-        duration: 2500,
+        duration: 2000,
     });
 };
 

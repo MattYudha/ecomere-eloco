@@ -477,6 +477,38 @@ const getProductById = asyncHandler(async (request, response) => {
     return response.status(200).json(product);
 });
 
+// Get related products by category
+const getRelatedProducts = asyncHandler(async (request, response) => {
+    const { categoryId, exclude, limit = 4 } = request.query;
+
+    if (!categoryId) {
+        throw new AppError('categoryId is required', 400);
+    }
+
+    const relatedProducts = await prisma.product.findMany({
+        where: {
+            categoryId,
+            id: { not: exclude },
+            inStock: 1 // Only in-stock products
+        },
+        take: Number(limit),
+        orderBy: {
+            rating: 'desc' // Order by highest rated
+        },
+        select: {
+            id: true,
+            slug: true,
+            title: true,
+            mainImage: true,
+            price: true,
+            rating: true,
+            reviewCount: true
+        }
+    });
+
+    return response.status(200).json(relatedProducts);
+});
+
 module.exports = {
     getAllProducts,
     createProduct,
@@ -485,4 +517,5 @@ module.exports = {
     bulkDeleteProducts,
     searchProducts,
     getProductById,
+    getRelatedProducts, // Export new function
 };

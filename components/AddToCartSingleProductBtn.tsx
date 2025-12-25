@@ -27,7 +27,10 @@ const AddToCartSingleProductBtn = ({
 
   const handleAddToCart = async () => {
     if (!session) {
-      router.push('/login');
+      showErrorToast('Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang');
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
       return;
     }
 

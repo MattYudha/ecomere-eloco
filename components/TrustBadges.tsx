@@ -1,268 +1,72 @@
 'use client';
-
 import React from 'react';
-import { FaLock, FaShieldAlt, FaCheck, FaTruck } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { FaShieldAlt, FaLock } from 'react-icons/fa';
 
-interface TrustBadgesProps {
-    variant?: 'security' | 'payment' | 'delivery' | 'compact' | 'full';
-    showSecurity?: boolean;
-    showPayment?: boolean;
-    showDelivery?: boolean;
-}
-
-const TrustBadges: React.FC<TrustBadgesProps> = ({
-    variant = 'full',
-    showSecurity = true,
-    showPayment = true,
-    showDelivery = true,
-}) => {
-    // Payment methods data
-    const paymentMethods = [
-        { name: 'GoPay', color: 'bg-green-500' },
-        { name: 'OVO', color: 'bg-purple-500' },
-        { name: 'DANA', color: 'bg-blue-500' },
-        { name: 'ShopeePay', color: 'bg-orange-500' },
-        { name: 'BCA', color: 'bg-blue-600' },
-        { name: 'Mandiri', color: 'bg-yellow-600' },
-        { name: 'BNI', color: 'bg-orange-600' },
-        { name: 'BRI', color: 'bg-blue-700' },
-        { name: 'QRIS', color: 'bg-red-500' },
-    ];
-
-    // Calculate delivery estimate (2-4 business days)
-    const getDeliveryEstimate = () => {
-        const today = new Date();
-        const deliveryDate = new Date(today);
-
-        // Add 4 days for max estimate
-        let daysAdded = 0;
-        while (daysAdded < 4) {
-            deliveryDate.setDate(deliveryDate.getDate() + 1);
-            // Skip weekends
-            if (deliveryDate.getDay() !== 0 && deliveryDate.getDay() !== 6) {
-                daysAdded++;
-            }
-        }
-
-        const options: Intl.DateTimeFormatOptions = {
-            weekday: 'short',
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        };
-        return deliveryDate.toLocaleDateString('id-ID', options);
-    };
-
-    // Compact variant (for sidebar)
-    if (variant === 'compact') {
-        return (
-            <div className="space-y-2">
-                {showSecurity && (
-                    <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
-                        <FaLock className="flex-shrink-0" />
-                        <span>Pesanan aman & terenkripsi</span>
-                    </div>
-                )}
-
-                {showDelivery && (
-                    <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
-                        <FaTruck className="flex-shrink-0" />
-                        <span>Estimasi: 2-4 hari kerja</span>
-                    </div>
-                )}
-
-                {showPayment && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        GoPay, OVO, DANA, Transfer Bank
-                    </p>
-                )}
-            </div>
-        );
-    }
-
-    // Security only variant
-    if (variant === 'security') {
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-700 rounded-xl p-6"
-            >
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                        <FaShieldAlt className="text-white text-xl" />
-                    </div>
-                    <h3 className="font-bold text-lg text-green-900 dark:text-green-100">
-                        Pesanan Anda 100% Aman
-                    </h3>
-                </div>
-
-                <ul className="space-y-2 text-sm text-green-700 dark:text-green-300">
-                    <li className="flex items-center gap-2">
-                        <FaCheck className="text-green-500 flex-shrink-0" />
-                        <span>Pembayaran terenkripsi dengan SSL</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <FaCheck className="text-green-500 flex-shrink-0" />
-                        <span>Data pribadi dilindungi ketat</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <FaCheck className="text-green-500 flex-shrink-0" />
-                        <span>Transaksi aman & terpercaya</span>
-                    </li>
-                </ul>
-            </motion.div>
-        );
-    }
-
-    // Payment only variant
-    if (variant === 'payment') {
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-6"
-            >
-                <p className="text-sm font-bold text-gray-900 dark:text-white mb-4 text-center">
-                    Metode Pembayaran Aman:
-                </p>
-
-                <div className="flex flex-wrap justify-center gap-2">
-                    {paymentMethods.map((method, index) => (
-                        <div
-                            key={index}
-                            className="px-3 py-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-300 hover:border-grilli-gold transition-colors"
-                        >
-                            {method.name}
-                        </div>
-                    ))}
-                </div>
-
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-                    Pilih metode pembayaran favorit Anda saat checkout
-                </p>
-            </motion.div>
-        );
-    }
-
-    // Delivery only variant
-    if (variant === 'delivery') {
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-700 rounded-xl p-6"
-            >
-                <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <FaTruck className="text-white text-xl" />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2">
-                            Pengiriman Cepat & Terpercaya
-                        </h3>
-                        <div className="space-y-1 text-sm text-blue-700 dark:text-blue-300">
-                            <p className="flex items-center gap-2">
-                                <FaCheck className="text-blue-500 flex-shrink-0" />
-                                Estimasi pengiriman: <strong>2-4 hari kerja</strong>
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <FaCheck className="text-blue-500 flex-shrink-0" />
-                                Diterima paling lambat: <strong>{getDeliveryEstimate()}</strong>
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <FaCheck className="text-blue-500 flex-shrink-0" />
-                                Lacak pesanan Anda secara real-time
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-        );
-    }
-
-    // Full variant (all badges)
+const TrustBadges: React.FC = () => {
     return (
-        <div className="space-y-4">
-            {showSecurity && (
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0 }}
-                    className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-700 rounded-xl p-4"
-                >
-                    <div className="flex items-center gap-3 mb-3">
-                        <FaLock className="text-green-500 text-lg flex-shrink-0" />
-                        <h3 className="font-bold text-sm text-green-900 dark:text-green-100">
-                            Pesanan Anda 100% Aman
-                        </h3>
-                    </div>
-
-                    <ul className="space-y-1.5 text-xs text-green-700 dark:text-green-300">
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500 flex-shrink-0" size={10} />
-                            <span>Pembayaran terenkripsi SSL</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500 flex-shrink-0" size={10} />
-                            <span>Data pribadi dilindungi</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500 flex-shrink-0" size={10} />
-                            <span>Transaksi aman & terpercaya</span>
-                        </li>
-                    </ul>
-                </motion.div>
-            )}
-
-            {showDelivery && (
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-700 rounded-xl p-4"
-                >
-                    <div className="flex items-start gap-3">
-                        <FaTruck className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">
-                                Estimasi Pengiriman: 2-4 hari kerja
-                            </p>
-                            <p className="text-xs text-blue-600 dark:text-blue-300">
-                                Diterima paling lambat: <strong>{getDeliveryEstimate()}</strong>
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
-
-            {showPayment && (
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4"
-                >
-                    <p className="text-xs font-bold text-gray-900 dark:text-white mb-3 text-center">
-                        Metode Pembayaran Aman:
+        <div className="space-y-2">
+            {/* Security Message */}
+            <div className="flex items-center justify-center gap-1.5 p-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <FaShieldAlt className="text-green-600 dark:text-green-400 flex-shrink-0" size={14} />
+                <div className="flex-1">
+                    <p className="text-[10px] font-bold text-green-900 dark:text-green-100 leading-tight">
+                        Pesanan Anda Aman
                     </p>
+                </div>
+                <FaLock className="text-green-600 dark:text-green-400 flex-shrink-0" size={12} />
+            </div>
 
-                    <div className="flex flex-wrap justify-center gap-1.5">
-                        {paymentMethods.slice(0, 6).map((method, index) => (
-                            <div
-                                key={index}
-                                className="px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-300"
-                            >
-                                {method.name}
-                            </div>
-                        ))}
-                        <div className="px-2 py-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-xs font-medium text-gray-500 dark:text-gray-400">
-                            +{paymentMethods.length - 6} lainnya
+            {/* Payment Provider Badges */}
+            <div className="p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-200 dark:border-gray-600">
+                <p className="text-[9px] text-gray-600 dark:text-gray-400 text-center mb-1.5 font-medium uppercase tracking-wide">
+                    Metode Pembayaran
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-1.5">
+                    {/* Visa */}
+                    <div className="group relative">
+                        <div className="w-9 h-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                            <svg viewBox="0 0 48 32" className="w-8 h-4">
+                                <rect width="48" height="32" fill="white" />
+                                <path d="M21.3 19.8l1.9-11.6h3l-1.9 11.6h-3zm13.6-11.3c-.6-.2-1.5-.5-2.6-.5-2.9 0-4.9 1.5-4.9 3.7 0 1.6 1.5 2.5 2.6 3 1.1.6 1.5 1 1.5 1.5 0 .8-.9 1.1-1.8 1.1-1.2 0-1.8-.2-2.8-.6l-.4-.2-.4 2.4c.7.3 2 .6 3.3.6 3.1 0 5.1-1.5 5.1-3.8 0-1.2-.7-2.2-2.4-3-1-.5-1.6-.9-1.6-1.4 0-.5.5-.9 1.7-.9.9 0 1.6.2 2.1.4l.3.1.4-2.4zm5.7-1.5c-.6 0-1.1.4-1.4.9l-4.9 11.3h3.1l.6-1.7h3.8l.4 1.7h2.7l-2.4-11.6h-2.5-.4zm.4 3.4l.9 4.4h-2.5l1.6-4.4zM18.6 8.2L15.8 17l-.3-1.5c-.5-1.7-2.1-3.6-4-4.5l2.7 10.2h3.1l4.6-11.6h-3.1-.2z" fill="#1434CB" />
+                                <path d="M12.1 8.2H7.4l0 .2c3.7.9 6.1 3.1 7.1 5.8l-1-5c-.2-.8-.7-1-.9-1h-1.5.1z" fill="#F7B600" />
+                            </svg>
                         </div>
                     </div>
-                </motion.div>
-            )}
+
+                    {/* Mastercard */}
+                    <div className="group relative">
+                        <div className="w-9 h-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                            <svg viewBox="0 0 48 32" className="w-8 h-4">
+                                <rect width="48" height="32" fill="white" />
+                                <circle cx="18" cy="16" r="8" fill="#EB001B" />
+                                <circle cx="30" cy="16" r="8" fill="#F79E1B" />
+                                <path d="M24 9.6c-1.7 1.4-2.8 3.5-2.8 5.9s1.1 4.5 2.8 5.9c1.7-1.4 2.8-3.5 2.8-5.9s-1.1-4.5-2.8-5.9z" fill="#FF5F00" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* BCA */}
+                    <div className="group relative">
+                        <div className="px-1 h-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                            <span className="text-[9px] font-bold text-blue-700 dark:text-blue-400">BCA</span>
+                        </div>
+                    </div>
+
+                    {/* Mandiri */}
+                    <div className="group relative">
+                        <div className="px-1 h-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                            <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400">Mandiri</span>
+                        </div>
+                    </div>
+
+                    {/* BNI */}
+                    <div className="group relative">
+                        <div className="px-1 h-6 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                            <span className="text-[9px] font-bold text-orange-600 dark:text-orange-400">BNI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

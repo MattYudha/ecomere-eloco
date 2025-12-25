@@ -10,6 +10,7 @@ import Providers from '@/Providers';
 import SessionTimeoutWrapper from '@/components/SessionTimeoutWrapper';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WishlistModule } from '@/components/modules/wishlist';
+import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
 
 // Fonts
 const inter = Inter({ subsets: ['latin'] });
@@ -58,6 +59,9 @@ export default function RootLayout({
               </ClientLayoutWrapper>
 
               <Footer />
+
+              {/* Floating WhatsApp Button */}
+              <FloatingWhatsAppButton />
             </AuthProvider>
           </Providers>
         </ThemeProvider>

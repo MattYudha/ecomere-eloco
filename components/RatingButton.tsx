@@ -25,14 +25,11 @@ const RatingButton: React.FC<RatingButtonProps> = ({
     isCompact = false,
 }) => {
     if (hasReview && reviewRating) {
-        // Already reviewed - show rating
+        // Already reviewed - show rating (disabled state)
         return (
-            <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onClick}
+            <div
                 className={`
-                    flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-all
+                    flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg cursor-not-allowed
                     ${isCompact ? 'text-xs' : 'text-sm'}
                 `}
             >
@@ -48,9 +45,9 @@ const RatingButton: React.FC<RatingButtonProps> = ({
                     ))}
                 </div>
                 <span className="font-medium text-green-700 dark:text-green-300">
-                    {isCompact ? 'Review' : 'Lihat Review'}
+                    {isCompact ? 'Sudah Direview' : 'Sudah Direview'}
                 </span>
-            </motion.button>
+            </div>
         );
     }
 

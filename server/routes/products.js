@@ -9,7 +9,10 @@ const {
     bulkDeleteProducts,
     searchProducts,
     getProductById,
+    getRelatedProducts, // Import new function
 } = require('../controllers/products');
+
+router.route('/related').get(getRelatedProducts); // Add related products route
 
 router.route('/bulk').delete(bulkDeleteProducts); // Must be before /:id to avoid collision
 

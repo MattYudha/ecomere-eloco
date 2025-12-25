@@ -43,10 +43,10 @@ const BuyNowSingleProductBtn = ({
       });
       calculateTotals();
 
-      // Simulate processing
-      await new Promise(resolve => setTimeout(resolve, 400));
+      // Small delay to ensure state updates before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      showInfoToast('Proceeding to checkout...');
+      // Redirect to checkout
       router.push('/checkout');
     } catch (error) {
       setIsProcessing(false);

@@ -1,13 +1,19 @@
+'use client';
+
 import {
     StockAvailabillity,
     UrgencyText,
     ProductTabs,
     SingleProductDynamicFields,
 } from '@/components';
+import ProductHighlights from '@/components/ProductHighlights';
+import RelatedProducts from '@/components/RelatedProducts';
+import StickyMobileCTA from '@/components/StickyMobileCTA';
+import ProductImageLightbox from '@/components/ProductImageLightbox';
 import apiClient from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSquareFacebook } from 'react-icons/fa6';
 import { FaSquareXTwitter } from 'react-icons/fa6';
 import { FaSquarePinterest } from 'react-icons/fa6';
@@ -25,22 +31,47 @@ interface SingleProductPageProps {
     params: { productSlug: string; id: string };
 }
 
-const SingleProductPage = async ({ params }: SingleProductPageProps) => {
+const SingleProductPage = ({ params }: SingleProductPageProps) => {
     const { productSlug, id } = params;
+    const [product, setProduct] = useState<any>(null);
+    const [images, setImages] = useState<ImageItem[]>([]);
+    const [selectedImage, setSelectedImage] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
 
+    // Fetch product data
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setIsLoading(true);
 
+                // Fetch product
+                const data = await apiClient.get(`/api/slugs/${productSlug}`, { cache: 'no-store' });
+                const productData = await data.json();
 
-    // sending API request for a single product with a given product slug
-    const data = await apiClient.get(`/api/slugs/${productSlug}`, { cache: 'no-store' });
-    const product = await data.json();
+                if (!productData || productData.error) {
+                    notFound();
+                    return;
+                }
 
-    // sending API request for more than 1 product image if it exists
-    const imagesData = await apiClient.get(`/api/images/${id}`, { cache: 'no-store' });
-    const images: ImageItem[] = (await imagesData.json()) || [];
+                setProduct(productData);
+                setSelectedImage(productData?.mainImage || '');
 
-    if (!product || product.error) {
-        notFound();
-    }
+                // Fetch images
+                const imagesData = await apiClient.get(`/api/images/${id}`, { cache: 'no-store' });
+                const imagesArray: ImageItem[] = (await imagesData.json()) || [];
+                setImages(imagesArray);
+            } catch (error) {
+                console.error('Error fetching product:', error);
+                notFound();
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [productSlug, id]);
 
     // Helper function to create a consistent, root-relative image path
     const getImageUrl = (path: string | null | undefined) => {
@@ -51,6 +82,19 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
         // Ensures a single leading slash for a consistent root-relative path
         return `/${path.replace(/^\//, '')}`;
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-grilli-gold"></div>
+            </div>
+        );
+    }
+
+    if (!product) {
+        notFound();
+        return null;
+    }
 
     return (
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -72,13 +116,18 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                                         {/* Inner glow effect */}
                                         <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
 
-                                        <div className="relative aspect-square flex items-center justify-center">
+                                        <div className="relative aspect-square flex items-center justify-center overflow-hidden cursor-zoom-in"
+                                            onClick={() => {
+                                                setLightboxIndex(0);
+                                                setLightboxOpen(true);
+                                            }}
+                                        >
                                             <Image
-                                                src={getImageUrl(product?.mainImage)}
+                                                src={getImageUrl(selectedImage)}
                                                 width={500}
                                                 height={500}
                                                 alt={sanitize(product?.title)}
-                                                className="w-full h-full object-contain drop-shadow-2xl"
+                                                className="w-full h-full object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-[1.03]"
                                                 priority
                                             />
                                         </div>
@@ -87,10 +136,32 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
 
                                 {/* Gallery Thumbnails - Floating Glass Tiles */}
                                 <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                                    {/* Main image thumbnail */}
+                                    <div
+                                        onClick={() => setSelectedImage(product?.mainImage)}
+                                        className={`relative group cursor-pointer ${selectedImage === product?.mainImage ? 'ring-2 ring-[#cb6112]' : ''
+                                            }`}
+                                    >
+                                        <div className="absolute -inset-0.5 bg-gradient-to-br from-[#cb6112]/40 to-[#cb6112]/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                                        <div className="relative rounded-2xl backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/20 hover:border-[#cb6112]/50 shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] p-2 transition-all duration-300 hover:scale-105 overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                                            <Image
+                                                src={getImageUrl(product?.mainImage)}
+                                                width={100}
+                                                height={100}
+                                                alt={sanitize(product?.title)}
+                                                className="w-20 h-20 object-contain"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Additional images */}
                                     {Array.isArray(images) && images.map((imageItem: ImageItem, key: number) => (
                                         <div
                                             key={imageItem.imageID + key}
-                                            className="relative group cursor-pointer"
+                                            onClick={() => setSelectedImage(imageItem.image)}
+                                            className={`relative group cursor-pointer ${selectedImage === imageItem.image ? 'ring-2 ring-[#cb6112]' : ''
+                                                }`}
                                         >
                                             <div className="absolute -inset-0.5 bg-gradient-to-br from-[#cb6112]/40 to-[#cb6112]/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
                                             <div className="relative rounded-2xl backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/20 hover:border-[#cb6112]/50 shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] p-2 transition-all duration-300 hover:scale-105 overflow-hidden">
@@ -109,32 +180,77 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                             </div>
 
                             {/* Right Column - Product Details */}
-                            <div className="space-y-8">
+                            <div className="space-y-6">
 
-                                {/* Title & Price - Premium Typography */}
+                                {/* 1. Category Label */}
+                                <div className="inline-flex items-center gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        Snack • Makanan Pedas
+                                    </span>
+                                </div>
+
+                                {/* 2. Product Title */}
                                 <div className="space-y-4">
                                     <h1 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-[#cb6112] via-[#e07d2e] to-[#cb6112] leading-tight tracking-tight">
                                         {sanitize(product?.title)}
                                     </h1>
 
-                                    <div className="inline-flex items-baseline gap-2 px-6 py-3 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-[#cb6112]/15 via-[#cb6112]/10 to-transparent border border-[#cb6112]/30 shadow-[0_4px_24px_rgba(203,97,18,0.15)]">
-                                        <span className="text-4xl font-bold text-[#cb6112]">
-                                            {formatPrice(product?.price)}
-                                        </span>
+                                    {/* 3. Price */}
+                                    <div className="space-y-1">
+                                        <div className="inline-flex items-baseline gap-2 px-6 py-3 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-[#cb6112]/15 via-[#cb6112]/10 to-transparent border border-[#cb6112]/30 shadow-[0_4px_24px_rgba(203,97,18,0.15)]">
+                                            <span className="text-4xl font-bold text-[#cb6112]">
+                                                {formatPrice(product?.price)}
+                                            </span>
+                                        </div>
+                                        {/* 4. Price Microcopy */}
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                            Harga per porsi • Siap santap
+                                        </p>
                                     </div>
                                 </div>
 
-                                {/* Stock Status - Glass Capsule */}
+                                {/* Short Description - Above the fold */}
+                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-w-md">
+                                    {product?.description ?
+                                        sanitize(product.description).substring(0, 200) + (product.description.length > 200 ? '...' : '')
+                                        :
+                                        'Produk berkualitas dengan bahan pilihan untuk kepuasan Anda.'
+                                    }
+                                </p>
+
+                                {/* 6. Stock Status */}
                                 <div className="inline-block">
                                     <StockAvailabillity stock={94} inStock={product?.inStock} />
                                 </div>
 
-                                {/* Dynamic Fields */}
-                                <div className="space-y-4">
+                                {/* 7. Purchase Panel */}
+                                <div className="rounded-2xl backdrop-blur-xl bg-white/40 dark:bg-white/10 border border-white/40 dark:border-white/20 p-6 shadow-[0_8px_24px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
                                     <SingleProductDynamicFields product={product} />
                                 </div>
 
-                                {/* Product Meta - Glass Capsules */}
+                                {/* 8. Trust / Delivery Micro Info */}
+                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Dikemas rapi & higienis untuk kesegaran maksimal</span>
+                                </div>
+
+                                {/* 9. Divider */}
+                                {/* 10. Product Highlights */}
+                                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <ProductHighlights highlights={[
+                                        "Tanpa Pengawet",
+                                        "Pedas Gurih",
+                                        "Kemasan Aman",
+                                        "Halal Bersertifikat"
+                                    ]} />
+                                </div>
+
+                                {/* 11. Urgency Text */}
+                                <UrgencyText stock={product?.inStock} />
+
+                                {/* 12. Product Meta */}
                                 <div className="space-y-4">
                                     {/* SKU */}
                                     <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full backdrop-blur-xl bg-white/15 dark:bg-white/10 border border-white/30 dark:border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
@@ -196,6 +312,26 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                         <ProductTabs product={product} />
                     </div>
                 </div>
+
+                {/* Related Products Section */}
+                <div className="mt-16">
+                    <RelatedProducts
+                        productId={product.id}
+                        categoryId={product.categoryId}
+                        categoryName={product.category?.name}
+                    />
+                </div>
+
+                {/* Product Image Lightbox */}
+                <ProductImageLightbox
+                    images={[
+                        getImageUrl(product?.mainImage),
+                        ...images.map(img => getImageUrl(img.image))
+                    ]}
+                    open={lightboxOpen}
+                    onClose={() => setLightboxOpen(false)}
+                    index={lightboxIndex}
+                />
             </div>
         </div>
     );

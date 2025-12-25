@@ -50,6 +50,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "svgmap": "^2.10.1",
+    "yet-another-react-lightbox": "^3.28.0",
     "zod": "^3.22.4",
     "zustand": "^4.5.1"
   },

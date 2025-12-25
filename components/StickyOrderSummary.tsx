@@ -11,6 +11,7 @@ import {
 import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
 import TrustBadges from './TrustBadges';
+import DeliveryEstimate from './DeliveryEstimate';
 
 interface CartItem {
     id: string;
@@ -29,6 +30,8 @@ interface StickyOrderSummaryProps {
     showWhatsApp?: boolean;
     whatsAppNumber?: string;
     className?: string;
+    onCheckout?: () => void;
+    showCheckout?: boolean;
 }
 
 const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
@@ -40,6 +43,8 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
     showWhatsApp = true,
     whatsAppNumber = '6281234567890', // Default WA number
     className = '',
+    onCheckout,
+    showCheckout = false,
 }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [isMobileExpanded, setIsMobileExpanded] = useState(false);
@@ -56,7 +61,7 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
             {/* Desktop Sticky Summary */}
             <div
                 className={`hidden lg:block sticky top-24 ${className}`}
-                style={{ maxHeight: 'calc(100vh - 120px)' }}
+                style={{ maxHeight: 'calc(100vh - 200px)' }}
             >
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
                     {/* Header */}
@@ -121,6 +126,11 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
                                     ))}
                                 </div>
 
+                                {/* Delivery Estimate */}
+                                <div className="px-6 pt-4">
+                                    <DeliveryEstimate />
+                                </div>
+
                                 {/* Price Breakdown */}
                                 <div className="p-6 bg-gray-50 dark:bg-gray-700/30 space-y-3">
                                     <div className="flex justify-between text-sm">
@@ -166,8 +176,8 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
                                 </div>
 
                                 {/* Trust Badges */}
-                                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700">
-                                    <TrustBadges variant="compact" />
+                                <div className="px-4 pb-2 pt-1">
+                                    <TrustBadges />
                                 </div>
 
                                 {/* WhatsApp Contact */}
@@ -182,6 +192,24 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
                                         </button>
                                         <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-3">
                                             Butuh bantuan? Chat dengan kami
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Checkout Button - Desktop */}
+                                {showCheckout && onCheckout && (
+                                    <div className="p-6 border-t border-gray-100 dark:border-gray-700">
+                                        <button
+                                            onClick={onCheckout}
+                                            className="w-full py-4 px-6 bg-gradient-to-r from-grilli-gold to-orange-500 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-grilli-gold/30 hover:shadow-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
+                                        >
+                                            <span>Lanjut ke Checkout</span>
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </button>
+                                        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                            🔒 Pembayaran aman & terpercaya
                                         </p>
                                     </div>
                                 )}
@@ -291,6 +319,11 @@ const StickyOrderSummary: React.FC<StickyOrderSummaryProps> = ({
                                             {formatPrice(total)}
                                         </span>
                                     </div>
+                                </div>
+
+                                {/* Trust Badges - Mobile */}
+                                <div className="mt-3">
+                                    <TrustBadges />
                                 </div>
 
                                 {/* WhatsApp Button */}

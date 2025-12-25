@@ -130,26 +130,15 @@ const createReview = async (req, res) => {
 
         let newReview;
         if (existingReview) {
-            console.log("⚠️ Review exists for this order/product, updating...");
-            // Retrieve existing images to potentially merge or replace (for now, we'll append or just use new ones if provided)
-            // Simple logic: If new images provided, add them to existing? Or replace? 
-            // Let's assume we append if new ones exist, or strictly update if we want.
-            // For simplicity in this edit: We'll just ADD new ones to the list if they exist.
-
-            let currentImages = existingReview.images || [];
-            if (uploadedImages.length > 0) {
-                currentImages = [...currentImages, ...uploadedImages];
-            }
-
-            newReview = await prisma.review.update({
-                where: { id: existingReview.id },
-                data: {
-                    rating: Number(rating),
-                    comment,
-                    images: currentImages
+            console.log("❌ Review already exists for this order/product");
+            return res.status(409).json({
+                message: 'Anda sudah memberikan rating untuk produk ini pada order tersebut. Anda hanya bisa memberikan rating sekali per order.',
+                existingReview: {
+                    rating: existingReview.rating,
+                    comment: existingReview.comment,
+                    createdAt: existingReview.createdAt
                 }
             });
-            console.log("✅ Review updated:", newReview.id);
         } else {
             console.log("✨ Creating new review...");
             // 3. Create Review
