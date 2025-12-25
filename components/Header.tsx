@@ -15,7 +15,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { CiShoppingBasket, CiUser } from 'react-icons/ci';
 import { IoIosLogOut } from 'react-icons/io';
 import { LuLayoutDashboard } from 'react-icons/lu';
-import { Menu, X, Store } from 'lucide-react';
+import { Menu, X, Store, Heart } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 
 import SearchInput from './SearchInput';
@@ -262,6 +262,14 @@ const Header = () => {
               <ThemeToggle />
             </div>
 
+            {/* Wishlist Link */}
+            <Link
+              href="/wishlist"
+              className="relative hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-1"
+              title="Wishlist"
+            >
+              <Heart size={24} />
+            </Link>
 
             <Link
               href="/cart"
