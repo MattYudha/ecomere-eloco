@@ -32,9 +32,8 @@ interface CheckoutFormData {
     lastname: string;
     phone: string;
     email: string;
-    company: string; // Ke
-
-    camatan
+    company: string; // Kecamatan
+    camatan: string; // District
     adress: string; // Main address
     apartment: string; // Detail address
     city: string;
@@ -66,6 +65,7 @@ const CheckoutPage = () => {
             phone: '',
             email: session?.user?.email || '',
             company: '',
+            camatan: '',
             adress: '',
             apartment: '',
             city: '',

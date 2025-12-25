@@ -37,7 +37,7 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({
     orientation = 'horizontal',
 }) => {
     // Define timeline steps (excluding cancelled as it's a special state)
-    const steps: TimelineStep[] = [
+    const steps: TimelineStep[] = useMemo(() => [
         {
             id: 'pending',
             label: 'Pesanan Diterima',
@@ -62,7 +62,7 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({
             icon: <FaHome size={20} />,
             status: 'delivered',
         },
-    ];
+    ], []);
 
     // Get current step index
     const currentStepIndex = useMemo(() => {
