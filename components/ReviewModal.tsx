@@ -2,11 +2,10 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaCheck } from 'react-icons/fa';
+import { FaTimes, FaCheck, FaCamera, FaTrash } from 'react-icons/fa';
 import Image from 'next/image';
 import StarRatingInput from './StarRatingInput';
 import toast from 'react-hot-toast';
-import apiClient from '@/lib/api';
 
 interface ReviewModalProps {
     isOpen: boolean;
@@ -29,7 +28,55 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 }) => {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
+    const [images, setImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        const newImages: File[] = [];
+        const newPreviews: string[] = [];
+
+        // Limit to 3 images total
+        const availableSlots = 3 - images.length;
+        const filesToAdd = Math.min(files.length, availableSlots);
+
+        for (let i = 0; i < filesToAdd; i++) {
+            const file = files[i];
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                toast.error('Hanya file gambar yang diperbolehkan');
+                continue;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Ukuran gambar maksimal 5MB');
+                continue;
+            }
+
+            newImages.push(file);
+            newPreviews.push(URL.createObjectURL(file));
+        }
+
+        setImages([...images, ...newImages]);
+        setImagePreviews([...imagePreviews, ...newPreviews]);
+
+        if (images.length + newImages.length >= 3) {
+            toast('Maksimal 3 gambar', { icon: '📸' });
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        // Revoke object URL to free memory
+        URL.revokeObjectURL(imagePreviews[index]);
+        
+        setImages(images.filter((_, i) => i !== index));
+        setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+    };
 
     const handleSubmit = async () => {
         if (rating === 0) {
@@ -40,11 +87,24 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         try {
             setIsSubmitting(true);
 
-            const response = await apiClient.post('/api/reviews', {
-                productId: product.id,
-                orderId: orderId,
-                rating: rating,
-                comment: comment.trim() || undefined,
+            // Create FormData for file upload
+            const formData = new FormData();
+            formData.append('productId', product.id);
+            formData.append('orderId', orderId);
+            formData.append('rating', rating.toString());
+            if (comment.trim()) {
+                formData.append('comment', comment.trim());
+            }
+
+            // Append images
+            images.forEach((image) => {
+                formData.append('images', image);
+            });
+
+            const response = await fetch('/api/reviews', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -53,12 +113,18 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             }
 
             toast.success('Terima kasih atas review Anda! 🌟');
+            
+            // Clean up
+            imagePreviews.forEach(url => URL.revokeObjectURL(url));
+            
             onReviewSubmitted();
             onClose();
-
+            
             // Reset form
             setRating(5);
             setComment('');
+            setImages([]);
+            setImagePreviews([]);
         } catch (error: any) {
             console.error('Review error:', error);
             toast.error(error.message || 'Gagal mengirim review. Silakan coba lagi.');
@@ -85,9 +151,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none overflow-y-auto"
                     >
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 pointer-events-auto">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 pointer-events-auto max-h-[90vh] overflow-y-auto">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -157,6 +223,57 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                                 />
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
                                     {comment.length}/500
+                                </p>
+                            </div>
+
+                            {/* Image Upload */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    Foto Produk (Opsional, max 3)
+                                </label>
+                                
+                                {/* Image Previews */}
+                                {imagePreviews.length > 0 && (
+                                    <div className="grid grid-cols-3 gap-3 mb-3">
+                                        {imagePreviews.map((preview, index) => (
+                                            <div key={index} className="relative group">
+                                                <div className="relative w-full h-24 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                                                    <Image
+                                                        src={preview}
+                                                        alt={`Preview ${index + 1}`}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemoveImage(index)}
+                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <FaTrash size={10} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Upload Button */}
+                                {images.length < 3 && (
+                                    <label className="flex items-center justify-center gap-2 py-3 px-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-grilli-gold dark:hover:border-grilli-gold cursor-pointer transition-all group">
+                                        <FaCamera className="text-gray-400 group-hover:text-grilli-gold transition-colors" />
+                                        <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-grilli-gold transition-colors">
+                                            Tambah Foto ({images.length}/3)
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleImageChange}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                )}
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                    Format: JPG, PNG. Max 5MB per foto
                                 </p>
                             </div>
 
