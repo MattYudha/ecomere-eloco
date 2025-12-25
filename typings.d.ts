@@ -65,6 +65,7 @@ interface Order {
   apartment: string;
   company: string;
   dateTime: string;
+  updatedAt: string;
   email: string;
   lastname: string;
   name: string;
@@ -73,7 +74,7 @@ interface Order {
   status: 'processing' | 'canceled' | 'delivered';
   city: string;
   country: string;
-  orderNotice: string?;
+  orderNotice: string | null;
   total: number;
 }
 

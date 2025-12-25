@@ -5,6 +5,7 @@ import { useReviewStore } from '@/app/_zustand/reviewStore';
 import { FaStar, FaCheckCircle, FaTrash } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
+import ReviewSkeleton from '@/components/ReviewSkeleton';
 
 interface ReviewListProps {
     productId: string;
@@ -22,7 +23,15 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
         }
     }, [productId, fetchReviews]);
 
-    if (isLoading) return <div className="text-center py-8 text-gray-500">Loading reviews...</div>;
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <ReviewSkeleton key={i} />
+                ))}
+            </div>
+        );
+    }
 
     if (reviews.length === 0) {
         return (

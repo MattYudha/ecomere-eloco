@@ -5,6 +5,8 @@ import ProductItem, { Product } from '@/components/ProductItem';
 import apiClient from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useCallback } from 'react';
+import TableSkeleton from '@/components/TableSkeleton';
+import EmptyState from '@/components/EmptyState';
 
 export const WishlistModule = () => {
   const { status } = useAuth();
@@ -45,14 +47,18 @@ export const WishlistModule = () => {
   }, [status, getWishlist]);
 
   if (status === 'loading') {
-    return <div className="text-center py-10">Loading...</div>;
+    return <TableSkeleton rows={5} columns={5} />;
   }
 
   if (!wishlist || wishlist.length === 0) {
     return (
-      <h3 className="text-center text-4xl py-10 text-black max-lg:text-3xl max-sm:text-2xl max-sm:pt-5 max-[400px]:text-xl">
-        No items found in the wishlist
-      </h3>
+      <EmptyState
+        variant="wishlist"
+        title="Your Wishlist is Empty"
+        description="Explore more and shortlist some items"
+        actionLabel="Start Shopping"
+        actionHref="/shop-all"
+      />
     );
   }
 

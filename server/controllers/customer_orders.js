@@ -498,7 +498,32 @@ async function getCustomerOrder(request, response) {
       });
     }
 
-    return response.status(200).json(order);
+    // Enhance products with review status
+    // For each product, check if a review exists for this order
+    const productsWithReviewStatus = await Promise.all(
+      order.products.map(async (orderProduct) => {
+        const review = await prisma.review.findFirst({
+          where: {
+            orderId: id,
+            productId: orderProduct.productId
+          }
+        });
+
+        return {
+          ...orderProduct,
+          hasReview: !!review, // Boolean: true if review exists
+          isReviewed: !!review // Alias for compatibility
+        };
+      })
+    );
+
+    // Return order with enhanced product info
+    const enhancedOrder = {
+      ...order,
+      products: productsWithReviewStatus
+    };
+
+    return response.status(200).json(enhancedOrder);
   } catch (error) {
     console.error('Error fetching order:', error);
     return response.status(500).json({
@@ -561,6 +586,74 @@ async function getAllOrders(request, response) {
   }
 }
 
+// Get orders by user ID
+async function getOrdersByUserId(request, response) {
+  try {
+    const { userId } = request.params;
+
+    if (!userId) {
+      return response.status(400).json({
+        error: 'User ID is required',
+      });
+    }
+
+    console.log(`Fetching orders for user: ${userId}`);
+
+    // For now, we'll fetch orders by email since we don't have a userId field in Customer_order
+    // First, get the user to get their email
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return response.status(404).json({
+        error: 'User not found',
+      });
+    }
+
+    console.log(`Found user: ${user.email}`);
+
+    // Fetch orders by email (MySQL is case-insensitive by default)
+    const orders = await prisma.customer_order.findMany({
+      where: {
+        email: user.email,
+        isDeleted: false,
+      },
+      orderBy: {
+        dateTime: 'desc', // Most recent first
+      },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        phone: true,
+        email: true,
+        company: true,
+        adress: true,
+        apartment: true,
+        city: true,
+        country: true,
+        postalCode: true,
+        dateTime: true,
+        updatedAt: true,
+        status: true,
+        total: true,
+        orderNotice: true,
+      },
+    });
+
+    console.log(`Found ${orders.length} orders for user ${user.email}`);
+
+    return response.json(orders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    return response.status(500).json({
+      error: 'Internal server error',
+      details: 'Failed to fetch user orders. Please try again later.',
+    });
+  }
+}
+
 module.exports = {
   createCustomerOrder,
   updateCustomerOrder,
@@ -568,4 +661,5 @@ module.exports = {
   bulkDeleteOrders,
   getCustomerOrder,
   getAllOrders,
+  getOrdersByUserId,
 };

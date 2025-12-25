@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { sanitize } from '@/lib/sanitize';
 import { useProductStore } from '../app/_zustand/store';
-import toast from 'react-hot-toast';
+import { showCartToast, showErrorToast } from '@/lib/toast-config';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { FaStar } from 'react-icons/fa6';
+import LoadingButton from './LoadingButton';
+import { useState } from 'react';
 
 import { formatPrice } from '@/lib/utils';
 
@@ -35,17 +37,31 @@ const ProductItem = ({ product }: ProductItemProps) => {
     : '/product_placeholder.jpg';
   const router = useRouter();
   const { addToCart } = useProductStore();
+  const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent link navigation
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      image: product.mainImage || '/product_placeholder.jpg',
-      amount: 1,
-    });
-    toast.success(`${product.title} added to cart!`);
+    setIsAdding(true);
+
+    try {
+      // Optimistic update - immediately add to cart
+      addToCart({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.mainImage || '/product_placeholder.jpg',
+        amount: 1,
+      });
+
+      // Simulate API delay for demo (in real app, this would be actual API call)
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      showCartToast(`${product.title} added to cart!`, 'add');
+    } catch (error) {
+      showErrorToast('Failed to add to cart');
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -58,20 +74,30 @@ const ProductItem = ({ product }: ProductItemProps) => {
     >
       <Link href={`/product/${product.slug}`} className="block h-full">
         <motion.div
-          className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
-          whileHover={{ y: -8 }}
+          className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
+          whileHover={{ y: -12, scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
           {/* Image Container */}
           <div className="relative w-full aspect-square bg-gray-50 dark:bg-gray-700/50 overflow-hidden">
-            <Image
-              src={imageUrl}
-              alt={sanitize(product?.title) || 'Product image'}
-              fill
-              className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
-            />
+            <motion.div
+              className="w-full h-full"
+              whileHover={{ scale: 1.15 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <Image
+                src={imageUrl}
+                alt={sanitize(product?.title) || 'Product image'}
+                fill
+                className="object-contain p-4"
+              />
+            </motion.div>
 
-            {/* Quick Action Overlay (Optional) */}
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-grilli-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+            {/* Quick Action Overlay */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             {/* Out of Stock Overlay - Elegant & Modern */}
             {product.inStock !== 1 && (
@@ -108,22 +134,27 @@ const ProductItem = ({ product }: ProductItemProps) => {
             <div className="grid grid-cols-2 gap-2 mt-auto">
               {product.inStock === 1 ? (
                 <>
-                  <button
+                  <LoadingButton
+                    loading={isAdding}
                     onClick={handleAddToCart}
-                    className="flex items-center justify-center gap-1 h-8 px-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium text-[10px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    variant="secondary"
+                    size="sm"
+                    className="flex items-center justify-center gap-1"
                   >
                     <ShoppingCart size={12} />
-                    Add
-                  </button>
-                  <button
+                    <span className="text-[10px]">Add</span>
+                  </LoadingButton>
+                  <motion.button
                     onClick={(e) => {
                       e.preventDefault();
                       router.push(`/product/${product.slug}`);
                     }}
                     className="flex items-center justify-center h-8 px-2 rounded-lg bg-[#cb6112] text-white font-medium text-[10px] hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     Buy Now
-                  </button>
+                  </motion.button>
                 </>
               ) : (
                 <button

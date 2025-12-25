@@ -7,18 +7,21 @@ const createReview = async (req, res) => {
         console.log("Content-Type:", req.headers['content-type']);
         console.log("Req Body:", req.body);
         console.log("Req Files Keys:", req.files ? Object.keys(req.files) : "NO FILES");
+        console.log("User from req:", req.user); // CHECK IF USER EXISTS
         if (req.files && req.files.images) {
             console.log("Images found:", Array.isArray(req.files.images) ? "Array" : "Single", req.files.images);
         }
 
         const { productId, rating, comment, orderId } = req.body;
 
+        // CRITICAL FIX: Check if user is authenticated
         if (!req.user || !req.user.id) {
             console.error("❌ User not found in request (Auth middleware failed or skipped?)");
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
         const userId = req.user.id;
+        console.log("✅ User authenticated:", userId);
 
         // Fetch full user details to get email
         const user = await prisma.user.findUnique({
@@ -184,7 +187,9 @@ const createReview = async (req, res) => {
 
         res.status(201).json(newReview);
     } catch (error) {
-        console.error('Error creating review:', error);
+        console.error('❌❌❌ ERROR creating review:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Error message:', error.message);
         res.status(500).json({ message: 'Failed to create review', error: error.message });
     }
 };

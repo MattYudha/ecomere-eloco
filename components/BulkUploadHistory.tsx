@@ -20,6 +20,7 @@ import {
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import apiClient from '@/lib/api';
+import CardSkeleton from '@/components/CardSkeleton';
 
 interface BatchHistory {
   id: string;
@@ -158,8 +159,11 @@ const BulkUploadHistory = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="space-y-4 p-4 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">📜 Upload History</h2>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <CardSkeleton key={i} />
+        ))}
       </div>
     );
   }
@@ -271,12 +275,12 @@ const BulkUploadHistory = () => {
             <div className="flex items-center gap-2">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${batch.status === 'COMPLETED'
-                    ? 'bg-green-500 text-white'
-                    : batch.status === 'FAILED'
-                      ? 'bg-red-500 text-white'
-                      : batch.status === 'PARTIAL'
-                        ? 'bg-yellow-500 text-white'
-                        : 'bg-gray-500 text-white'
+                  ? 'bg-green-500 text-white'
+                  : batch.status === 'FAILED'
+                    ? 'bg-red-500 text-white'
+                    : batch.status === 'PARTIAL'
+                      ? 'bg-yellow-500 text-white'
+                      : 'bg-gray-500 text-white'
                   }`}
               >
                 {batch.status}

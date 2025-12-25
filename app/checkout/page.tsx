@@ -1,866 +1,680 @@
 'use client';
-import { SectionTitle } from '@/components';
+
+import { useEffect, useState, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductStore } from '../_zustand/store';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 
-const CheckoutPage = () => {
-    const { data: session, status } = useAuth();
-    const router = useRouter();
+// Components
+import CheckoutStepper from '@/components/CheckoutStepper';
+import StickyOrderSummary from '@/components/StickyOrderSummary';
+import ValidatedInput from '@/components/ValidatedInput';
+import OrderSuccessModal from '@/components/OrderSuccessModal';
+import EmptyState from '@/components/EmptyState';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { FaCheck, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
+// Validation
+import {
+    createValidationRules,
+    validatePhoneIndonesia,
+    validatePostalCodeIndonesia,
+    validateEmail,
+} from '@/lib/validation';
+
+interface CheckoutFormData {
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    company: string; // Ke
+
+    camatan
+    adress: string; // Main address
+    apartment: string; // Detail address
+    city: string;
+    country: string;
+    postalCode: string;
+    orderNotice: string;
+}
+
+const CheckoutPage = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { data: session, status } = useAuth();
+    const { products, total, clearCart, calculateTotals } = useProductStore();
+
+    // Get step from URL or default to 1
+    const [currentStep, setCurrentStep] = useState<number>(
+        parseInt(searchParams.get('step') || '1')
+    );
+    const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [orderData, setOrderData] = useState({ orderNumber: '', customerName: '' });
+
+    // Auto-save form hook
+    const { formData, updateField, clearSaved, isSaving } = useAutoSaveForm<CheckoutFormData>(
+        {
+            name: '',
+            lastname: '',
+            phone: '',
+            email: session?.user?.email || '',
+            company: '',
+            adress: '',
+            apartment: '',
+            city: '',
+            country: 'Indonesia',
+            postalCode: '',
+            orderNotice: '',
+        },
+        {
+            key: 'eloco-checkout-form',
+            debounceMs: 2000,
+            enabled: true,
+        }
+    );
+
+    // Calculate totals on mount
+    useEffect(() => {
+        calculateTotals();
+    }, [calculateTotals]);
+
+    // Auth check
     useEffect(() => {
         if (status === 'unauthenticated') {
-            toast.error('Please login to checkout');
+            toast.error('Silakan login untuk checkout');
             router.push('/login?callbackUrl=/checkout');
         }
     }, [status, router]);
 
-    const [checkoutForm, setCheckoutForm] = useState({
-        name: '',
-        lastname: '',
-        phone: '',
-        email: '',
-        company: '',
-        adress: '',
-        apartment: '',
-        city: '',
-        country: '',
-        postalCode: '',
-        orderNotice: '',
-    });
+    // Redirect to cart if empty
+    useEffect(() => {
+        if (products.length === 0 && !showSuccessModal) {
+            router.push('/cart');
+        }
+    }, [products.length, showSuccessModal, router]);
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const { products, total, clearCart } = useProductStore();
-    // The router declaration is already above, so no need to redeclare here.
+    // Update URL when step changes
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('step', currentStep.toString());
+        window.history.replaceState({}, '', url.toString());
+    }, [currentStep]);
 
-    // Add validation functions that match server requirements
-    const validateForm = () => {
+    // Pre-fill email from session
+    useEffect(() => {
+        if (session?.user?.email && !formData.email) {
+            updateField('email', session.user.email);
+        }
+    }, [session, formData.email, updateField]);
+
+    // Transform products for StickyOrderSummary
+    const cartItems = useMemo(() => {
+        return products.map((product) => ({
+            id: product.id,
+            title: product.title,
+            mainImage: product.image?.startsWith('http')
+                ? product.image
+                : `/${product.image?.replace(/^\//, '') || 'product_placeholder.jpg'}`,
+            price: product.price,
+            quantity: product.amount,
+        }));
+    }, [products]);
+
+    // Validate Step 2 (Address form)
+    const validateStep2 = (): boolean => {
         const errors: string[] = [];
 
-        // Name validation
-        if (!checkoutForm.name.trim() || checkoutForm.name.trim().length < 2) {
-            errors.push('Nama Depan minimal 2 karakter');
+        if (!formData.name.trim() || formData.name.length < 2) {
+            errors.push('Nama Dep an minimal 2 karakter');
         }
-
-        // Lastname validation
-        if (
-            !checkoutForm.lastname.trim() ||
-            checkoutForm.lastname.trim().length < 2
-        ) {
+        if (!formData.lastname.trim() || formData.lastname.length < 2) {
             errors.push('Nama Belakang minimal 2 karakter');
         }
-
-        // Email validation
-        const emailRegex =
-            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-        if (
-            !checkoutForm.email.trim() ||
-            !emailRegex.test(checkoutForm.email.trim())
-        ) {
-            errors.push('Mohon masukkan alamat email yang valid');
+        if (!validateEmail(formData.email)) {
+            errors.push('Email tidak valid');
         }
-
-        // Phone validation (must be at least 10 digits)
-        const phoneDigits = checkoutForm.phone.replace(/[^0-9]/g, '');
-        if (!checkoutForm.phone.trim() || phoneDigits.length < 10) {
-            errors.push('Nomor HP/WA minimal 10 digit');
+        if (!validatePhoneIndonesia(formData.phone)) {
+            errors.push('Nomor HP tidak valid');
         }
-
-        // Company validation (Kecamatan)
-        if (
-            !checkoutForm.company.trim() ||
-            checkoutForm.company.trim().length < 3
-        ) {
+        if (!formData.company.trim() || formData.company.length < 3) {
             errors.push('Kecamatan minimal 3 karakter');
         }
-
-        // Address validation
-        if (!checkoutForm.adress.trim() || checkoutForm.adress.trim().length < 5) {
-            errors.push('Alamat Lengkap minimal 5 karakter');
+        if (!formData.adress.trim() || formData.adress.length < 10) {
+            errors.push('Alamat minimal 10 karakter');
+        }
+        if (!formData.city.trim() || formData.city.length < 3) {
+            errors.push('Kota minimal 3 karakter');
+        }
+        if (!validatePostalCodeIndonesia(formData.postalCode)) {
+            errors.push('Kode Pos harus 5 digit');
         }
 
-        // Apartment validation (updated to 1 character minimum)
-        if (
-            !checkoutForm.apartment.trim() ||
-            checkoutForm.apartment.trim().length < 1
-        ) {
-            errors.push('Apartment is required');
+        if (errors.length > 0) {
+            errors.forEach((error) => toast.error(error));
+            return false;
         }
-
-        // City validation
-        if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 3) {
-            errors.push('Kota/Kabupaten minimal 3 karakter');
-        }
-
-        // Country validation (Provinsi)
-        if (
-            !checkoutForm.country.trim() ||
-            checkoutForm.country.trim().length < 3
-        ) {
-            errors.push('Provinsi minimal 3 karakter');
-        }
-
-        // Postal code validation
-        if (
-            !checkoutForm.postalCode.trim() ||
-            checkoutForm.postalCode.trim().length < 3
-        ) {
-            errors.push('Kode Pos minimal 3 karakter');
-        }
-
-        return errors;
+        return true;
     };
 
-    const makePurchase = async () => {
-        // Client-side validation first
-        const validationErrors = validateForm();
-        if (validationErrors.length > 0) {
-            validationErrors.forEach((error) => {
-                toast.error(error);
-            });
-            return;
+    // Handle step navigation
+    const handleStepClick = (step: number) => {
+        if (step === 1) {
+            setCurrentStep(1);
+        } else if (step === 2) {
+            if (products.length > 0) {
+                setCurrentStep(2);
+            }
+        } else if (step === 3) {
+            if (completedSteps.includes(2) || validateStep2()) {
+                setCurrentStep(3);
+            }
         }
+    };
 
-        // Basic client-side checks for required fields (UX only)
-        const requiredFields = [
-            'name',
-            'lastname',
-            'phone',
-            'email',
-            'company',
-            'adress',
-            'apartment',
-            'city',
-            'country',
-            'postalCode',
-        ];
-
-        const missingFields = requiredFields.filter(
-            (field) => !checkoutForm[field as keyof typeof checkoutForm]?.trim(),
-        );
-
-        if (missingFields.length > 0) {
-            toast.error('Mohon lengkapi semua field yang wajib diisi');
-            return;
+    const handleNextStep = () => {
+        if (currentStep === 1) {
+            if (products.length === 0) {
+                toast.error('Keranjang kosong');
+                return;
+            }
+            setCompletedSteps((prev) => [...new Set([...prev, 1])]);
+            setCurrentStep(2);
+        } else if (currentStep === 2) {
+            if (validateStep2()) {
+                setCompletedSteps((prev) => [...new Set([...prev, 2])]);
+                setCurrentStep(3);
+            }
         }
+    };
+
+    const handlePrevStep = () => {
+        if (currentStep > 1) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    // Handle order submission
+    const handleSubmitOrder = async () => {
+        if (!validateStep2()) return;
 
         if (products.length === 0) {
-            toast.error('Your cart is empty');
-            return;
-        }
-
-        if (total <= 0) {
-            toast.error('Invalid order total');
+            toast.error('Keranjang kosong');
             return;
         }
 
         setIsSubmitting(true);
 
         try {
-            console.log('🚀 Starting order creation...');
-
-            // Get user ID if logged in
+            // Get user ID
             let userId = null;
             if (session?.user?.email) {
                 try {
-                    console.log(
-                        '🔍 Getting user ID for logged-in user:',
-                        session.user.email,
-                    );
                     const userResponse = await apiClient.get(
-                        `/api/users/email/${session.user.email}`,
+                        `/api/users/email/${session.user.email}`
                     );
                     if (userResponse.ok) {
                         const userData = await userResponse.json();
                         userId = userData.id;
-                        console.log('✅ Found user ID:', userId);
-                    } else {
-                        console.log(
-                            '❌ Could not find user with email:',
-                            session.user.email,
-                        );
                     }
-                } catch (userError) {
-                    console.log('⚠️  Error getting user ID:', userError);
+                } catch (error) {
+                    console.error('Error fetching user ID:', error);
                 }
             }
 
-            // Prepare the order data
-            const orderData = {
-                name: checkoutForm.name.trim(),
-                lastname: checkoutForm.lastname.trim(),
-                phone: checkoutForm.phone.trim(),
-                email: checkoutForm.email.trim().toLowerCase(),
-                company: checkoutForm.company.trim(),
-                adress: checkoutForm.adress.trim(),
-                apartment: checkoutForm.apartment.trim(),
-                postalCode: checkoutForm.postalCode.trim(),
+            // Prepare order data
+            const orderPayload = {
+                name: formData.name.trim(),
+                lastname: formData.lastname.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim(),
+                company: formData.company.trim(),
+                adress: formData.adress.trim(),
+                apartment: formData.apartment.trim(),
+                city: formData.city.trim(),
+                country: formData.country || 'Indonesia',
+                postalCode: formData.postalCode.trim(),
                 status: 'pending',
-                total: total,
-                city: checkoutForm.city.trim(),
-                country: checkoutForm.country.trim(),
-                orderNotice: checkoutForm.orderNotice.trim(),
-                userId: userId, // Add user ID for notifications
+                total: Math.round(total),
+                orderNotice: formData.orderNotice.trim(),
+                userId: userId,
             };
 
-            console.log('📋 Order data being sent:', orderData);
+            // Create order
+            const orderResponse = await apiClient.post('/api/orders', orderPayload);
 
-            // Send order data to server for validation and processing
-            const response = await apiClient.post('/api/orders', orderData);
-
-            console.log('📡 API Response received:');
-            console.log('  Status:', response.status);
-            console.log('  Status Text:', response.statusText);
-            console.log('  Response OK:', response.ok);
-
-            // Check if response is ok before parsing
-            if (!response.ok) {
-                console.error(
-                    '❌ Response not OK:',
-                    response.status,
-                    response.statusText,
-                );
-
-                // --- START DEBUGGING BLOCK ---
-                // Clone the response to be able to read it twice
-                const clonedResponse = response.clone();
-                try {
-                    const rawErrorText = await clonedResponse.text();
-                    console.log('📄 RAW SERVER ERROR RESPONSE:', rawErrorText);
-                } catch (e) {
-                    console.error('Could not get raw text from error response.');
-                }
-                // --- END DEBUGGING BLOCK ---
-
-                let errorData = {
-                    error: 'Order creation failed',
-                    details: 'Please try again.',
-                };
-                try {
-                    // Try to get detailed error information from the server
-                    errorData = await response.json();
-                } catch (jsonError) {
-                    console.error('Could not parse error as JSON:', jsonError);
-                }
-
-                console.error('Parsed error data:', errorData);
-
-                // Handle different error types
-                if (response.status === 409) {
-                    toast.error(errorData.details || errorData.error);
-                } else if (errorData.details && Array.isArray(errorData.details)) {
-                    errorData.details.forEach((detail: any) => {
-                        toast.error(`${detail.field}: ${detail.message}`);
-                    });
-                } else {
-                    toast.error(errorData.error || 'An unexpected error occurred.');
-                }
-                return; // Stop execution
+            if (!orderResponse.ok) {
+                const errorData = await orderResponse.json();
+                throw new Error(errorData.details || 'Gagal membuat pesanan');
             }
 
-            const data = await response.json();
-            console.log('✅ Parsed response data:', data);
+            const createdOrder = await orderResponse.json();
+            const orderId = createdOrder.id || createdOrder.orderNumber;
 
-            const orderId: string = data.id;
-            console.log('🆔 Extracted order ID:', orderId);
-
-            if (!orderId) {
-                console.error('❌ Order ID is missing or falsy!');
-                console.error('Full response data:', JSON.stringify(data, null, 2));
-                throw new Error('Order ID not received from server');
-            }
-
-            console.log(
-                '✅ Order ID validation passed, proceeding with product addition...',
-            );
-
-            // Add products to order
-            for (let i = 0; i < products.length; i++) {
-                console.log(`🛍️ Adding product ${i + 1}/${products.length}:`, {
-                    orderId,
-                    productId: products[i].id,
-                    quantity: products[i].amount,
+            // Create order products
+            for (const product of products) {
+                await apiClient.post('/api/order-product', {
+                    customerOrderId: orderId,
+                    productId: product.id,
+                    quantity: product.amount,
                 });
-
-                await addOrderProduct(orderId, products[i].id, products[i].amount);
-                console.log(`✅ Product ${i + 1} added successfully`);
             }
 
-            console.log(' All products added successfully!');
-
-            setIsSuccess(true); // Mark as success to prevent empty cart error
-
-            // Clear form and cart
-            setCheckoutForm({
-                name: '',
-                lastname: '',
-                phone: '',
-                email: '',
-                company: '',
-                adress: '',
-                apartment: '',
-                city: '',
-                country: '',
-                postalCode: '',
-                orderNotice: '',
+            // Success!
+            setOrderData({
+                orderNumber: orderId,
+                customerName: `${formData.name} ${formData.lastname}`,
             });
+            setShowSuccessModal(true);
             clearCart();
+            clearSaved();
 
-            // Refresh notification count if user is logged in
-            try {
-                // This will trigger a refresh of notifications in the background
-                window.dispatchEvent(new CustomEvent('orderCompleted'));
-            } catch (error) {
-                console.log('Note: Could not trigger notification refresh');
-            }
-
-            toast.success(
-                'Pesanan berhasil dibuat! Kami akan menghubungi Anda untuk pembayaran.',
-            );
+            // Redirect after delay
             setTimeout(() => {
                 router.push('/');
-            }, 1000);
+            }, 5000);
         } catch (error: any) {
-            console.error('💥 Error in makePurchase:', error);
-
-            // Handle server validation errors
-            if (error.response?.status === 400) {
-                console.log(' Handling 400 error...');
-                try {
-                    const errorData = await error.response.json();
-                    console.log('Error data:', errorData);
-                    if (errorData.details && Array.isArray(errorData.details)) {
-                        // Show specific validation errors
-                        errorData.details.forEach((detail: any) => {
-                            toast.error(`${detail.field}: ${detail.message}`);
-                        });
-                    } else {
-                        toast.error(errorData.error || 'Validation failed');
-                    }
-                } catch (parseError) {
-                    console.error('Failed to parse error response:', parseError);
-                    toast.error('Validation failed');
-                }
-            } else if (error.response?.status === 409) {
-                toast.error(
-                    'Duplicate order detected. Please wait before creating another order.',
-                );
-            } else {
-                console.log('🔍 Handling generic error...');
-                toast.error('Failed to create order. Please try again.');
-            }
+            console.error('Order submission error:', error);
+            toast.error(error.message || 'Gagal membuat pesanan');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const addOrderProduct = async (
-        orderId: string,
-        productId: string,
-        productQuantity: number,
-    ) => {
-        try {
-            console.log('️ Adding product to order:', {
-                customerOrderId: orderId,
-                productId,
-                quantity: productQuantity,
-            });
-
-            const response = await apiClient.post('/api/order-product', {
-                customerOrderId: orderId,
-                productId: productId,
-                quantity: productQuantity,
-            });
-
-            console.log('📡 Product order response:', response);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Product order failed:', response.status, errorText);
-                throw new Error(`Product order failed: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ Product order successful:', data);
-        } catch (error) {
-            console.error('💥 Error creating product order:', error);
-            throw error;
-        }
-    };
-
-    useEffect(() => {
-        if (products.length === 0 && !isSuccess) {
-            toast.error("You don't have items in your cart");
-            router.push('/cart');
-        }
-    }, [products.length, router, isSuccess]);
+    // Show empty state if no products
+    if (products.length === 0 && !showSuccessModal) {
+        return null; // Will redirect to cart
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 relative overflow-hidden">
-            {/* Animated Background Elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-300 dark:bg-orange-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-                <div
-                    className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-300 dark:bg-amber-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
-                    style={{ animationDelay: '1s' }}
-                ></div>
-                <div
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-300 dark:bg-yellow-700 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"
-                    style={{ animationDelay: '2s' }}
-                ></div>
-            </div>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* Checkout Stepper */}
+            <CheckoutStepper
+                currentStep={currentStep}
+                onStepClick={handleStepClick}
+                completedSteps={completedSteps}
+            />
 
-            <SectionTitle title="Checkout" path="Home | Cart | Checkout" />
-
-            <main className="relative z-10 mx-auto max-w-screen-2xl grid grid-cols-1 lg:grid-cols-2 gap-x-16 lg:px-8 xl:gap-x-48 py-12 sm:py-16">
-                <h1 className="sr-only">Informasi Pemesanan</h1>
-
-                {/* Order Summary */}
-                <section
-                    aria-labelledby="summary-heading"
-                    className="lg:col-start-2 lg:row-start-1 px-4 sm:px-6 lg:px-0 pb-10 lg:pb-16"
-                >
-                    <div className="mx-auto max-w-lg lg:max-w-none backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 px-6 py-8 shadow-2xl sm:rounded-3xl sm:px-12 border border-white/20 dark:border-gray-700/20 relative overflow-hidden">
-                        {/* Subtle gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 dark:from-gray-700/50 to-transparent pointer-events-none rounded-3xl"></div>
-                        <div className="relative z-10">
-                            <h2
-                                id="summary-heading"
-                                className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
+            {/* Main Content */}
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+                    {/* Left Column - Step Content */}
+                    <div className="lg:col-span-8">
+                        {/* Step 1: Review Keranjang */}
+                        {currentStep === 1 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
                             >
-                                Ringkasan Pesanan
-                            </h2>
+                                <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        Review Keranjang
+                                    </h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        Periksa kembali pesanan Anda
+                                    </p>
+                                </div>
 
-                            <ul
-                                role="list"
-                                className="divide-y divide-gray-200 dark:divide-gray-700 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                {products.map((product) => (
-                                    <li
-                                        key={product?.id}
-                                        className="flex items-start space-x-4 py-4"
+                                <div className="p-6 space-y-4">
+                                    {products.map((product) => (
+                                        <div
+                                            key={product.id}
+                                            className="flex gap-4 items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl"
+                                        >
+                                            <div className="w-20 h-20 bg-white dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                                <Image
+                                                    src={
+                                                        product.image?.startsWith('http')
+                                                            ? product.image
+                                                            : `/${product.image?.replace(/^\//, '') || 'product_placeholder.jpg'}`
+                                                    }
+                                                    alt={product.title}
+                                                    width={80}
+                                                    height={80}
+                                                    className="w-full h-full object-contain p-2"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-gray-900 dark:text-white">
+                                                    {product.title}
+                                                </h3>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    Qty: {product.amount} × {formatPrice(product.price)}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold text-grilli-gold">
+                                                    {formatPrice(product.price * product.amount)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="p-6 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
+                                    <button
+                                        onClick={handleNextStep}
+                                        className="w-full py-4 px-6 bg-gradient-to-r from-grilli-gold to-orange-500 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
                                     >
-                                        <Image
-                                            src={
-                                                product?.image
-                                                    ? product.image.startsWith('http')
-                                                        ? product.image
-                                                        : `/${product.image.replace(/^\//, '')}`
-                                                    : '/product_placeholder.jpg'
-                                            }
-                                            alt={product?.title}
-                                            width={80}
-                                            height={80}
-                                            className="h-20 w-20 flex-none rounded-md object-cover object-center border border-gray-200 dark:border-gray-600"
+                                        Lanjut ke Alamat Pengiriman
+                                        <FaArrowRight />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Step 2: Alamat Pengiriman */}
+                        {currentStep === 2 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+                            >
+                                <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        Alamat Pengiriman
+                                    </h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        Masukkan data pengiriman Anda
+                                        {isSaving && (
+                                            <span className="ml-2 text-grilli-gold">
+                                                • Data tersimpan otomatis
+                                            </span>
+                                        )}
+                                    </p>
+                                </div>
+
+                                <div className="p-6 space-y-6">
+                                    {/* Name Fields */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <ValidatedInput
+                                            label="Nama Depan"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={(value) => updateField('name', value)}
+                                            required
+                                            validationRules={[createValidationRules.minLength(2, 'Nama')]}
                                         />
-                                        <div className="flex-auto space-y-1">
-                                            <h3 className="text-base font-semibold">
-                                                {product?.title}
-                                            </h3>
+                                        <ValidatedInput
+                                            label="Nama Belakang"
+                                            name="lastname"
+                                            value={formData.lastname}
+                                            onChange={(value) => updateField('lastname', value)}
+                                            required
+                                            validationRules={[createValidationRules.minLength(2, 'Nama Belakang')]}
+                                        />
+                                    </div>
+
+                                    {/* Contact Fields */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <ValidatedInput
+                                            label="Email"
+                                            name="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(value) => updateField('email', value)}
+                                            required
+                                            validationRules={[createValidationRules.email()]}
+                                        />
+                                        <ValidatedInput
+                                            label="Nomor HP / WhatsApp"
+                                            name="phone"
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={(value) => updateField('phone', value)}
+                                            required
+                                            validationRules={[createValidationRules.phoneIndonesia()]}
+                                            hint="Contoh: 08123456789"
+                                        />
+                                    </div>
+
+                                    {/* Address Fields */}
+                                    <ValidatedInput
+                                        label="Alamat Lengkap"
+                                        name="adress"
+                                        type="textarea"
+                                        value={formData.adress}
+                                        onChange={(value) => updateField('adress', value)}
+                                        required
+                                        validationRules={[createValidationRules.minLength(10, 'Alamat')]}
+                                        rows={3}
+                                        hint="Jalan, nomor rumah, RT/RW"
+                                    />
+
+                                    <ValidatedInput
+                                        label="Detail Alamat"
+                                        name="apartment"
+                                        value={formData.apartment}
+                                        onChange={(value) => updateField('apartment', value)}
+                                        hint="Gedung, lantai, unit (opsional)"
+                                    />
+
+                                    {/* Location Fields */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <ValidatedInput
+                                            label="Kecamatan"
+                                            name="company"
+                                            value={formData.company}
+                                            onChange={(value) => updateField('company', value)}
+                                            required
+                                            validationRules={[createValidationRules.minLength(3, 'Kecamatan')]}
+                                        />
+                                        <ValidatedInput
+                                            label="Kota/Kabupaten"
+                                            name="city"
+                                            value={formData.city}
+                                            onChange={(value) => updateField('city', value)}
+                                            required
+                                            validationRules={[createValidationRules.minLength(3, 'Kota')]}
+                                        />
+                                        <ValidatedInput
+                                            label="Kode Pos"
+                                            name="postalCode"
+                                            value={formData.postalCode}
+                                            onChange={(value) => updateField('postalCode', value)}
+                                            required
+                                            validationRules={[createValidationRules.postalCodeIndonesia()]}
+                                            hint="5 digit"
+                                        />
+                                    </div>
+
+                                    {/* Country (read-only) */}
+                                    <ValidatedInput
+                                        label="Negara"
+                                        name="country"
+                                        value="Indonesia"
+                                        onChange={() => { }}
+                                        disabled
+                                    />
+
+                                    {/* Order Notice */}
+                                    <ValidatedInput
+                                        label="Catatan Pesanan"
+                                        name="orderNotice"
+                                        type="textarea"
+                                        value={formData.orderNotice}
+                                        onChange={(value) => updateField('orderNotice', value)}
+                                        rows={3}
+                                        hint="Informasi tambahan untuk pengiriman (opsional)"
+                                    />
+                                </div>
+
+                                {/* Navigation Buttons */}
+                                <div className="p-6 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700 flex gap-4">
+                                    <button
+                                        onClick={handlePrevStep}
+                                        className="flex-1 py-4 px-6 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <FaArrowLeft />
+                                        Kembali
+                                    </button>
+                                    <button
+                                        onClick={handleNextStep}
+                                        className="flex-1 py-4 px-6 bg-gradient-to-r from-grilli-gold to-orange-500 hover:from-orange-600 hover:to-orange-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                                    >
+                                        Lanjut ke Review
+                                        <FaArrowRight />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Step 3: Review & Konfirmasi */}
+                        {currentStep === 3 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+                            >
+                                <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        Review & Konfirmasi
+                                    </h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        Periksa kembali detail pesanan Anda
+                                    </p>
+                                </div>
+
+                                <div className="p-6 space-y-6">
+                                    {/* Order Summary */}
+                                    <div>
+                                        <h3 className="font-bold text-gray-900 dark:text-white mb-4">
+                                            Pesanan Anda ({products.length} Item)
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {products.map((product) => (
+                                                <div
+                                                    key={product.id}
+                                                    className="flex justify-between text-sm"
+                                                >
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {product.title} ({product.amount}x)
+                                                    </span>
+                                                    <span className="font-medium text-gray-900 dark:text-white">
+                                                        {formatPrice(product.price * product.amount)}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Shipping Address */}
+                                    <div>
+                                        <h3 className="font-bold text-gray-900 dark:text-white mb-4">
+                                            Alamat Pengiriman
+                                        </h3>
+                                        <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl space-y-2 text-sm">
+                                            <p className="font-bold text-gray-900 dark:text-white">
+                                                {formData.name} {formData.lastname}
+                                            </p>
                                             <p className="text-gray-600 dark:text-gray-400">
-                                                Jumlah: {product?.amount}
+                                                {formData.phone}
+                                            </p>
+                                            <p className="text-gray-600 dark:text-gray-400">
+                                                {formData.email}
+                                            </p>
+                                            <p className="text-gray-600 dark:text-gray-400">
+                                                {formData.adress}
+                                                {formData.apartment && `, ${formData.apartment}`}
+                                            </p>
+                                            <p className="text-gray-600 dark:text-gray-400">
+                                                {formData.company}, {formData.city}, {formData.postalCode}
+                                            </p>
+                                            <p className="text-gray-600 dark:text-gray-400">
+                                                {formData.country}
                                             </p>
                                         </div>
-                                        <p className="flex-none text-base font-bold">{formatPrice(product?.price)}</p>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <dl className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6 text-sm font-medium text-gray-900 dark:text-white mt-6">
-                                <div className="flex items-center justify-between">
-                                    <dt className="text-gray-600 dark:text-gray-400">Subtotal</dt>
-                                    <dd>{formatPrice(total)}</dd>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <dt className="text-gray-600 dark:text-gray-400">Pajak</dt>
-                                    <dd>{formatPrice(0)}</dd>
-                                </div>
-                                <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4 text-base font-bold">
-                                    <dt>Total Pesanan</dt>
-                                    <dd>{formatPrice(total === 0 ? 0 : Math.round(total))}</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Checkout Form */}
-                <form className="lg:col-start-1 lg:row-start-1 px-4 sm:px-6 lg:px-0 pt-10 sm:pt-16 lg:pt-0">
-                    <div className="mx-auto max-w-lg lg:max-w-none backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 px-6 py-8 shadow-2xl sm:rounded-3xl sm:px-12 border border-white/20 dark:border-gray-700/20 relative overflow-hidden">
-                        {/* Subtle gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 dark:from-gray-700/50 to-transparent pointer-events-none rounded-3xl"></div>
-                        <div className="relative z-10">
-                            {/* Contact Information */}
-                            <section aria-labelledby="contact-info-heading">
-                                <h2
-                                    id="contact-info-heading"
-                                    className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
-                                >
-                                    Penerima
-                                </h2>
-
-                                <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
-                                    <div>
-                                        <label
-                                            htmlFor="name-input"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Nama Depan *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                value={checkoutForm.name}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        name: e.target.value,
-                                                    })
-                                                }
-                                                type="text"
-                                                id="name-input"
-                                                name="name-input"
-                                                autoComplete="given-name"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                            />
-                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label
-                                            htmlFor="lastname-input"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Nama Belakang *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                value={checkoutForm.lastname}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        lastname: e.target.value,
-                                                    })
-                                                }
-                                                type="text"
-                                                id="lastname-input"
-                                                name="lastname-input"
-                                                autoComplete="family-name"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="phone-input"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Nomor WhatsApp / HP *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                value={checkoutForm.phone}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        phone: e.target.value,
-                                                    })
-                                                }
-                                                type="tel"
-                                                id="phone-input"
-                                                name="phone-input"
-                                                autoComplete="tel"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="email-address"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Alamat Email *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                value={checkoutForm.email}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        email: e.target.value,
-                                                    })
-                                                }
-                                                type="email"
-                                                id="email-address"
-                                                name="email-address"
-                                                autoComplete="email"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* Payment Notice */}
-                            <section className="mt-10">
-                                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-4">
-                                    <div className="flex">
-                                        <div className="flex-shrink-0">
-                                            <svg
-                                                className="h-5 w-5 text-orange-400 dark:text-orange-300"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <div className="ml-3">
-                                            <h3 className="text-sm font-medium text-orange-800 dark:text-orange-300">
-                                                Informasi Pembayaran
-                                            </h3>
-                                            <div className="mt-2 text-sm text-orange-700 dark:text-orange-400">
-                                                <p>
-                                                    Pembayaran akan diproses setelah konfirmasi pesanan.
-                                                    Kami akan menghubungi Anda untuk detail pembayaran.
+                                    {/* Payment Info */}
+                                    <div className="p-6 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <FaCheck className="text-white" size={24} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="font-bold text-gray-900 dark:text-white mb-2">
+                                                    Pembayaran via WhatsApp
+                                                </h4>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                                    Setelah Anda submit pesanan, tim kami akan{' '}
+                                                    <strong>menghubungi Anda via WhatsApp</strong> untuk
+                                                    konfirmasi pembayaran dan detail pengiriman.
+                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                                                    💳 Metode: <strong>Transfer Bank</strong> (BCA, Mandiri, BNI)
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </section>
 
-                            {/* Shipping Address */}
-                            <section aria-labelledby="shipping-heading" className="mt-10">
-                                <h2
-                                    id="shipping-heading"
-                                    className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
-                                >
-                                    Lokasi Pengiriman & Alamat
-                                </h2>
-
-                                <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="company"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Kecamatan *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                id="company"
-                                                name="company"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                value={checkoutForm.company}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        company: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="address"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Alamat Lengkap *
-                                        </label>
-                                        <div className="mt-1">
-                                            <textarea
-                                                id="address"
-                                                name="address"
-                                                autoComplete="street-address"
-                                                required
-                                                disabled={isSubmitting}
-                                                rows={3}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                placeholder="Contoh: Jl. Merdeka No. 10, RT 01/RW 02 (Samping Toko Berkah)"
-                                                value={checkoutForm.adress}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        adress: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="apartment"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Detail Lainnya / Patokan Tambahan *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                id="apartment"
-                                                name="apartment"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                value={checkoutForm.apartment}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        apartment: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label
-                                            htmlFor="city"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Kota / Kabupaten *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                id="city"
-                                                name="city"
-                                                autoComplete="address-level2"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                value={checkoutForm.city}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        city: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label
-                                            htmlFor="region"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Provinsi *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                id="region"
-                                                name="region"
-                                                autoComplete="address-level1"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                value={checkoutForm.country}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        country: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label
-                                            htmlFor="postal-code"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Kode Pos *
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                id="postal-code"
-                                                name="postal-code"
-                                                autoComplete="postal-code"
-                                                required
-                                                disabled={isSubmitting}
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                value={checkoutForm.postalCode}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        postalCode: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-2">
-                                        <label
-                                            htmlFor="order-notice"
-                                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Order Notice
-                                        </label>
-                                        <div className="mt-1">
-                                            <textarea
-                                                className="block w-full rounded-md border-0 py-2.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-700/80 focus:bg-white/90 dark:focus:bg-gray-700/90 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                id="order-notice"
-                                                name="order-notice"
-                                                autoComplete="order-notice"
-                                                disabled={isSubmitting}
-                                                value={checkoutForm.orderNotice}
-                                                onChange={(e) =>
-                                                    setCheckoutForm({
-                                                        ...checkoutForm,
-                                                        orderNotice: e.target.value,
-                                                    })
-                                                }
-                                                rows={3}
-                                            ></textarea>
-                                        </div>
-                                    </div>
+                                {/* Submit Button */}
+                                <div className="p-6 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700 flex gap-4">
+                                    <button
+                                        onClick={handlePrevStep}
+                                        disabled={isSubmitting}
+                                        className="flex-1 py-4 px-6 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <FaArrowLeft />
+                                        Kembali
+                                    </button>
+                                    <button
+                                        onClick={handleSubmitOrder}
+                                        disabled={isSubmitting}
+                                        className="flex-1 py-4 px-6 bg-gradient-to-r from-grilli-gold to-orange-500 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                                Memproses...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FaCheck />
+                                                Konfirmasi Pesanan
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-                            </section>
-
-                            <div className="mt-10 pt-6">
-                                <button
-                                    type="button"
-                                    onClick={makePurchase}
-                                    disabled={isSubmitting}
-                                    className="w-full rounded-md border border-transparent bg-orange-600 px-20 py-3 text-lg font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-                                >
-                                    {isSubmitting ? 'Memproses Pesanan...' : 'Buat Pesanan'}
-                                </button>
-                            </div>
-                        </div>
+                            </motion.div>
+                        )}
                     </div>
-                </form>
-            </main>
+
+                    {/* Right Column - Sticky Order Summary */}
+                    <div className="lg:col-span-4 mt-8 lg:mt-0">
+                        <StickyOrderSummary
+                            items={cartItems}
+                            subtotal={total}
+                            shipping={0}
+                            tax={0}
+                            total={total}
+                            showWhatsApp={true}
+                            whatsAppNumber="6281234567890"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Order Success Modal */}
+            {showSuccessModal && (
+                <OrderSuccessModal
+                    isOpen={showSuccessModal}
+                    onClose={() => setShowSuccessModal(false)}
+                    orderNumber={orderData.orderNumber}
+                    customerName={orderData.customerName}
+                />
+            )}
         </div>
     );
 };

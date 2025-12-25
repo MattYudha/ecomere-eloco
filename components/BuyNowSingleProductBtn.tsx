@@ -10,10 +10,11 @@
 
 'use client';
 import { useProductStore } from '@/app/_zustand/store';
-import React from 'react';
-import toast from 'react-hot-toast';
+import React, { useState } from 'react';
+import { showCartToast, showInfoToast } from '@/lib/toast-config';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import LoadingButton from './LoadingButton';
 
 const BuyNowSingleProductBtn = ({
   product,
@@ -22,30 +23,45 @@ const BuyNowSingleProductBtn = ({
   const router = useRouter();
   const { data: session } = useAuth();
   const { buyNow, calculateTotals } = useProductStore();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!session) {
       router.push('/login');
       return;
     }
-    buyNow({
-      id: product?.id.toString(),
-      title: product?.title,
-      price: product?.price,
-      image: product?.mainImage,
-      amount: quantityCount,
-    });
-    calculateTotals();
-    toast.success('Proceeding to checkout');
-    router.push('/checkout');
+
+    setIsProcessing(true);
+
+    try {
+      buyNow({
+        id: product?.id.toString(),
+        title: product?.title,
+        price: product?.price,
+        image: product?.mainImage,
+        amount: quantityCount,
+      });
+      calculateTotals();
+
+      // Simulate processing
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      showInfoToast('Proceeding to checkout...');
+      router.push('/checkout');
+    } catch (error) {
+      setIsProcessing(false);
+    }
   };
   return (
-    <button
+    <LoadingButton
+      loading={isProcessing}
       onClick={handleBuyNow}
-      className="btn w-[200px] text-lg border border-grilli-gold hover:border-grilli-gold border-1 font-normal bg-grilli-gold text-white hover:bg-white hover:scale-110 hover:text-grilli-gold transition-all uppercase ease-in max-[500px]:w-full"
+      variant="primary"
+      size="lg"
+      className="w-[200px] uppercase max-[500px]:w-full"
     >
       Buy Now
-    </button>
+    </LoadingButton>
   );
 };
 

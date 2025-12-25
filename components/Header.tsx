@@ -15,7 +15,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { CiShoppingBasket, CiUser } from 'react-icons/ci';
 import { IoIosLogOut } from 'react-icons/io';
 import { LuLayoutDashboard } from 'react-icons/lu';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Store } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 
 import SearchInput from './SearchInput';
@@ -162,6 +162,15 @@ const Header = () => {
 
             <NotificationBell />
 
+            {/* Shop Link */}
+            <Link
+              href="/shop"
+              className="hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-2 rounded-full hover:bg-orange-50 dark:hover:bg-slate-800"
+              title="Shop All Products"
+            >
+              <Store size={20} />
+            </Link>
+
             {/* User Dropdown */}
             {session?.user ? (
               <div className="relative hidden md:block" ref={dropdownRef}>
@@ -196,6 +205,14 @@ const Header = () => {
                           {session.user.email}
                         </p>
                       </div>
+
+                      <Link
+                        href="/my-orders"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-[#cb6112] transition-all"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <CiShoppingBasket size={18} /> Pesanan Saya
+                      </Link>
 
                       {session?.user?.role === 'admin' && (
                         <Link
@@ -354,6 +371,17 @@ const Header = () => {
                           </span>
                         )}
                       </Link>
+
+                      {session?.user && (
+                        <Link
+                          href="/my-orders"
+                          onClick={closeMobileMenu}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                        >
+                          <CiShoppingBasket size={22} />
+                          <span>Pesanan Saya</span>
+                        </Link>
+                      )}
 
                       {session?.user?.role === 'admin' && (
                         <Link

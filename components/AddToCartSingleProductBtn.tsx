@@ -9,11 +9,12 @@
 // *********************
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useProductStore } from '@/app/_zustand/store';
-import toast from 'react-hot-toast';
+import { showCartToast, showErrorToast } from '@/lib/toast-config';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import LoadingButton from './LoadingButton';
 
 const AddToCartSingleProductBtn = ({
   product,
@@ -22,29 +23,47 @@ const AddToCartSingleProductBtn = ({
   const { addToCart, calculateTotals } = useProductStore();
   const { data: session } = useAuth();
   const router = useRouter();
+  const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!session) {
       router.push('/login');
       return;
     }
-    addToCart({
-      id: product?.id.toString(),
-      title: product?.title,
-      price: product?.price,
-      image: product?.mainImage,
-      amount: quantityCount,
-    });
-    calculateTotals();
-    toast.success('Product added to the cart');
+
+    setIsAdding(true);
+
+    try {
+      // Optimistic update
+      addToCart({
+        id: product?.id.toString(),
+        title: product?.title,
+        price: product?.price,
+        image: product?.mainImage,
+        amount: quantityCount,
+      });
+      calculateTotals();
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      showCartToast('Product added to cart!', 'add');
+    } catch (error) {
+      showErrorToast('Failed to add to cart');
+    } finally {
+      setIsAdding(false);
+    }
   };
   return (
-    <button
+    <LoadingButton
+      loading={isAdding}
       onClick={handleAddToCart}
-      className="btn w-[200px] text-lg border border-gray-300 border-1 font-normal bg-white text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:scale-110 transition-all uppercase ease-in max-[500px]:w-full"
+      variant="ghost"
+      size="lg"
+      className="w-[200px] text-lg border-gray-300 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500 uppercase max-[500px]:w-full"
     >
       Add to cart
-    </button>
+    </LoadingButton>
   );
 };
 

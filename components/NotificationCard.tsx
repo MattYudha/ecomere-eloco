@@ -77,7 +77,7 @@ interface NotificationCardProps {
 }
 
 import ReviewOrderModal from './ReviewOrderModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
@@ -100,10 +100,40 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
   // Local state for review status (initially checking metadata)
   // Ensure we check for true explicitly
   const [hasReviewed, setHasReviewed] = useState(metadata.isReviewed === true);
+  const [isCheckingReview, setIsCheckingReview] = useState(true);
 
   // Title Override logic based on STATUS
   const isReviewsAllowed = status === 'delivered' || status === 'completed' || status === 'pesanan telah terkirim';
   const displayTitle = isReviewsAllowed ? 'Pesanan Telah Terkirim' : notification.title;
+
+  // Check review status on mount (persistent across refreshes)
+  useEffect(() => {
+    const checkReviewStatus = async () => {
+      if (!orderId || !isReviewsAllowed) {
+        setIsCheckingReview(false);
+        return;
+      }
+
+      try {
+        // Fetch order details to check if review exists
+        const response = await apiClient.get(`/api/orders/${orderId}`);
+        if (response.ok) {
+          const orderData = await response.json();
+          // Check if any product in this order has been reviewed
+          const hasAnyReview = orderData.products?.some((p: any) => p.hasReview || p.isReviewed);
+          setHasReviewed(hasAnyReview || false);
+        }
+      } catch (error) {
+        console.error('Failed to check review status:', error);
+        // Fallback to metadata value
+        setHasReviewed(metadata.isReviewed === true);
+      } finally {
+        setIsCheckingReview(false);
+      }
+    };
+
+    checkReviewStatus();
+  }, [orderId, isReviewsAllowed, metadata.isReviewed]);
 
   const handleReviewSuccess = async () => {
     setHasReviewed(true);
@@ -243,7 +273,12 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
                     Delivered
                   </div>
 
-                  {hasReviewed ? (
+                  {isCheckingReview ? (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-600">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-400"></div>
+                      Checking...
+                    </div>
+                  ) : hasReviewed ? (
                     <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-bold rounded-lg cursor-not-allowed border border-gray-200 dark:border-gray-600">
                       <FaCheckCircle size={12} />
                       Ulasan Terkirim

@@ -22,6 +22,7 @@ import {
     ArrowLeft,
     Info,
 } from 'lucide-react';
+import OrderStatusCard from '@/components/OrderStatusCard';
 
 interface OrderProduct {
     id: string;
@@ -50,6 +51,7 @@ const AdminSingleOrder = () => {
         apartment: '',
         company: '',
         dateTime: '',
+        updatedAt: '',
         email: '',
         lastname: '',
         name: '',
@@ -273,6 +275,16 @@ const AdminSingleOrder = () => {
                             {isUpdating ? 'Updating...' : 'Update Order'}
                         </button>
                     </div>
+                </div>
+
+                {/* Order Status Visualization */}
+                <div className="mb-8">
+                    <OrderStatusCard
+                        status={order.status as any}
+                        createdAt={new Date(order.dateTime || Date.now())}
+                        updatedAt={new Date(order.updatedAt || Date.now())}
+                        timelineOrientation="horizontal"
+                    />
                 </div>
 
                 {/* Main Grid */}

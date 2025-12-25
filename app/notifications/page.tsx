@@ -15,6 +15,7 @@ import {
   FaSpinner,
   FaBell,
 } from 'react-icons/fa';
+import NotificationSkeleton from '@/components/NotificationSkeleton';
 
 const NotificationsPage = () => {
   const { data: session, status } = useAuth();
@@ -130,8 +131,14 @@ const NotificationsPage = () => {
   // Loading state
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <NotificationSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -289,9 +296,10 @@ const NotificationsPage = () => {
         {/* Notifications List */}
         <div className="space-y-4">
           {loading && notifications.length === 0 ? (
-            <div className="text-center py-12">
-              <FaSpinner className="animate-spin text-3xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Loading notifications...</p>
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <NotificationSkeleton key={i} />
+              ))}
             </div>
           ) : error ? (
             <div className="text-center py-12">

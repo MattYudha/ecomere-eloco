@@ -2,6 +2,7 @@
 
 import { ProductItem, SectionTitle } from '@/components';
 import ProductSkeleton from '@/components/ProductSkeleton';
+import EmptyState from '@/components/EmptyState';
 import { FaSearch } from 'react-icons/fa';
 import apiClient from '@/lib/api';
 import { sanitize } from '@/lib/sanitize';
@@ -78,14 +79,14 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
               <ProductItem key={product.id} product={product} />
             ))
           ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-10">
-              <FaSearch className="text-gray-400 dark:text-gray-600 text-6xl mb-4" />
-              <h3 className="text-4xl font-bold text-grilli-gold dark:text-grilli-gold mb-2 max-sm:text-3xl">
-                No Results Found
-              </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-300 max-sm:text-base">
-                Try searching for something else or browse our categories.
-              </p>
+            <div className="col-span-full">
+              <EmptyState
+                variant="search"
+                title="No Results Found"
+                description={`We couldn't find anything for "${sanitize(searchQuery as string)}". Try different keywords or browse our categories.`}
+                actionLabel="Browse All Products"
+                actionHref="/shop-all"
+              />
             </div>
           )}
         </div>
