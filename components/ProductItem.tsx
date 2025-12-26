@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { sanitize } from '@/lib/sanitize';
@@ -96,10 +96,11 @@ const ProductItem = ({ product }: ProductItemProps) => {
               whileHover={{ scale: 1.15 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              <Image
+              <OptimizedImage
                 src={imageUrl}
                 alt={sanitize(product?.title) || 'Product image'}
                 fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-contain p-4"
               />
             </motion.div>

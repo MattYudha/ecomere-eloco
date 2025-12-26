@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const router = useRouter();
   const { data: session, status: sessionStatus } = useAuth();
 
@@ -23,13 +25,39 @@ const RegisterPage = () => {
     return emailRegex.test(email);
   };
 
+  // Password Validation Logic
+  const validations = [
+    {
+      check: (pass: string) => pass.length >= 8,
+      label: 'Minimum 8 characters',
+    },
+    {
+      check: (pass: string) => /[A-Z]/.test(pass),
+      label: 'Minimum 1 capital letter A-Z',
+    },
+    {
+      check: (pass: string) => /[a-z]/.test(pass),
+      label: 'Minimum 1 lowercase letter a-z',
+    },
+    {
+      check: (pass: string) => /[0-9]/.test(pass),
+      label: 'Minimum 1 digit 0-9',
+    },
+    {
+      check: (pass: string) => /[!@#$%^&*(),.?":{}|<>]/.test(pass),
+      label: 'Minimum 1 of the following symbols: ~ ! @ # $ ...',
+    },
+  ];
+
+  const allValid = validations.every((v) => v.check(password));
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     const lastname = formData.get('lastname') as string;
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    // Password already in state
     const confirmPassword = formData.get('confirmpassword') as string;
 
     if (!isValidEmail(email)) {
@@ -38,9 +66,9 @@ const RegisterPage = () => {
       return;
     }
 
-    if (!password || password.length < 8) {
-      setError('Password is invalid');
-      toast.error('Password is invalid');
+    if (!allValid) {
+      setError('Password does not meet all requirements');
+      toast.error('Password does not meet all requirements');
       return;
     }
 
@@ -51,7 +79,6 @@ const RegisterPage = () => {
     }
 
     try {
-      // sending API request for registering user
       // sending API request for registering user
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
       const res = await fetch(`${apiUrl}/api/auth/register`, {
@@ -175,23 +202,54 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="relative">
                 <label
                   htmlFor="password"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Password
                 </label>
-                <div className="mt-2">
+                <div className="mt-2 text-black">
                   <input
                     id="password"
                     name="password"
                     type="password"
                     autoComplete="current-password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setIsPasswordFocused(true)}
+                    onBlur={() => setIsPasswordFocused(false)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
+
+                {/* Password Validation Tooltip */}
+                {isPasswordFocused && (
+                  <div className="absolute left-0 bottom-full mb-2 w-full bg-white p-4 rounded-lg shadow-xl border border-gray-100 z-10 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="space-y-2">
+                      {validations.map((val, index) => {
+                        const isValid = val.check(password);
+                        return (
+                          <div key={index} className="flex items-start gap-2 text-xs transition-colors duration-200">
+                            <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${isValid ? 'bg-green-500' : 'bg-gray-200'}`}>
+                              {isValid && (
+                                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                            <span className={isValid ? 'text-gray-700 font-medium' : 'text-gray-500'}>
+                              {val.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {/* Tooltip Arrow */}
+                    <div className="absolute -bottom-2 left-4 w-4 h-4 bg-white transform rotate-45 border-b border-r border-gray-100"></div>
+                  </div>
+                )}
               </div>
 
               <div>

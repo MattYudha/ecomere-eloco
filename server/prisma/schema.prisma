@@ -95,11 +95,14 @@ model Customer_order {
   status      String
   city        String
   country     String
-  orderNotice String?
-  total       Int
-  isDeleted   Boolean                  @default(false)
-  products    customer_order_product[]
-  reviews     Review[]
+  orderNotice       String?
+  total             Int
+  shippingCost      Int                      @default(0)
+  shippingZone      String?
+  isShippingEstimated Boolean                @default(true)
+  isDeleted         Boolean                  @default(false)
+  products          customer_order_product[]
+  reviews           Review[]
 }
 
 model customer_order_product {

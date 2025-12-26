@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoArrowDown, IoChevronBack, IoChevronForward } from 'react-icons/io5';
@@ -150,13 +150,14 @@ const Hero = () => {
             variants={slideVariants}
           >
             <div className="relative w-full h-full">
-              <Image
+              <OptimizedImage
                 src={slides[current].bgImage}
                 alt={slides[current].subtitle}
                 fill
                 priority={current === 0}
                 className="object-cover object-center"
                 quality={90}
+                sizes="100vw"
               />
             </div>
           </motion.div>
@@ -170,13 +171,14 @@ const Hero = () => {
           >
             <div className="relative w-full h-full bg-orange-50 dark:bg-slate-900 transition-colors duration-500">
               {/* Mobile Image - Visible in BOTH Light and Dark nodes now as per 'image saja' request */}
-              <Image
+              <OptimizedImage
                 src={slides[current].bgImageMobile || slides[current].bgImage}
                 alt={slides[current].subtitle}
                 fill
                 className="object-cover object-center"
                 quality={90}
                 priority={current === 0}
+                sizes="100vw"
               />
             </div>
 

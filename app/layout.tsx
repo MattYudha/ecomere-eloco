@@ -28,10 +28,10 @@ const dm_sans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Elloco – Premium Snacks & E-Commerce Platform',
   description: 'Your premium destination for electronics',
-  icons: {
-    icon: '/assets/logo.png', // Reverted to logo.png
-    apple: '/assets/logo.png',
-  },
+  // icons: {
+  //   icon: '/assets/logo.png',
+  //   apple: '/assets/logo.png',
+  // },
 };
 
 import { AuthProvider } from '@/context/auth-context';
