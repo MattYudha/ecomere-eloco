@@ -28,14 +28,16 @@ const nextConfig = {
       },
     ],
   },
-  return [
-    {
-      source: '/api/:path*',
-      destination: process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3001/api/:path*' // Proxy to Backend in Dev
-        : 'https://ecomere-eloco-production.up.railway.app/api/:path*', // Corrected Production Backend
-    },
-  ];
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: process.env.NODE_ENV === 'development'
+          ? 'http://localhost:3001/api/:path*' // Proxy to Backend in Dev
+          : 'https://ecomere-eloco-production.up.railway.app/api/:path*', // Corrected Production Backend
+      },
+    ];
+  },
 };
 
 export default nextConfig;
