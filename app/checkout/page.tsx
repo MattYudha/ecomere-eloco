@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductStore } from '../_zustand/store';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,7 +46,7 @@ interface CheckoutFormData {
     orderNotice: string;
 }
 
-const CheckoutPage = () => {
+const CheckoutContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session, status } = useAuth();
@@ -147,7 +147,7 @@ const CheckoutPage = () => {
         const errors: string[] = [];
 
         if (!formData.name.trim() || formData.name.length < 2) {
-            errors.push('Nama Dep an minimal 2 karakter');
+            errors.push('Nama Depan minimal 2 karakter');
         }
         if (!formData.lastname.trim() || formData.lastname.length < 2) {
             errors.push('Nama Belakang minimal 2 karakter');
@@ -698,6 +698,24 @@ const CheckoutPage = () => {
                 />
             )}
         </div>
+    );
+};
+
+// Loading component for Suspense fallback
+const CheckoutLoading = () => (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-grilli-gold mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Memuat checkout...</p>
+        </div>
+    </div>
+);
+
+const CheckoutPage = () => {
+    return (
+        <Suspense fallback={<CheckoutLoading />}>
+            <CheckoutContent />
+        </Suspense>
     );
 };
 

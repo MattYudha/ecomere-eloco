@@ -57,7 +57,7 @@ export const WishlistModule = () => {
         title="Your Wishlist is Empty"
         description="Explore more and shortlist some items"
         actionLabel="Start Shopping"
-        actionHref="/shop-all"
+        actionHref="/shop"
       />
     );
   }

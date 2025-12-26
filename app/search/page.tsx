@@ -85,7 +85,7 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
                 title="No Results Found"
                 description={`We couldn't find anything for "${sanitize(searchQuery as string)}". Try different keywords or browse our categories.`}
                 actionLabel="Browse All Products"
-                actionHref="/shop-all"
+                actionHref="/shop"
               />
             </div>
           )}
