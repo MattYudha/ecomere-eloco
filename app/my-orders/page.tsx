@@ -381,7 +381,7 @@ const MyOrdersPage = () => {
                             flex-1 py-3 px-6 font-bold rounded-xl shadow-md transition-all duration-300 flex items-center justify-center gap-2
                             ${reorderingId === order.id
                                 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
-                                : 'bg-green-500 hover:bg-green-600 text-white'
+                                : 'bg-orange-600 hover:bg-orange-700 text-white'
                             }
                         `}
                     >

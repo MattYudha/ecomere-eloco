@@ -62,7 +62,10 @@ export default function RootLayout({
                 </main>
               </ClientLayoutWrapper>
 
-              <Footer />
+              {/* Footer with top spacing */}
+              <div className="mt-20">
+                <Footer />
+              </div>
 
               {/* Floating WhatsApp Button */}
               <FloatingWhatsAppButton />
