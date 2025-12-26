@@ -161,10 +161,10 @@ export const CartModule = () => {
                                             onClick={toggleSelectAll}
                                             className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center transition-all hover:border-grilli-gold focus:outline-none focus:ring-2 focus:ring-grilli-gold focus:ring-offset-2"
                                             style={{
-                                                backgroundColor: selectedItems.size === products.length && products.length > 0 ? '#D97706' : 'transparent'
+                                                backgroundColor: selectedItems.length === products.length && products.length > 0 ? '#D97706' : 'transparent'
                                             }}
                                         >
-                                            {selectedItems.size === products.length && products.length > 0 && (
+                                            {selectedItems.length === products.length && products.length > 0 && (
                                                 <FaCheck className="text-white" size={12} />
                                             )}
                                         </button>

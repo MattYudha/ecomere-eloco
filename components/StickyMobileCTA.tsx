@@ -12,8 +12,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/lib/utils';
-import { useProductStore } from '@/store/productStore';
-import { useAuth } from '@/context/AuthContext';
+import { useProductStore } from '@/app/_zustand/store';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
