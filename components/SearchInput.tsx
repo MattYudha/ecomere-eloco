@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { sanitize } from '@/lib/sanitize';
 import { isValidQuery, saveSearchHistory } from '@/lib/searchUtils';
@@ -34,6 +34,8 @@ const SearchInput = () => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ✅ Debounced autocomplete fetch
@@ -76,18 +78,9 @@ const SearchInput = () => {
 
   // ✅ Close dropdown on route change
   useEffect(() => {
-    const handleRouteChange = () => {
-      setShowDropdown(false);
-      setSearchInput('');
-    };
-
-    // Note: Next.js 13+ uses different router events
-    // This is a fallback for older versions
-    if (router.events) {
-      router.events.on('routeChangeStart', handleRouteChange);
-      return () => router.events.off('routeChangeStart', handleRouteChange);
-    }
-  }, [router]);
+    setShowDropdown(false);
+    setSearchInput('');
+  }, [pathname, searchParams]);
 
   // ✅ Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {

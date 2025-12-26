@@ -17,9 +17,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
     const currentUserEmail = session?.user?.email;
     const isAdmin = session?.user?.role === 'admin';
 
+    const [visibleCount, setVisibleCount] = React.useState(5);
+
     useEffect(() => {
         if (productId) {
             fetchReviews(productId);
+            // Reset visible count only when product ID changes
+            setVisibleCount(5);
         }
     }, [productId, fetchReviews]);
 
@@ -48,7 +52,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                 Customer Reviews ({reviews.length})
             </h3>
 
-            {reviews.map((review) => (
+            {reviews.slice(0, visibleCount).map((review) => (
                 <div key={review.id} className="border-b border-gray-100 dark:border-gray-700 pb-6 last:border-0 relative group">
                     <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
@@ -115,6 +119,18 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                     )}
                 </div>
             ))}
+
+            {reviews.length > visibleCount && (
+                <div className="flex justify-center mt-8 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <button
+                        type="button"
+                        onClick={() => setVisibleCount((prev) => prev + 5)}
+                        className="px-6 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors active:scale-95"
+                    >
+                        Muat Lebih Banyak Ulasan ({reviews.length - visibleCount} tersisa)
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

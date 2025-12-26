@@ -3,8 +3,8 @@
 import {
     StockAvailabillity,
     UrgencyText,
-    ProductTabs,
     SingleProductDynamicFields,
+    ProductDetailsStack,
 } from '@/components';
 import ProductHighlights from '@/components/ProductHighlights';
 import RelatedProducts from '@/components/RelatedProducts';
@@ -14,6 +14,7 @@ import apiClient from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 import { FaSquareFacebook } from 'react-icons/fa6';
 import { FaSquareXTwitter } from 'react-icons/fa6';
 import { FaSquarePinterest } from 'react-icons/fa6';
@@ -195,13 +196,39 @@ const SingleProductPage = ({ params }: SingleProductPageProps) => {
                                         {sanitize(product?.title)}
                                     </h1>
 
-                                    {/* 3. Price */}
-                                    <div className="space-y-1">
-                                        <div className="inline-flex items-baseline gap-2 px-6 py-3 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-[#cb6112]/15 via-[#cb6112]/10 to-transparent border border-[#cb6112]/30 shadow-[0_4px_24px_rgba(203,97,18,0.15)]">
-                                            <span className="text-4xl font-bold text-[#cb6112]">
-                                                {formatPrice(product?.price)}
-                                            </span>
+                                    {/* 3. Price & Rating Summary */}
+                                    <div className="space-y-4">
+                                        <div className="flex flex-wrap items-center gap-4">
+                                            {/* Price Badge */}
+                                            <div className="inline-flex items-baseline gap-2 px-6 py-3 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-[#cb6112]/15 via-[#cb6112]/10 to-transparent border border-[#cb6112]/30 shadow-[0_4px_24px_rgba(203,97,18,0.15)]">
+                                                <span className="text-4xl font-bold text-[#cb6112]">
+                                                    {formatPrice(product?.price)}
+                                                </span>
+                                            </div>
+
+                                            {/* Rating Summary - Click to Scroll */}
+                                            {product?.rating > 0 && (
+                                                <button
+                                                    onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                                    className="group flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 dark:hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-white/10"
+                                                    type="button"
+                                                    aria-label="Lihat ulasan produk"
+                                                >
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-xl font-bold text-gray-900 dark:text-white">{Number(product.rating).toFixed(1)}</span>
+                                                        <FaStar className="text-[#fbbf24] text-lg" />
+                                                    </div>
+                                                    <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
+                                                    <div className="flex flex-col items-start">
+                                                        <span className="text-xs font-medium text-gray-900 dark:text-gray-100 underline decoration-gray-400/50 group-hover:decoration-[#cb6112] underline-offset-2 transition-all">
+                                                            {product.reviewCount || 0} Ulasan
+                                                        </span>
+                                                        <span className="text-[10px] text-gray-500">Lihat semua</span>
+                                                    </div>
+                                                </button>
+                                            )}
                                         </div>
+
                                         {/* 4. Price Microcopy */}
                                         <p className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                                             Harga per porsi • Siap santap
@@ -305,12 +332,9 @@ const SingleProductPage = ({ params }: SingleProductPageProps) => {
                     </div>
                 </div>
 
-                {/* Product Tabs Section - Separate Glass Panel */}
-                <div className="mt-12 relative rounded-[2rem] backdrop-blur-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-white/10 dark:via-white/5 dark:to-transparent border border-white/30 dark:border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent pointer-events-none" />
-                    <div className="relative p-8 lg:p-12">
-                        <ProductTabs product={product} />
-                    </div>
+                {/* Product Details Stack Section */}
+                <div className="mt-12">
+                    <ProductDetailsStack product={product} />
                 </div>
 
                 {/* Related Products Section */}

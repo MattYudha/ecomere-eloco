@@ -21,6 +21,7 @@ export { default as StockAvailabillity } from './StockAvailabillity';
 export { default as ColorInput } from './ColorInput';
 
 export { default as ProductTabs } from './ProductTabs';
+export { default as ProductDetailsStack } from './ProductDetailsStack';
 
 export { default as CustomButton } from './CustomButton';
 export { default as QuantityInputCart } from './QuantityInputCart';
