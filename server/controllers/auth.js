@@ -170,7 +170,18 @@ const getMe = asyncHandler(async (req, res) => {
     // DEBUG: Helpful logs for auth failures
     if (!token) {
         console.warn('[Auth] getMe - 401 Unauthorized. No token in Cookie or Header.');
+
+        // SAFE LOGGING: Don't log full values if sensitive, but checking existence is key
+        const debugHeaders = {
+            cookie: req.headers.cookie ? 'PRESENT' : 'MISSING',
+            authorization: req.headers.authorization ? req.headers.authorization.substring(0, 15) + '...' : 'MISSING',
+            'x-forwarded-proto': req.headers['x-forwarded-proto'],
+            host: req.headers.host
+        };
+
+        console.warn('Debug Headers:', JSON.stringify(debugHeaders, null, 2));
         console.warn('Checks -> Cookie:', !!req.cookies.eloco_session, '| Header:', !!req.headers.authorization);
+
         throw new AppError('Not authorized to access this route', 401);
     }
 

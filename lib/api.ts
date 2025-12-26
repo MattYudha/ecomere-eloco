@@ -34,11 +34,17 @@ export const apiClient = {
     }
 
     const defaultOptions: RequestInit = {
-      headers: defaultHeaders,
-      credentials: 'include',
+      credentials: 'include', // ALWAYS include credentials for CORS
     };
 
-    return fetch(url, { ...defaultOptions, ...options });
+    // Merge headers carefully: Default (Auth) + Custom
+    const finalHeaders = { ...defaultHeaders, ...(options.headers || {}) };
+
+    return fetch(url, {
+      ...defaultOptions,
+      ...options,
+      headers: finalHeaders
+    });
   },
 
   // Convenience methods

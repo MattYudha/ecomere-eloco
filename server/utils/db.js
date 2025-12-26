@@ -13,24 +13,12 @@ const createPrismaClient = () => {
   // DEBUG: Log available env keys to debug Railway issue
   if (!process.env.DATABASE_URL) {
     console.log('Available Env Keys:', Object.keys(process.env).sort());
-    console.error('DATABASE_URL value:', process.env.DATABASE_URL);
-    // throw new Error('❌ Missing DATABASE_URL environment variable');
-    // Allow it to proceed to see if Prisma can pick it up locally or if it's a soft failure? 
-    // No, Prisma needs it. But maybe we can fallback or log better.
-    throw new Error('❌ Critical: DATABASE_URL is missing from environment variables.');
-  }
-
-  const databaseUrl = new URL(process.env.DATABASE_URL);
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log(
-      `📦 Database: ${databaseUrl.protocol}//${databaseUrl.hostname}:${databaseUrl.port || '3306'
-      }`,
-    );
-    console.log(
-      `🔒 SSL Mode: ${databaseUrl.searchParams.get('sslmode') || 'not specified'
-      }`,
-    );
+    console.error('❌ Critical: DATABASE_URL is missing from environment variables.');
+  } else {
+    // Log a redacted version of the DB URL to confirm it's loaded
+    const dbUrl = process.env.DATABASE_URL;
+    const redactedUrl = dbUrl.replace(/(:)([^:@]+)(@)/, '$1****$3');
+    console.log(`✅ DATABASE_URL found: ${redactedUrl}`);
   }
 
   const client = new PrismaClient({

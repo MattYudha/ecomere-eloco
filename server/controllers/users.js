@@ -143,37 +143,57 @@ const getUser = asyncHandler(async (request, response) => {
 });
 
 const getUserByEmail = asyncHandler(async (request, response) => {
-  const { email } = request.params;
+  console.log('HIT /users/email', request.params);
 
-  if (!email) {
-    throw new AppError('Email is required', 400);
-  }
+  try {
+    const { email } = request.params;
 
-  // Try exact match first
-  let user = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
+    if (!email) {
+      console.log('❌ Missing email param');
+      return response.status(400).json({ message: 'Email is required' });
+    }
 
-  // Fallback: Case-insensitive search if strict match fails
-  if (!user) {
-    user = await prisma.user.findFirst({
+    console.log(`🔍 Searching for primary email: ${email}`);
+
+    // Try exact match first
+    let user = await prisma.user.findUnique({
       where: {
-        email: {
-          equals: email,
-          mode: 'insensitive' // Requires Prisma support for the DB provider
+        email: email,
+      },
+    });
+
+    // Fallback: Case-insensitive search if strict match fails
+    if (!user && email) {
+      console.log(`⚠️ Primary search failed. Trying case-insensitive search for: ${email}`);
+      user = await prisma.user.findFirst({
+        where: {
+          email: {
+            equals: email,
+            mode: 'insensitive' // Requires Prisma support for the DB provider
+          }
         }
-      }
+      });
+    }
+
+    if (!user) {
+      console.log(`❌ User NOT found for email: ${email}`);
+      return response.status(404).json({ message: 'User not found' });
+    }
+
+    console.log(`✅ User found: ${user.id}`);
+
+    // Explicitly return response
+    const safeUser = excludePassword(user);
+    return response.status(200).json(safeUser);
+
+  } catch (error) {
+    console.error('❌ CRITICAL ERROR in getUserByEmail:', error);
+    // Ensure we return a response even on crash
+    return response.status(500).json({
+      message: 'Internal processing error',
+      error: error.message
     });
   }
-
-  if (!user) {
-    throw new AppError('User not found', 404);
-  }
-
-  // Exclude password from response
-  return response.status(200).json(excludePassword(user));
 });
 
 module.exports = {
