@@ -127,8 +127,8 @@ const Header = () => {
             className="flex items-center gap-2 flex-shrink-0 group"
           >
             <Image
-              src="/assets/logo.png"
-              alt="Logo"
+              src="/assets/eloqo.png"
+              alt="Eloqo Logo"
               width={56}
               height={56}
               className={`transition-all duration-500 ease-out ${isScrolled ? 'h-9 w-9' : 'h-12 w-12'}`}
