@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   title: 'Elloco – Premium Snacks & E-Commerce Platform',
   description: 'Your premium destination for electronics',
   icons: {
-    icon: '/assets/eloqo.png', // Using eloqo.png as requested
-    apple: '/assets/eloqo.png',
+    icon: '/assets/logo.png', // Reverted to logo.png
+    apple: '/assets/logo.png',
   },
 };
 
