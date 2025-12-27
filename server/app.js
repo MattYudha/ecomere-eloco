@@ -68,6 +68,7 @@ const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
 const reviewsRouter = require('./routes/reviews');
+const adminRouter = require('./routes/admin');
 
 // =========================
 // Middleware & Utils
@@ -228,6 +229,7 @@ app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/admin', adminRouter);
 
 // =========================
 // 404 Handler

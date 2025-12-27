@@ -296,6 +296,9 @@ async function updateCustomerOrder(request, response) {
         country: validatedData.country,
         orderNotice: validatedData.orderNotice,
         total: validatedData.total,
+        courier: request.body.courier || null,
+        courierService: request.body.courierService || null,
+        trackingNumber: request.body.trackingNumber || null,
       },
     });
 
