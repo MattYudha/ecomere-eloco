@@ -105,6 +105,31 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
     }
 
     try {
+      // Get default merchant (first active merchant)
+      const merchant = await tx.merchant.findFirst({
+        where: { status: 'ACTIVE' },
+      });
+
+      if (!merchant) {
+        await tx.bulk_upload_item.create({
+          data: {
+            batchId,
+            title: row.title,
+            slug: row.slug,
+            price: row.price,
+            manufacturer: row.manufacturer,
+            description: row.description,
+            mainImage: row.mainImage,
+            categoryId: resolvedCategoryId,
+            inStock: row.inStock,
+            status: 'ERROR',
+            error: 'No active merchant found',
+          },
+        });
+        failed++;
+        continue;
+      }
+
       const product = await tx.product.create({
         data: {
           title: row.title,
@@ -116,6 +141,7 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
           mainImage: row.mainImage ?? '',
           categoryId: resolvedCategoryId, // Use resolved category ID
           inStock: row.inStock,
+          merchantId: merchant.id, // Add merchant ID
         },
       });
 
@@ -137,6 +163,8 @@ async function createBatchWithItems(tx, batchId, validRows, errorRows) {
       });
       success++;
     } catch (e) {
+      console.error('❌ Error creating product:', e.message);
+      console.error('Row data:', row);
       await tx.bulk_upload_item.create({
         data: {
           batchId,
