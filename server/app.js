@@ -127,51 +127,43 @@ app.get('/health', (req, res) => {
 // =========================
 // CORS Configuration (SAFE)
 // =========================
+// =========================
+// CORS Configuration (STRICT & FIX)
+// =========================
 const allowedOrigins = [
+    'https://elloco.vercel.app',
+    'https://eloco.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://eloco.vercel.app',
-    'https://elloco.vercel.app',
     process.env.FRONTEND_URL,
     process.env.NEXTAUTH_URL,
 ].filter(Boolean);
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // allow non-browser / server-to-server (curl, health checks, etc.)
+        // allow non-browser / server-to-server
         if (!origin) return callback(null, true);
 
-        const ok =
-            allowedOrigins.includes(origin) ||
-            // opsi: subdomain vercel preview
-            origin.endsWith('.vercel.app');
-
-        if (!ok) {
+        if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+            callback(null, true);
+        } else {
             console.warn(`[CORS BLOCKED] Origin: ${origin}`);
-            // Still allow the request but don't set CORS headers
-            return callback(null, false);
+            callback(new Error('Not allowed by CORS'));
         }
-
-        return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'X-Request-Id',
-    ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Request-Id'],
     exposedHeaders: ['X-Request-Id'],
-    optionsSuccessStatus: 204,
     preflightContinue: false,
+    optionsSuccessStatus: 204
 };
 
-// CORS harus sebelum routes
-app.use(cors(corsOptions));
+// WAJIB: Handle preflight OPTIONS explicitly agar tidak 502/404 di Railway
+app.options('*', cors(corsOptions));
 
-// Note: CORS middleware already handles OPTIONS preflight requests
-// No need for explicit app.options() handler
+// Apply CORS middleware
+app.use(cors(corsOptions));
 
 // =========================
 // Core Middlewares
