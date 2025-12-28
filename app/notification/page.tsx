@@ -15,6 +15,7 @@ import {
   FaSpinner,
   FaBell
 } from 'react-icons/fa';
+import NotificationSettings from '@/components/NotificationSettings';
 
 const NotificationsPage = () => {
   const { data: session, status } = useAuth();
@@ -152,6 +153,11 @@ const NotificationsPage = () => {
           <p className="text-gray-600 dark:text-gray-400">
             Manage and view all your notifications in one place
           </p>
+        </div>
+
+        {/* Notification Settings */}
+        <div className="mb-6">
+          <NotificationSettings />
         </div>
 
         {/* Filters and Search */}
