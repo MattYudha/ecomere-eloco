@@ -147,10 +147,11 @@ const corsOptions = {
 
         if (!ok) {
             console.warn(`[CORS BLOCKED] Origin: ${origin}`);
+            // Still allow the request but don't set CORS headers
+            return callback(null, false);
         }
 
-        // PENTING: jangan callback(new Error(...)) karena itu jadi 500
-        return callback(null, ok);
+        return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -160,15 +161,16 @@ const corsOptions = {
         'X-Requested-With',
         'X-Request-Id',
     ],
+    exposedHeaders: ['X-Request-Id'],
     optionsSuccessStatus: 204,
+    preflightContinue: false,
 };
 
 // CORS harus sebelum routes
 app.use(cors(corsOptions));
 
-// Handle preflight dengan benar (jangan manual sendStatus tanpa header)
-// Handle preflight dengan benar (jangan manual sendStatus tanpa header)
-app.options(/.*/, cors(corsOptions));
+// Explicitly handle OPTIONS requests for all routes
+app.options('*', cors(corsOptions));
 
 // =========================
 // Core Middlewares
