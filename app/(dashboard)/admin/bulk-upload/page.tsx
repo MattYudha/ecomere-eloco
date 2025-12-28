@@ -11,7 +11,7 @@
 'use client';
 import { DashboardSidebar } from '@/components';
 import BulkUploadHistory from '@/components/BulkUploadHistory';
-import config from '@/lib/config';
+import apiClient from '@/lib/api';
 import React, { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import {
@@ -96,10 +96,7 @@ const BulkUploadPage = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${config.apiBaseUrl}/api/bulk-upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await apiClient.post('/api/bulk-upload', formData);
 
       const data = await response.json();
 
