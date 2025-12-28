@@ -3,6 +3,7 @@ const { sendMail } = require('../utils/mail.js');
 const fs = require('fs').promises;
 const path = require('path');
 const { formatPrice } = require('../utils/format.js');
+const emailLogger = require('../utils/emailLogger');
 
 const prisma = new PrismaClient();
 
@@ -62,8 +63,10 @@ async function sendOrderShippedEmail(userId, orderData) {
         try {
             // Idempotency check
             if (wasEmailSent(orderData.id, 'shipped', userId)) {
-                console.log('[EMAIL] email_skipped', {
+                emailLogger.info({
+                    event: 'email_skipped',
                     reason: 'already_sent',
+                    type: 'order_shipped',
                     orderId: orderData.id,
                     userId,
                 });
@@ -76,8 +79,11 @@ async function sendOrderShippedEmail(userId, orderData) {
             });
 
             if (!user || !user.email) {
-                console.log('[EMAIL] email_skipped', {
+                emailLogger.warn({
+                    event: 'email_skipped',
                     reason: 'user_not_found_or_no_email',
+                    type: 'order_shipped',
+                    orderId: orderData.id,
                     userId,
                 });
                 return;
@@ -139,27 +145,34 @@ async function sendOrderShippedEmail(userId, orderData) {
             markEmailAsSent(orderData.id, 'shipped', userId);
 
             const duration = Date.now() - startTime;
-            console.log('[EMAIL] email_sent', {
+            emailLogger.info({
+                event: 'email_sent',
+                type: 'order_shipped',
                 orderId: orderData.id,
                 userId,
-                userEmail: user.email,
-                status: 'shipped',
+                // Do NOT log full email to protect PII, just domain/hash if needed, or rely on internal access logs
+                // userEmail: user.email, 
                 duration: `${duration}ms`,
             });
         } catch (error) {
             const duration = Date.now() - startTime;
 
             if (error.message === 'Email timeout') {
-                console.error('[EMAIL] email_timeout', {
+                emailLogger.error({
+                    event: 'email_timeout',
+                    type: 'order_shipped',
                     orderId: orderData.id,
                     userId,
                     duration: `${duration}ms`,
                 });
             } else {
-                console.error('[EMAIL] email_error', {
+                emailLogger.error({
+                    event: 'email_failed',
+                    type: 'order_shipped',
                     orderId: orderData.id,
                     userId,
                     error: error.message,
+                    stack: error.stack,
                     duration: `${duration}ms`,
                 });
             }
@@ -176,10 +189,13 @@ async function sendOrderShippedEmail(userId, orderData) {
  */
 async function sendOrderDeliveredEmail(userId, orderData) {
     setImmediate(async () => {
+        const startTime = Date.now();
         try {
             if (wasEmailSent(orderData.id, 'delivered', userId)) {
-                console.log('[EMAIL] email_skipped', {
+                emailLogger.info({
+                    event: 'email_skipped',
                     reason: 'already_sent',
+                    type: 'order_delivered',
                     orderId: orderData.id,
                     userId,
                 });
@@ -191,8 +207,11 @@ async function sendOrderDeliveredEmail(userId, orderData) {
             });
 
             if (!user || !user.email) {
-                console.log('[EMAIL] email_skipped', {
+                emailLogger.warn({
+                    event: 'email_skipped',
                     reason: 'user_not_found_or_no_email',
+                    type: 'order_delivered',
+                    orderId: orderData.id,
                     userId,
                 });
                 return;
@@ -222,17 +241,24 @@ async function sendOrderDeliveredEmail(userId, orderData) {
 
             markEmailAsSent(orderData.id, 'delivered', userId);
 
-            console.log('[EMAIL] email_sent', {
+            const duration = Date.now() - startTime;
+            emailLogger.info({
+                event: 'email_sent',
+                type: 'order_delivered',
                 orderId: orderData.id,
                 userId,
-                userEmail: user.email,
-                status: 'delivered',
+                duration: `${duration}ms`,
             });
         } catch (error) {
-            console.error('[EMAIL] email_error', {
+            const duration = Date.now() - startTime;
+            emailLogger.error({
+                event: 'email_failed',
+                type: 'order_delivered',
                 orderId: orderData.id,
                 userId,
                 error: error.message,
+                stack: error.stack,
+                duration: `${duration}ms`,
             });
         }
     });
@@ -242,3 +268,4 @@ module.exports = {
     sendOrderShippedEmail,
     sendOrderDeliveredEmail,
 };
+

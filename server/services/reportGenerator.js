@@ -1,4 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
+const PDFDocument = require('pdfkit');
+const { formatPrice } = require('../utils/format'); // Ensure this utils exists, otherwise I will inline helper
+
 const prisma = new PrismaClient();
 
 // CSV Header with accounting-ready columns
@@ -33,7 +36,12 @@ async function* generateSalesReportStream(filters) {
 
         // Only add status filter if explicitly provided
         if (filters.status) {
-            whereClause.status = filters.status;
+            const statuses = filters.status.split(',').map(s => s.trim());
+            if (statuses.length > 1) {
+                whereClause.status = { in: statuses };
+            } else {
+                whereClause.status = statuses[0];
+            }
         }
 
         console.log('[CSV Export] Query params:', {
@@ -133,8 +141,127 @@ function formatOrderToCSV(order) {
 }
 
 /**
- * Get report statistics (for confirmation dialog)
+ * Stream PDF report directly to response
  */
+async function generateSalesReportPDFStream(res, filters) {
+    const doc = new PDFDocument({ margin: 50, size: 'A4' });
+
+    // Pipe directly to response
+    doc.pipe(res);
+
+    // -- Header --
+    doc.fontSize(20).text('Sales Report', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(12).text(`Period: ${filters.from} to ${filters.to}`, { align: 'center' });
+    if (filters.status) {
+        doc.text(`Status: ${filters.status}`, { align: 'center' });
+    }
+    doc.moveDown();
+
+    // -- Summary Stats --
+    // We need to calculate totals. For "streaming" purely, we might not have totals upfront unless we query first.
+    // It's better to do a quick aggregate query first for the summary section.
+    const stats = await getReportStats(filters);
+
+    doc.fontSize(14).text('Summary', { underline: true });
+    doc.fontSize(10);
+    doc.text(`Total Orders: ${stats.orderCount}`);
+    doc.text(`Total Revenue: ${formatPrice(stats.totalRevenue)}`);
+    doc.moveDown();
+
+    // -- Table Headers --
+    const tableTop = doc.y;
+    const colX = [50, 130, 250, 350, 450]; // Column X positions
+
+    doc.font('Helvetica-Bold');
+    doc.text('Order ID', colX[0], tableTop);
+    doc.text('Date', colX[1], tableTop);
+    doc.text('Customer', colX[2], tableTop);
+    doc.text('Status', colX[3], tableTop);
+    doc.text('Total', colX[4], tableTop);
+
+    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+    doc.moveDown();
+    doc.font('Helvetica');
+
+    // -- Data Rows --
+    const batchSize = 1000;
+    let skip = 0;
+    let hasMore = true;
+
+    // Build where clause (same as CSV)
+    const endDate = new Date(filters.to);
+    endDate.setDate(endDate.getDate() + 1);
+
+    const whereClause = {
+        dateTime: {
+            gte: new Date(filters.from),
+            lt: endDate
+        },
+        isDeleted: false
+    };
+
+    if (filters.status) {
+        const statuses = filters.status.split(',').map(s => s.trim());
+        if (statuses.length > 1) {
+            whereClause.status = { in: statuses };
+        } else {
+            whereClause.status = statuses[0];
+        }
+    }
+
+    while (hasMore) {
+        const orders = await prisma.customer_order.findMany({
+            where: whereClause,
+            orderBy: { dateTime: 'desc' },
+            skip,
+            take: batchSize
+        });
+
+        if (orders.length === 0) {
+            hasMore = false;
+            break;
+        }
+
+        for (const order of orders) {
+            // Check for page break
+            if (doc.y > 700) {
+                doc.addPage();
+                // Redraw Headers
+                doc.font('Helvetica-Bold');
+                doc.text('Order ID', colX[0], 50);
+                doc.text('Date', colX[1], 50);
+                doc.text('Customer', colX[2], 50);
+                doc.text('Status', colX[3], 50);
+                doc.text('Total', colX[4], 50);
+                doc.moveTo(50, 65).lineTo(550, 65).stroke();
+                doc.moveDown();
+                doc.font('Helvetica');
+                doc.y = 80;
+            }
+
+            const y = doc.y;
+            const dateStr = new Date(order.dateTime).toLocaleDateString('id-ID');
+
+            doc.text(order.id.substring(0, 8), colX[0], y);
+            doc.text(dateStr, colX[1], y);
+            doc.text(order.name || 'N/A', colX[2], y, { width: 90, ellipsis: true });
+            doc.text(order.status, colX[3], y);
+            doc.text(formatPrice(order.total), colX[4], y);
+
+            doc.moveDown(0.5); // Add spacing between rows
+        }
+
+        skip += batchSize;
+        hasMore = orders.length === batchSize;
+
+        // flush to client roughly
+    }
+
+    // Finalize PDF
+    doc.end();
+}
 async function getReportStats(filters) {
     // Build where clause dynamically
     // Add 1 day to 'to' date to make it inclusive (end of day)
@@ -151,7 +278,12 @@ async function getReportStats(filters) {
 
     // Only add status filter if explicitly provided
     if (filters.status) {
-        whereClause.status = filters.status;
+        const statuses = filters.status.split(',').map(s => s.trim());
+        if (statuses.length > 1) {
+            whereClause.status = { in: statuses };
+        } else {
+            whereClause.status = statuses[0];
+        }
     }
 
     const count = await prisma.customer_order.count({
@@ -173,5 +305,6 @@ async function getReportStats(filters) {
 
 module.exports = {
     generateSalesReportStream,
-    getReportStats
+    getReportStats,
+    generateSalesReportPDFStream
 };

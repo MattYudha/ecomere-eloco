@@ -335,7 +335,21 @@ router.get('/reports/sales/export', authMiddleware, requireAdmin, async (req, re
             console.error('[Export] Audit log failed:', err.message);
         });
 
-        // Set response headers
+        if (format === 'pdf') {
+            const filename = `sales_report_${from}_to_${to}.pdf`;
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+            // Generate and stream PDF
+            // generateSalesReportPDFStream handles pipe(res) and res.end()
+            const { generateSalesReportPDFStream } = require('../services/reportGenerator');
+            await generateSalesReportPDFStream(res, { from, to, status });
+
+            console.log(`[Export] PDF export completed for ${req.user.email}`);
+            return;
+        }
+
+        // Default: CSV
         const filename = `sales_report_${from}_to_${to}.csv`;
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -359,14 +373,13 @@ router.get('/reports/sales/export', authMiddleware, requireAdmin, async (req, re
 
         res.end();
 
-        console.log(`[Export] Successfully exported ${rowCount - 1} orders`);
-
+        console.log(`[Export] Frequently exported ${rowCount - 1} orders`);
     } catch (error) {
         console.error('[Export] Error:', error);
 
         // If headers already sent, can't send JSON error
         if (res.headersSent) {
-            res.end();
+            res.end(); // Just close connection
         } else {
             res.status(500).json({ error: 'Export failed. Please try again.' });
         }

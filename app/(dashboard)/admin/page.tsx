@@ -8,7 +8,9 @@ import {
   FaShoppingCart,
   FaUsers,
   FaChartBar,
+  FaDownload,
 } from 'react-icons/fa';
+import ExportReportModal from '@/components/admin/ExportReportModal';
 
 // Define types for our stats data
 interface StatData {
@@ -28,20 +30,13 @@ interface DashboardStats {
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        // Use apiClient to hit Express backend (localhost:3001) where dashboard-stats is mounted
         const response = await apiClient.get('/api/dashboard-stats');
-        // apiClient returns response.data directly logic dependent, usually it returns axios-like response or just data
-        // Let's check api.ts. usually it returns parsed JSON if using fetch wrapper, or we need to await .json() if it allows
-        // Checking lib/api.ts (Step 712 view). It uses fetch wrapper.
-        // It returns the response object? 
-        // Wait, typical apiClient implementation returns data directly OR response. 
-        // Let's assume standard fetch for now but CORRECT URL.
-        // Actually apiClient in this project (Step 712) returns `response` from `fetch`.
 
         if (!response.ok) {
           throw new Error('Failed to fetch dashboard stats');
@@ -74,8 +69,20 @@ const AdminDashboardPage = () => {
       <DashboardSidebar />
       <div
         className="flex flex-col items-center ml-5 gap-y-4 w-full h-full max-xl:ml-0 max-xl:px-2 max-xl:mt-5
-                  p-4 rounded-lg bg-white/70 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
+                        p-4 rounded-lg bg-white/70 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-gray-700 shadow-lg text-gray-900 dark:text-white"
       >
+        {/* Header Section with Export Button */}
+        <div className="w-full flex justify-between items-center mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            className="px-4 py-2 bg-[#cb6112] text-white rounded-lg text-sm font-medium hover:bg-[#b0520e] transition-colors shadow-lg shadow-orange-500/20 flex items-center gap-2"
+          >
+            <FaDownload size={14} />
+            Export Data
+          </button>
+        </div>
+
         {/* Grid untuk Kartu Statistik */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
           <StatsElement
@@ -125,6 +132,12 @@ const AdminDashboardPage = () => {
         {/* Grafik Penjualan Mingguan */}
         <SalesChart data={stats?.dailySales} loading={loading} />
       </div>
+
+      {/* Export Modal */}
+      <ExportReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
     </div>
   );
 };
