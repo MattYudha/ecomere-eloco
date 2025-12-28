@@ -50,16 +50,27 @@ async function getBrowser() {
 
     // Browser dead or doesn't exist → relaunch
     console.log('[Puppeteer] Launching new browser instance...');
-    browser = await puppeteer.launch({
+
+    // Railway/production: use system chromium
+    const launchOptions = {
       headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage', // Prevent memory issues
-        '--disable-gpu'
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-extensions'
       ],
       timeout: BROWSER_TIMEOUT
-    });
+    };
+
+    // In production (Railway), use system chromium
+    if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+      launchOptions.executablePath = '/nix/store/*-chromium-*/bin/chromium';
+    }
+
+    browser = await puppeteer.launch(launchOptions);
 
     // Handle browser disconnect
     browser.on('disconnected', () => {

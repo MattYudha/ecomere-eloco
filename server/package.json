@@ -37,6 +37,7 @@
     "mysql": "^2.18.1",
     "nanoid": "^3.3.7",
     "node-fetch": "^3.3.2",
+    "pdfkit": "^0.17.2",
     "puppeteer": "^24.34.0",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.1",

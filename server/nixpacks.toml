@@ -1,0 +1,9 @@
+# Let Railway handle dependencies via Aptfile
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npx prisma generate"]
+
+[start]
+cmd = "node app.js"
