@@ -5,6 +5,9 @@ import { useNotificationStore } from '@/app/_zustand/notificationStore';
 // const SOUND_FILE = '/sounds/notification.mp3';
 const THROTTLE_MS = 3000;
 
+// Singleton AudioContext to bypass autoplay restrictions
+let globalAudioContext: AudioContext | null = null;
+
 export const useNotificationSound = () => {
     const [isEnabled, setIsEnabled] = useState(false);
     const lastPlayedRef = useRef<number>(0);
@@ -18,13 +21,28 @@ export const useNotificationSound = () => {
         setStoreSoundEnabled(enabled);
     }, [setStoreSoundEnabled]);
 
-    const playBeep = useCallback(() => {
-        try {
+    const getContext = useCallback(() => {
+        if (!globalAudioContext) {
             // @ts-ignore - for legacy browsers
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
+            if (AudioContext) {
+                globalAudioContext = new AudioContext();
+            }
+        }
+        return globalAudioContext;
+    }, []);
 
-            const ctx = new AudioContext();
+    const playBeep = useCallback(() => {
+        try {
+            const ctx = getContext();
+            if (!ctx) return;
+
+            // Important: Resume context if suspended (requires user interaction first typically, 
+            // but we call this on toggle so it should be unlocked)
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(e => console.error('[SOUND] Resume failed', e));
+            }
+
             const now = ctx.currentTime;
 
             // Oscillator 1 (Fundamental - The body of the bell)
@@ -61,7 +79,7 @@ export const useNotificationSound = () => {
         } catch (e) {
             console.error('[SOUND] AudioContext error:', e);
         }
-    }, []);
+    }, [getContext]);
 
     const toggleSound = useCallback(() => {
         setIsEnabled((prev) => {
@@ -70,6 +88,7 @@ export const useNotificationSound = () => {
             setStoreSoundEnabled(newValue);
 
             if (newValue) {
+                // This user interaction unlocks the audio context
                 playBeep();
             }
 
@@ -80,10 +99,8 @@ export const useNotificationSound = () => {
     const playSound = useCallback(async () => {
         if (!isEnabled) return;
 
-        if (typeof document !== 'undefined' && document.hidden) {
-            console.log('[SOUND] Skipped: Tab hidden');
-            return;
-        }
+        // Note: Removed document.hidden check to allow background sounds if browser permits
+        // However, browsers usually throttle background tabs.
 
         const now = Date.now();
         if (now - lastPlayedRef.current < THROTTLE_MS) {
