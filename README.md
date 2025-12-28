@@ -2,7 +2,7 @@
 
 > **Modern. Skalabel. Real-time.**
 >
-> Solusi e-commerce premium dengan fitur lengkap yang dibangun untuk performa tinggi dan pengalaman pengguna yang mulus. Karya Anak Bangsa.
+> Solusi e-commerce *enterprise-grade* dengan arsitektur monolitik terdistribusi, dirancang untuk performa tinggi, keamanan maksimal, dan pengalaman pengguna yang mulus. Karya Anak Bangsa untuk UMKM Indonesia.
 
 <div align="center">
   <img src="/assets/logo.png" alt="Banner Eloqo" width="200" />
@@ -10,177 +10,149 @@
 
 ## 📖 Tentang Proyek Ini
 
-**Eloqo** adalah platform e-commerce mutakhir yang dirancang untuk memberikan pengalaman belanja kelas atas bagi pelanggan dan sistem manajemen yang tangguh bagi administrator. Dibangun dengan teknologi web terbaru, platform ini menjamin kecepatan, keamanan, dan skalabilitas.
+**Eloqo** bukan sekadar toko online biasa. Ini adalah ekosistem perdagangan digital yang dibangun di atas fondasi teknologi modern untuk menjamin **Skabilitas**, **Keamanan**, dan **Keandalan**.
 
-Baik Anda mengelola ribuan pesanan dengan **Dashboard Admin Canggih** kami atau menelusuri produk dengan **Antarmuka (UI) Lazy-loaded**, Eloqo menghadirkan keunggulan di setiap aspek.
+Platform ini mengintegrasikan **Advanced Admin Dashboard** untuk manajemen operasional yang kompleks dengan **Lazy-loaded User Interface** yang cepat, menciptakan sinergi sempurna antara *Back-Office* dan *Storefront*.
 
-### ✨ Keunggulan Utama
-- **🚀 Performa Tinggi**: Dioptimalkan dengan Next.js 14 App Router, lazy loading gambar, dan server-side rendering (SSR).
-- **📊 Wawasan Berbasis Data**: Analitik penjualan real-time, laporan streaming PDF/CSV, dan grafik interaktif.
-- **⚡ Fitur Real-Time**: Notifikasi instan untuk pembaruan pesanan melalui WebSocket (Socket.io).
-- **🛡️ Aman & Tangguh**: Menggunakan structured logging, autentikasi cookie HTTP-only, dan alur pemrosesan pembayaran yang aman.
-- **📱 Responsif Sepenuhnya**: Pengalaman yang seragam dan optimal di Desktop, Tablet, dan Ponsel.
-
----
-
-## 🌟 Fitur Unggulan
-
-### 🛍️ Pengalaman Pelanggan (Customer Experience)
-- **UI/UX Modern**: Desain bersih terinspirasi glassmorphism dengan animasi halus menggunakan `framer-motion`.
-- **Galeri Produk Canggih**: Lightbox interaktif dengan dukungan zoom dan geser (swipe).
-- **Keranjang & Checkout Pintar**: Status keranjang yang persisten dan proses checkout yang efisien.
-- **Pelacakan Pesanan**: Pembaruan status real-time dari "Menunggu" hingga "Diterima".
-- **Ulasan Pengguna**: Unggah gambar dan beri peringkat produk dengan dukungan media yang kaya.
-
-### 🔧 Manajemen Admin
-- **Dashboard Statistik**: Visualisasikan pendapatan, pesanan, dan pengunjung dalam sekilas.
-- **Laporan Streaming**: Hasilkan Laporan Penjualan (PDF/CSV) untuk rentang tanggal berapa pun tanpa membebani server, bahkan dengan dataset besar.
-- **Manajemen Pesanan**: Proses pesanan, cetak label pengiriman, dan lacak status kurir.
-- **Operasi Massal (Bulk)**: Unggah ribuan produk via CSV dengan validasi otomatis.
-- **Log Audit**: Lacak tindakan kritis dan kesalahan sistem dengan structured logging (Winston).
+### 💎 Keunggulan Kompetitif
+- **🚀 High-Performance Architecture**: Dibangun dengan **Next.js 14 App Router** dan **React Server Components (RSC)** untuk rendering ultra-cepat dan SEO optimal.
+- **�️ Enterprise-Grade Security**: Dilengkapi dengan **Rate Limiting Middleware**, **JWT Authentication (HTTP-Only Cookies)**, dan **Role-Based Access Control (RBAC)** untuk melindungi data sensitif.
+- **📊 Streaming Data Pipeline**: Satu-satunya platform di kelasnya yang mendukung ekspor laporan (PDF/CSV) menggunakan metode **Streaming**, memungkinkan unduhan jutaan baris data tanpa membebani memori server (OOM Protection).
+- **⚡ Concurrency Control**: Sistem antrean cerdas untuk operasi massal (Bulk Print Label) dengan mekanisme **Idempotency** (SHA-256 Checksums) untuk mencegah duplikasi data transaksi.
+- **📱 Omni-Channel Experience**: Desain responsif adaptif yang memberikan pengalaman *Native App-like* di semua perangkat.
 
 ---
 
-## 🛠️ Teknologi yang Digunakan (Tech Stack)
+## 🌟 Fitur Unggulan & Analisis Teknis
 
-Eloqo dibangun di atas arsitektur monolitik yang menggunakan layanan frontend dan backend terpisah untuk fleksibilitas maksimal.
+### 1. 🛍️ Storefront Berkinerja Tinggi (Frontend)
+- **Persisten State Management**: Menggunakan **Zustand** dengan `JSON Storage Persistence` untuk menjaga integritas keranjang belanja pengguna meskipun browser ditutup.
+- **Optimized Asset Delivery**: Implementasi **Advanced Lazy Loading** dan **Image Optimization** (WebP conversion) mengurangi *First Contentful Paint (FCP)* secara signifikan.
+- **Interactive UX**: Lightbox galeri produk dengan dukungan *gestures* (cubit zoom, geser) dan animasi transisi halus menggunakan `framer-motion`.
 
-### **Frontend**
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-- **Bahasa**: TypeScript
-- **Styling**: [TailwindCSS](https://tailwindcss.com/) + HeadlessUI
-- **Manajemen State**: Zustand
-- **Real-time**: Socket.io Client
-- **Utilitas**: Framer Motion, React Hot Toast, React Icons
+### 2. 🔧 Manajemen Back-Office Canggih (Backend)
+- **Strategic Database Indexing**: Skema Prisma didesain dengan indeks majemuk (`@@index`) pada kolom kritis (`userId`, `createdAt`, `orderId`) untuk menjamin query tetap cepat seiring bertambahnya data.
+- **Audit Trail System**: Mencatat setiap tindakan sensitif (cetak label, ekspor data) ke dalam tabel `AuditLog` yang *immutable*, memudahkan pelacakan investigasi forensik digital.
+- **Bulk Operations Engine**: Mesin pemrosesan batch untuk mengunggah ribuan produk dan mencetak ratusan label pengiriman sekaligus dengan validasi data real-time dan penanganan error parsial.
+- **Real-time Event Bus**: Integrasi **Socket.io** untuk notifikasi pesanan instan, memungkinkan penjual merespons pesanan masuk dalam hitungan milidetik.
 
-### **Backend**
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MySQL (via [Prisma ORM](https://www.prisma.io/))
-- **Logging**: Winston (Structured JSON Logs)
-- **Reporting**: PDFKit (Streaming Generation)
-- **Penyimpanan File**: Cloudinary
+### 3. 📄 Pelaporan & Analitik (Reporting)
+- **Memory-Efficient Export**: Menggunakan teknik *Node.js Streams* untuk pipa data langsung dari database ke respons HTTP klien.
+    - **CSV**: Streaming baris demi baris.
+    - **PDF**: Pembuatan dokumen on-the-fly dengan `pdfkit`.
+- **Dasbor Statistik Visual**: Grafik interaktif untuk memantau *Revenue*, *Traffic*, dan *Conversion Rate* secara real-time.
 
 ---
 
-## 🚀 Mulai Penggunaan (Getting Started)
+## 🛠️ Arsitektur Teknologi (Tech Stack)
 
-Ikuti langkah-langkah ini untuk menjalankan proyek secara lokal.
+Kami menggunakan tumpukan teknologi (stack) yang telah teruji di industri untuk stabilitas jangka panjang.
 
-### Prasyarat
-- Node.js (v18 atau lebih baru)
-- Database MySQL
-- npm atau pnpm
+### **Frontend Layer**
+- **Core**: [Next.js 14](https://nextjs.org/) (React Framework)
+- **Language**: TypeScript (Strict Typing)
+- **Styling**: [TailwindCSS](https://tailwindcss.com/) + HeadlessUI (Aksesibilitas Tinggi)
+- **State**: Zustand (Atomic State)
+- **Protocol**: WebSocket (Socket.io Client)
 
-### Instalasi
+### **Backend Layer**
+- **Runtime**: Node.js (V8 Engine)
+- **Framework**: Express.js (REST API Standard)
+- **ORM**: [Prisma](https://www.prisma.io/) (Type-safe Database Access)
+- **Database**: MySQL (Relational Integrity)
+- **DevOps**: Structured Logging (Winston), PM2 Ready
 
-1.  **Clone repositori**
+---
+
+## 🚀 Instalasi & Penggunaan
+
+Ikuti langkah-langkah berikut untuk menjalankan infrastruktur ini di lingkungan lokal Anda.
+
+### Prasyarat Sistem
+- Node.js (v18 LTS atau lebih baru)
+- MySQL Database Server
+- Dukungan npm/pnpm/yarn
+
+### Langkah Deployment
+
+1.  **Clone Repositori**
     ```bash
     git clone https://github.com/MattYudha/ecomere-eloco.git
     cd ecomere-eloco
     ```
 
-2.  **Instal Dependensi**
+2.  **Instalasi Dependensi (Monorepo-style)**
     ```bash
-    # Instal dependensi root/frontend
+    # Instal dependensi Frontend
     npm install
 
-    # Instal dependensi server
+    # Instal dependensi Backend Service
     cd server
     npm install
     cd ..
     ```
 
-3.  **Pengaturan Environment**
-    Buat file `.env` di `server/` dan `root` berdasarkan `.env.example`.
-    
-    **Variabel Wajib:**
-    - `DATABASE_URL` (String Koneksi MySQL)
-    - `JWT_SECRET`
-    - `CLOUDINARY_CLOUD_NAME`, `API_KEY`, `API_SECRET`
-    - `NEXT_PUBLIC_API_URL` (contoh: `http://localhost:3001`)
+3.  **Konfigurasi Environment**
+    Duplikasi `.env.example` menjadi `.env` di root dan folder server. Isi variabel kunci:
+    - `DATABASE_URL`: String koneksi database MySQL.
+    - `JWT_SECRET`: Kunci enkripsi token.
+    - `CLOUDINARY_*`: Kredensial penyimpanan aset media.
 
-4.  **Migrasi Database**
+4.  **Migrasi Skema Database**
+    Sinkronisasi skema Prisma dengan database lokal:
     ```bash
-    # Jalankan dari root
     npx prisma generate --schema=./server/prisma/schema.prisma
     npx prisma db push --schema=./server/prisma/schema.prisma
     ```
 
-5.  **Jalankan Aplikasi**
-    Anda perlu menjalankan backend dan frontend secara bersamaan.
+5.  **Menjalankan Layanan**
+    Jalankan kedua layanan secara paralel untuk komunikasi penuh.
 
-    **Terminal 1 (Backend):**
+    **Terminal A (API Server):**
     ```bash
     cd server
     node app.js
     ```
 
-    **Terminal 2 (Frontend):**
+    **Terminal B (Storefront Client):**
     ```bash
     npm run dev
     ```
 
-    Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
+    Akses aplikasi melalui: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📂 Struktur Proyek
+## 📂 Peta Struktur Proyek
 
 ```
 ecomere-eloco/
-├── app/                  # Halaman Next.js App Router
-├── components/           # Komponen UI yang dapat digunakan kembali
-│   ├── admin/            # Komponen khusus Admin (ExportModal, dll.)
-│   ├── ui/               # Elemen UI inti (OptimizedImage, Buttons)
-├── context/              # Context Global (Auth, Theme)
-├── hooks/                # Custom React Hooks
-├── lib/                  # Utilitas (Klien API, Formatters)
-├── server/               # Layanan Backend Express
-│   ├── controllers/      # Logika Rute
-│   ├── middleware/       # Middleware Auth & Logging
-│   ├── prisma/           # Skema Database
-│   ├── routes/           # Endpoint API
-│   ├── services/         # Logika Bisnis (Email, Laporan)
-│   └── utils/            # Helper Backend (Logger, Formatters)
-└── public/               # Aset Statis
+├── app/                  # Next.js App Router (Server & Client Components)
+├── components/           # Pustaka Komponen Atomic Design
+│   ├── admin/            # Widget Dashboard (ExportModal, Charts)
+│   ├── ui/               # Primitif UI (OptimizedImage, Buttons)
+├── lib/                  # Utilitas Bersama (API Facade, Formatters)
+├── server/               # Microservice Backend
+│   ├── middleware/       # Lapisan Keamanan (Auth, Rate Limit, Logs)
+│   ├── prisma/           # Sumber Kebenaran Data (Schema)
+│   ├── services/         # Logika Bisnis Terisolasi (ReportGen, LabelGen)
+│   └── utils/            # Helper Teknis (Winston Logger, Crypto)
+└── public/               # Aset Statis Publik
 ```
-
-## 🔍 Dokumentasi Fitur Lanjutan
-
-### 📄 Laporan Penjualan (Streaming)
-Kami menggunakan **pendekatan streaming** untuk menghasilkan laporan PDF dan CSV. Hal ini memastikan memori server tetap stabil bahkan jika Anda mengekspor 100.000 pesanan.
-- **PDF**: Progres dibuat menggunakan `pdfkit` dan dialirkan langsung ke respons.
-- **CSV**: Dibuat baris demi baris untuk menghindari pembengkakan memori.
-
-### 📧 Structured Logging
-Semua kejadian email (Sukses/Gagal) dicatat ke `server/logs/email.log` dalam **format JSON**. Ini memudahkan parsing dan integrasi dengan alat manajemen log seperti Datadog atau ELK Stack.
-- **Lihat Log**: Jalankan `node server/view-logs.js email` untuk memeriksa status pengiriman terbaru.
-
-### 📦 Upload Massal (Bulk Upload)
-Admin dapat mengunggah produk melalui CSV. Sistem melakukan validasi otomatis meliputi:
-- Pengecekan duplikat
-- Keberadaan kategori
-- Validasi URL gambar
 
 ---
 
-## 🤝 Kontribusi
+## 🤝 Berkontribusi
 
-Kontribusi adalah hal yang membuat komunitas open-source menjadi tempat yang luar biasa untuk belajar, mendapat inspirasi, dan berkreasi. Setiap kontribusi yang Anda berikan **sangat dihargai**.
-
-1. Fork Proyek ini
-2. Buat Feature Branch Anda (`git checkout -b fitur/FiturKeren`)
-3. Commit Perubahan Anda (`git commit -m 'Menambahkan FiturKeren'`)
-4. Push ke Branch (`git push origin fitur/FiturKeren`)
-5. Buka Pull Request
+Kami mengundang pengembang berbakat untuk berkontribusi pada proyek open-source ini. Silakan buat *Pull Request* baru dengan perbaikan bug atau fitur baru.
 
 ## 📝 Lisensi
 
-Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
+Didistribusikan di bawah lisensi MIT. Hak Cipta © 2025 Eloqo Team.
 
 ---
 
 <div align="center">
-  <p>Dibuat dengan ❤️ oleh Tim Eloqo</p>
+  <p><b>Dibuat dengan Kebanggaan dan ❤️ oleh Tim Eloqo</b></p>
+  <p><i>Memberdayakan UMKM Indonesia Go Digital</i></p>
 </div>
