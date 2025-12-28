@@ -25,6 +25,7 @@ import {
     Printer,
 } from 'lucide-react';
 import OrderStatusCard from '@/components/OrderStatusCard';
+import PrintableShippingLabel from '@/components/PrintableShippingLabel';
 
 interface OrderProduct {
     id: string;
@@ -216,7 +217,7 @@ const AdminSingleOrder = () => {
         }
     };
 
-    const handlePrintLabel = async () => {
+    const handlePrintLabel = () => {
         // Validate courier selected
         if (!order.courier) {
             toast.error('Silakan pilih kurir terlebih dahulu');
@@ -224,38 +225,11 @@ const AdminSingleOrder = () => {
         }
 
         setIsPrinting(true);
-        try {
-            const response = await apiClient.post(
-                `/api/admin/orders/${order.id}/label`
-            );
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to generate label');
-            }
-
-            // Download PDF
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Label_${order.id.substring(0, 8)}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-
-            // Cleanup
-            setTimeout(() => {
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            }, 100);
-
-            toast.success('Label berhasil di-download!');
-        } catch (error: any) {
-            console.error('Error printing label:', error);
-            toast.error(error.message || 'Gagal generate label');
-        } finally {
+        // Small delay to ensure component renders before printing
+        setTimeout(() => {
+            window.print();
             setIsPrinting(false);
-        }
+        }, 100);
     };
 
 
@@ -607,6 +581,11 @@ const AdminSingleOrder = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Printable Label - Only visible when printing */}
+            {isPrinting && order && (
+                <PrintableShippingLabel order={order} />
+            )}
         </div>
     );
 };
