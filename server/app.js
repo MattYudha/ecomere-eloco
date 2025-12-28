@@ -68,8 +68,8 @@ const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
 const reviewsRouter = require('./routes/reviews');
-// TEMPORARY: Comment out admin router to prevent Puppeteer crash
-// const adminRouter = require('./routes/admin');
+// Use lightweight admin router (no Puppeteer/label generation)
+const adminRouter = require('./routes/admin-lite');
 
 // =========================
 // Middleware & Utils
@@ -232,11 +232,8 @@ app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewsRouter);
-// TEMPORARY FIX: Disable admin routes due to Puppeteer/Chromium issue on Railway
-// This prevents 502 Bad Gateway error
-// TODO: Fix Chromium installation or replace Puppeteer with PDFKit
-// app.use('/api/admin', adminRouter);
-console.log('[TEMP] Admin routes disabled - fixing Puppeteer issue');
+// Admin routes (lightweight version - CSV export only, no label printing)
+app.use('/api/admin', adminRouter);
 
 // =========================
 // 404 Handler
