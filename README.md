@@ -5,7 +5,7 @@
 > Solusi e-commerce premium dengan fitur lengkap yang dibangun untuk performa tinggi dan pengalaman pengguna yang mulus. Karya Anak Bangsa.
 
 <div align="center">
-  <img src="/assets/logo.png" alt="Banner Eloqo" width="200" />
+  <img src="public/assets/logo.png" alt="Banner Eloqo" width="200" />
 </div>
 
 ## 📖 Tentang Proyek Ini
