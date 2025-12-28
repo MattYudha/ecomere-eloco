@@ -49,15 +49,15 @@ export default function PrintableShippingLabel({ order }: PrintableShippingLabel
 
             <div id="printable-label" style={{
                 width: '148mm',
-                height: '105mm',
+                height: 'auto',
+                minHeight: '105mm',
                 padding: '12mm',
                 fontFamily: 'Arial, sans-serif',
                 background: 'white',
                 color: 'black',
                 fontSize: '9pt',
                 boxSizing: 'border-box',
-                pageBreakAfter: 'always',
-                position: 'relative'
+                pageBreakAfter: 'always'
             }}>
                 {/* Header */}
                 <div style={{
@@ -161,26 +161,25 @@ export default function PrintableShippingLabel({ order }: PrintableShippingLabel
                 </div>
 
                 {/* QR Code */}
-                <div style={{ textAlign: 'center', marginTop: '8mm' }}>
+                <div style={{ textAlign: 'center', marginTop: '6mm' }}>
                     <QRCodeSVG
                         value={qrPayload}
                         size={80}
                         level="M"
                     />
-                    <div style={{ fontSize: '7pt', marginTop: '4mm', color: '#666' }}>
+                    <div style={{ fontSize: '7pt', marginTop: '3mm', color: '#666' }}>
                         Scan untuk verifikasi order
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div style={{
-                    position: 'absolute',
-                    bottom: '6mm',
-                    left: '12mm',
-                    right: '12mm',
+                    marginTop: '8mm',
                     textAlign: 'center',
                     fontSize: '7pt',
-                    color: '#999'
+                    color: '#999',
+                    borderTop: '1px solid #eee',
+                    paddingTop: '3mm'
                 }}>
                     Kode Pos: {order.postalCode} | Powered by ELOCO E-Commerce
                 </div>
