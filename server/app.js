@@ -231,7 +231,11 @@ app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewsRouter);
-app.use('/api/admin', adminRouter);
+// TEMPORARY FIX: Disable admin routes due to Puppeteer/Chromium issue on Railway
+// This prevents 502 Bad Gateway error
+// TODO: Fix Chromium installation or replace Puppeteer with PDFKit
+// app.use('/api/admin', adminRouter);
+console.log('[TEMP] Admin routes disabled - fixing Puppeteer issue');
 
 // =========================
 // 404 Handler
