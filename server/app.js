@@ -68,7 +68,8 @@ const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
 const reviewsRouter = require('./routes/reviews');
-const adminRouter = require('./routes/admin');
+// TEMPORARY: Comment out admin router to prevent Puppeteer crash
+// const adminRouter = require('./routes/admin');
 
 // =========================
 // Middleware & Utils
