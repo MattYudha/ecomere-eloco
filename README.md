@@ -4,7 +4,7 @@
 >
 > A premium, full-featured e-commerce solution built for high performance and seamless user experience.
 
-![Eloqo Banner](/assets/eloqo_banner.png) *<!-- Replace with actual banner if available -->*
+![Eloqo Banner](/assets/logo.png)
 
 ## 📖 About The Project
 
