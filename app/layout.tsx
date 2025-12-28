@@ -11,6 +11,7 @@ import SessionTimeoutWrapper from '@/components/SessionTimeoutWrapper';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WishlistModule } from '@/components/modules/wishlist';
 import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
+import GlobalSoundPlayer from '@/components/GlobalSoundPlayer';
 
 // Fonts
 const inter = Inter({ subsets: ['latin'] });
@@ -53,6 +54,7 @@ export default function RootLayout({
           <Providers>
             <AuthProvider>
               <SessionTimeoutWrapper />
+              <GlobalSoundPlayer />
 
               <Header />
 

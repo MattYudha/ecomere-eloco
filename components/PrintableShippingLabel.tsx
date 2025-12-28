@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
 
 interface Order {
@@ -24,13 +25,22 @@ interface PrintableShippingLabelProps {
 }
 
 export default function PrintableShippingLabel({ order }: PrintableShippingLabelProps) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
     const qrPayload = JSON.stringify({
         v: 1,
         orderId: order.id,
         checksum: order.id.substring(0, 4)
     });
 
-    return (
+    if (!mounted) return null;
+
+    return createPortal(
         <>
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -217,6 +227,7 @@ export default function PrintableShippingLabel({ order }: PrintableShippingLabel
                     Kode Pos: {order.postalCode} | Powered by ELOCO E-Commerce
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 }

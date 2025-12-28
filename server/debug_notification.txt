@@ -1395,3 +1395,24 @@ Data: {
 --------------------------------------------------
 [2025-12-28T12:03:48.595Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
 --------------------------------------------------
+[2025-12-28T12:30:25.492Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-28T12:30:25.590Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "iJvQS33-wXL_Ilb_46oHH"
+}
+--------------------------------------------------
+[2025-12-28T12:30:34.883Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-28T12:30:34.884Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Update: Shipped 🚚
+Data: {
+  "notificationId": "N7A-v_SIauuXEQBRAiyOX"
+}
+--------------------------------------------------
+[2025-12-28T12:35:19.949Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-28T12:35:19.984Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Selesai
+Data: {
+  "notificationId": "RkyyMSZdctgXUwYteve2Q"
+}
+--------------------------------------------------
