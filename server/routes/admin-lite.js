@@ -123,4 +123,97 @@ router.get('/reports/sales/stats', authMiddleware, requireAdmin, async (req, res
     }
 });
 
+// ============================================
+// LABEL PRINTING (GRACEFUL DEGRADATION)
+// ============================================
+
+// Generate shipping label for single order
+router.post('/orders/:orderId/label', authMiddleware, requireAdmin, async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+        // Check if we're in Railway environment (Puppeteer not available)
+        if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+            return res.status(503).json({
+                error: 'Label printing tidak tersedia di production',
+                message: 'Fitur cetak label membutuhkan Chromium yang tidak tersedia di Railway. Silakan gunakan alternatif: 1) Download data order dan buat label manual, 2) Gunakan layanan pihak ketiga seperti ShipStation, atau 3) Jalankan server lokal untuk cetak label.',
+                orderId,
+                suggestion: 'Export CSV untuk mendapatkan data lengkap order'
+            });
+        }
+
+        // In local environment, try to use Puppeteer
+        const { generateShippingLabel } = require('../services/labelGenerator');
+
+        const order = await prisma.customer_order.findUnique({
+            where: { id: orderId },
+            include: {
+                user: true
+            }
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const pdf = await generateShippingLabel(order);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="label_${orderId}.pdf"`);
+        res.send(pdf);
+
+    } catch (error) {
+        console.error('[Label] Error:', error);
+        res.status(500).json({
+            error: 'Failed to generate label',
+            message: error.message
+        });
+    }
+});
+
+// Bulk label generation
+router.post('/orders/labels/bulk', authMiddleware, requireAdmin, async (req, res) => {
+    const { orderIds } = req.body;
+
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        return res.status(400).json({ error: 'orderIds array required' });
+    }
+
+    try {
+        // Check if we're in Railway environment
+        if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+            return res.status(503).json({
+                error: 'Bulk label printing tidak tersedia di production',
+                message: 'Fitur cetak label membutuhkan Chromium. Silakan export CSV untuk mendapatkan data lengkap semua order.',
+                orderCount: orderIds.length
+            });
+        }
+
+        // Local environment only
+        const { generateBulkLabels } = require('../services/labelGenerator');
+
+        const orders = await prisma.customer_order.findMany({
+            where: { id: { in: orderIds } },
+            include: { user: true }
+        });
+
+        if (orders.length === 0) {
+            return res.status(404).json({ error: 'No orders found' });
+        }
+
+        const result = await generateBulkLabels(orders);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="labels_bulk_${Date.now()}.pdf"`);
+        res.send(result.pdf);
+
+    } catch (error) {
+        console.error('[Bulk Label] Error:', error);
+        res.status(500).json({
+            error: 'Failed to generate bulk labels',
+            message: error.message
+        });
+    }
+});
+
 module.exports = router;
