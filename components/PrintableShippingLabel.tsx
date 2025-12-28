@@ -35,14 +35,47 @@ export default function PrintableShippingLabel({ order }: PrintableShippingLabel
             <style dangerouslySetInnerHTML={{
                 __html: `
                     @media print {
-                        body * { visibility: hidden; }
-                        #printable-label, #printable-label * { visibility: visible; }
-                        #printable-label { position: absolute; left: 0; top: 0; width: 100%; }
-                        @page { size: A6 landscape; margin: 0; }
-                        html, body { width: 148mm; height: 105mm; }
+                        /* Hide everything on the page */
+                        body > *:not(#printable-label) {
+                            display: none !important;
+                        }
+                        
+                        /* Show only the label */
+                        #printable-label {
+                            display: block !important;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            visibility: visible !important;
+                        }
+                        
+                        /* A6 Landscape page setup */
+                        @page {
+                            size: A6 landscape;
+                            margin: 0;
+                        }
+                        
+                        /* Ensure proper sizing */
+                        html, body {
+                            width: 148mm;
+                            height: 105mm;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        
+                        /* Remove any default browser print styles */
+                        * {
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
                     }
+                    
+                    /* Hide on screen */
                     @media screen {
-                        #printable-label { display: none; }
+                        #printable-label {
+                            display: none;
+                        }
                     }
                 `
             }} />
