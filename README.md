@@ -4,7 +4,7 @@
 >
 > Solusi e-commerce premium dengan fitur lengkap yang dibangun untuk performa tinggi dan pengalaman pengguna yang mulus. Karya Anak Bangsa.
 
-![Banner Eloqo](/assets/logo.png)
+![Banner Eloqo](public/assets/logo.png)
 
 ## 📖 Tentang Proyek Ini
 
