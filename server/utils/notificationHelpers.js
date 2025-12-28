@@ -96,57 +96,33 @@ const createOrderUpdateNotification = async (
     try {
       const io = socketIo.getIO();
       io.to(`user_${userId}`).emit('notification', notification);
+      console.log('[NOTIFICATION] socket_emitted', {
+        userId,
+        notificationId: notification.id,
+        type: 'ORDER_UPDATE',
+        status: orderStatus,
+      });
       logDebug(`📡 Socket event emitted to user_${userId}`);
     } catch (socketError) {
-      console.error('Socket emit error:', socketError.message);
+      console.error('[NOTIFICATION] socket_error', {
+        userId,
+        error: socketError.message,
+      });
     }
 
-    // If order is delivered, send a professional email
-    if (orderStatus.toLowerCase() === 'delivered') {
-      try {
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-        });
+    console.log('[NOTIFICATION] notification_created', {
+      userId,
+      notificationId: notification.id,
+      type: 'ORDER_UPDATE',
+      status: orderStatus,
+      priority: statusInfo.priority,
+      title: statusInfo.title,
+    });
 
-        if (user && user.email) {
-          const emailTemplatePath = path.join(
-            __dirname,
-            '..',
-            'templates',
-            'orderDelivered.html',
-          );
-          let htmlContent = await fs.readFile(emailTemplatePath, 'utf-8');
+    logDebug(`✅ Notification created for user ${userId}: ${statusInfo.title}`, {
+      notificationId: notification.id
+    });
 
-          htmlContent = htmlContent
-            .replace('{{userName}}', user.name || 'Valued Customer')
-            .replace('{{orderId}}', orderId)
-            .replace(
-              '{{totalAmount}}',
-              totalAmount ? formatPrice(totalAmount) : 'N/A',
-            )
-            .replace(
-              '{{shopUrl}}',
-              process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-            )
-            .replace('{{currentYear}}', new Date().getFullYear());
-
-          await sendMail({
-            to: user.email,
-            subject: `Your Order #${orderId} Has Been Delivered!`,
-            html: htmlContent,
-          });
-          console.log(`📧 Delivered email notification sent to ${user.email}`);
-        }
-      } catch (emailError) {
-        console.error('❌ Failed to send "delivered" email:', emailError);
-        // Do not block the response for email errors
-      }
-    }
-
-    logDebug(`✅ Notification created for user ${userId}: ${statusInfo.title}`, { notificationId: notification.id });
-    console.log(
-      `✅ Notification created for user ${userId}: ${statusInfo.title}`,
-    );
     return notification;
   } catch (error) {
     logDebug('❌ Error creating order notification helper', error);

@@ -5,6 +5,10 @@ const {
   createOrderUpdateNotification,
 } = require('../utils/notificationHelpers');
 const { logDebug } = require('../utils/debug');
+const {
+  sendOrderShippedEmail,
+  sendOrderDeliveredEmail,
+} = require('../services/emailService');
 
 
 async function createCustomerOrder(request, response) {
@@ -343,6 +347,14 @@ async function updateCustomerOrder(request, response) {
             updatedOrder.id,
             validatedData.total,
           );
+
+          // Trigger email notifications (async/fire-and-forget)
+          const lowerStatus = validatedData.status.toLowerCase();
+          if (lowerStatus === 'shipped' || lowerStatus === 'dikirim') {
+            sendOrderShippedEmail(user.id, updatedOrder);
+          } else if (lowerStatus === 'delivered' || lowerStatus === 'selesai') {
+            sendOrderDeliveredEmail(user.id, updatedOrder);
+          }
           console.log(
             `📧 Status update notification sent to user: ${user.email} - Status: ${validatedData.status}`,
           );

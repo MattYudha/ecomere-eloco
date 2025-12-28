@@ -6,6 +6,8 @@ import { FaStar, FaCheckCircle, FaTrash } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import ReviewSkeleton from '@/components/ReviewSkeleton';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import { IMAGE_SIZES, getSizes } from '@/lib/imageUtils';
 
 interface ReviewListProps {
     productId: string;
@@ -106,11 +108,14 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                         <div className="pl-[3.25rem] mt-3 flex flex-wrap gap-2">
                             {review.images.map((imgUrl, idx) => (
                                 <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer hover:opacity-90 active:scale-95 transition-all">
-                                    <Image
+                                    <OptimizedImage
                                         src={imgUrl}
                                         alt={`Review image ${idx + 1}`}
-                                        fill
-                                        className="object-cover"
+                                        width={IMAGE_SIZES.THUMBNAIL}
+                                        height={IMAGE_SIZES.THUMBNAIL}
+                                        sizes="80px"
+                                        className="object-cover w-full h-full"
+                                        loading="lazy"
                                         onClick={() => window.open(imgUrl, '_blank')}
                                     />
                                 </div>
