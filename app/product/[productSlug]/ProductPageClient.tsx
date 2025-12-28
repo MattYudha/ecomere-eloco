@@ -29,7 +29,7 @@ interface ImageItem {
 }
 
 interface SingleProductPageProps {
-    params: { productSlug: string; id: string };
+    params: { productSlug: string; id?: string };
 }
 
 export default function ProductPageClient({ params }: SingleProductPageProps) {
@@ -59,10 +59,12 @@ export default function ProductPageClient({ params }: SingleProductPageProps) {
                 setProduct(productData);
                 setSelectedImage(productData?.mainImage || '');
 
-                // Fetch images
-                const imagesData = await apiClient.get(`/api/images/${id}`, { cache: 'no-store' });
-                const imagesArray: ImageItem[] = (await imagesData.json()) || [];
-                setImages(imagesArray);
+                // Fetch images using product ID from the fetched data
+                if (productData.id) {
+                    const imagesData = await apiClient.get(`/api/images/${productData.id}`, { cache: 'no-store' });
+                    const imagesArray: ImageItem[] = (await imagesData.json()) || [];
+                    setImages(imagesArray);
+                }
             } catch (error) {
                 console.error('Error fetching product:', error);
                 notFound();
@@ -72,7 +74,7 @@ export default function ProductPageClient({ params }: SingleProductPageProps) {
         };
 
         fetchProduct();
-    }, [productSlug, id]);
+    }, [productSlug]);
 
     // Helper function to create a consistent, root-relative image path
     const getImageUrl = (path: string | null | undefined) => {

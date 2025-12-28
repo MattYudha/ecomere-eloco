@@ -23,6 +23,9 @@ import {
   ChevronDown,
   Filter,
   Trash,
+  Download,
+  FileSpreadsheet,
+  X,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -41,6 +44,12 @@ const AdminOrders = () => {
   const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [exportModal, setExportModal] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    from: new Date(new Date().setDate(1)).toISOString().split('T')[0],
+    to: new Date().toISOString().split('T')[0]
+  });
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -53,7 +62,7 @@ const AdminOrders = () => {
         setOrders(data?.orders || []);
       } catch (error) {
         console.error('Error fetching orders:', error);
-        setOrders([]); // Set to empty array on error
+        setOrders([]);
       }
     };
     fetchOrders();
@@ -77,11 +86,8 @@ const AdminOrders = () => {
     setSelectedOrders(newSelected);
   };
 
-
-
   const handleBulkDelete = async () => {
     if (selectedOrders.size === 0) return;
-
     if (!confirm('Are you sure you want to delete selected orders?')) return;
 
     try {
@@ -90,9 +96,7 @@ const AdminOrders = () => {
         body: JSON.stringify({ orderIds }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete orders');
-      }
+      if (!response.ok) throw new Error('Failed to delete orders');
 
       toast.success(`Successfully deleted ${selectedOrders.size} orders`);
       setOrders(orders.filter((o) => !selectedOrders.has(o.id)));
@@ -100,6 +104,52 @@ const AdminOrders = () => {
     } catch (error) {
       console.error('Error deleting orders:', error);
       toast.error('Failed to delete selected orders');
+    }
+  };
+
+  const handleExport = async () => {
+    setExportLoading(true);
+    try {
+      const response = await apiClient.get(
+        `/api/admin/reports/sales/export?from=${dateRange.from}&to=${dateRange.to}&format=csv`,
+        { cache: 'no-store' }
+      );
+
+      if (!response.ok) throw new Error('Export failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sales_report_${dateRange.from}_to_${dateRange.to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Laporan berhasil didownload!');
+      setExportModal(false);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Gagal export laporan');
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const setQuickDate = (type: 'thisMonth' | 'lastMonth') => {
+    const now = new Date();
+    if (type === 'thisMonth') {
+      setDateRange({
+        from: new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0],
+        to: new Date().toISOString().split('T')[0]
+      });
+    } else {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      setDateRange({
+        from: lastMonth.toISOString().split('T')[0],
+        to: new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0]
+      });
     }
   };
 
@@ -124,7 +174,6 @@ const AdminOrders = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-50 dark:bg-dark-bg p-4 md:p-8">
-      {/* Main Container */}
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
@@ -148,13 +197,21 @@ const AdminOrders = () => {
                     Delete Selected ({selectedOrders.size})
                   </button>
                 )}
+                <button
+                  onClick={() => setExportModal(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-2xl border border-green-200 dark:border-green-900 font-semibold transition-all hover:bg-green-200 dark:hover:bg-green-900/50"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Laporan
+                </button>
                 <div className="backdrop-blur-md bg-white/50 rounded-2xl px-6 py-3 border border-gray-200">
                   <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
                     Total Orders
                   </p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {orders.length}
-                  </p>                </div>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -164,7 +221,6 @@ const AdminOrders = () => {
         <div className="mb-6">
           <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 rounded-2xl border border-gray-200 dark:border-slate-700 p-6 shadow-lg">
             <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search Bar */}
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -176,7 +232,6 @@ const AdminOrders = () => {
                 />
               </div>
 
-              {/* Status Filter */}
               <div className="relative">
                 <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <select
@@ -196,123 +251,62 @@ const AdminOrders = () => {
           </div>
         </div>
 
-        {/* Table Container with Liquid Glass */}
+        {/* Table Container */}
         <div className="relative">
           <div className="relative backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-xl overflow-hidden">
-            {/* Table Wrapper for Responsive Scroll */}
             <div className="overflow-x-auto">
               <table className="w-full">
-                {/* Table Head */}
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="px-6 py-5 text-left">
                       <input
                         type="checkbox"
-                        checked={
-                          selectedOrders.size === orders.length &&
-                          orders.length > 0
-                        }
+                        checked={selectedOrders.size === orders.length && orders.length > 0}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-5 h-5 rounded-lg bg-gray-200/50 dark:bg-slate-700/50 border-2 border-gray-300 dark:border-slate-600 checked:bg-purple-600 dark:checked:bg-purple-500 checked:border-purple-600 dark:checked:border-purple-500 cursor-pointer transition-all"
+                        className="w-5 h-5 rounded-lg border-2 border-gray-300 checked:bg-purple-600 cursor-pointer transition-all"
                       />
                     </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4" />
-                        Order ID
-                      </div>
-                    </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        Customer
-                      </div>
-                    </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
-                        Amount
-                      </div>
-                    </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        Date
-                      </div>
-                    </th>
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Action
-                    </th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                   </tr>
                 </thead>
-
-                {/* Table Body */}
                 <tbody>
-                  {filteredOrders && filteredOrders.length > 0 ? (
-                    filteredOrders.map((order, index) => (
-                      <tr
-                        key={order?.id}
-                        className="border-b border-gray-200/50 hover:bg-gray-500/10 transition-all duration-200 group"
-                      >
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
+                      <tr key={order.id} className="border-b border-gray-200/50 hover:bg-gray-500/10 transition-all duration-200 group">
                         <td className="px-6 py-5">
                           <input
                             type="checkbox"
-                            checked={selectedOrders.has(order?.id)}
-                            onChange={(e) =>
-                              handleSelectOrder(order?.id, e.target.checked)
-                            }
-                            className="w-5 h-5 rounded-lg bg-gray-200/50 dark:bg-slate-700/50 border-2 border-gray-300 dark:border-slate-600 checked:bg-purple-600 dark:checked:bg-purple-500 checked:border-purple-600 dark:checked:border-purple-500 cursor-pointer transition-all"
+                            checked={selectedOrders.has(order.id)}
+                            onChange={(e) => handleSelectOrder(order.id, e.target.checked)}
+                            className="w-5 h-5 rounded-lg border-2 border-gray-300 checked:bg-purple-600 cursor-pointer transition-all"
                           />
                         </td>
-                        <td className="px-6 py-5">
-                          <div className="font-mono font-bold text-gray-900 text-sm">
-                            #{order?.id}
-                          </div>
-                        </td>
+                        <td className="px-6 py-5 font-mono font-bold text-sm">#{order.id}</td>
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
-                            <span className="font-semibold text-gray-800 text-sm">
-                              {order?.name}
-                            </span>
+                            <span className="font-semibold text-gray-800 text-sm">{order.name}</span>
                             <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                              <MapPin className="w-3 h-3" />
-                              {order?.country}
+                              <MapPin className="w-3 h-3" /> {order.country}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span
-                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatusColor(order?.status)}`}
-                          >
-                            {order?.status}
+                          <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
+                            {order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-5">
-                          <span className="font-bold text-gray-800 text-sm">
-                            {formatPrice(order?.total)}
-                          </span>
+                        <td className="px-6 py-5 font-bold text-sm">{formatPrice(order.total)}</td>
+                        <td className="px-6 py-5 text-sm">
+                          {new Date(order.dateTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </td>
                         <td className="px-6 py-5">
-                          <span className="text-gray-600 text-sm">
-                            {new Date(
-                              Date.parse(order?.dateTime),
-                            ).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5">
-                          <Link
-                            href={`/admin/orders/${order?.id}`}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-sm font-medium transition-all duration-200 group-hover:border-purple-400"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View
+                          <Link href={`/admin/orders/${order.id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-sm font-medium transition-all">
+                            <Eye className="w-4 h-4" /> View
                           </Link>
                         </td>
                       </tr>
@@ -322,12 +316,7 @@ const AdminOrders = () => {
                       <td colSpan={7} className="px-6 py-16 text-center">
                         <div className="flex flex-col items-center gap-3">
                           <Package className="w-16 h-16 text-gray-300" />
-                          <p className="text-gray-500 text-lg font-medium">
-                            No orders found
-                          </p>
-                          <p className="text-gray-400 text-sm">
-                            Try adjusting your search or filters
-                          </p>
+                          <p className="text-gray-500 text-lg font-medium">No orders found</p>
                         </div>
                       </td>
                     </tr>
@@ -335,34 +324,66 @@ const AdminOrders = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Table Footer with Summary */}
             {filteredOrders.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 backdrop-blur-sm bg-white/50 dark:bg-slate-800/50">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-500">
-                  <span>
-                    Showing{' '}
-                    <span className="text-gray-800 font-semibold">
-                      {filteredOrders.length}
-                    </span>{' '}
-                    of{' '}
-                    <span className="text-gray-800 font-semibold">
-                      {orders.length}
-                    </span>{' '}
-                    orders
-                  </span>
-                  {selectedOrders.size > 0 && (
-                    <span className="text-purple-600 font-medium">
-                      {selectedOrders.size} order
-                      {selectedOrders.size > 1 ? 's' : ''} selected
-                    </span>
-                  )}
+              <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50">
+                <div className="flex justify-between items-center text-sm text-gray-500">
+                  <span>Showing <b>{filteredOrders.length}</b> of <b>{orders.length}</b> orders</span>
+                  {selectedOrders.size > 0 && <span className="text-purple-600 font-medium">{selectedOrders.size} selected</span>}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Export Modal */}
+      {exportModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+            <button onClick={() => setExportModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+              <X className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-3 mb-6">
+              <FileSpreadsheet className="w-8 h-8 text-green-600" />
+              <h2 className="text-2xl font-bold dark:text-white">Export Laporan</h2>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-300">Dari Tanggal</label>
+                <input
+                  type="date"
+                  value={dateRange.from}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border dark:bg-slate-700 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-300">Sampai Tanggal</label>
+                <input
+                  type="date"
+                  value={dateRange.to}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border dark:bg-slate-700 dark:text-white"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setQuickDate('thisMonth')} className="flex-1 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm">Bulan Ini</button>
+                <button onClick={() => setQuickDate('lastMonth')} className="flex-1 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm">Bulan Lalu</button>
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button onClick={() => setExportModal(false)} className="flex-1 py-3 border rounded-xl dark:text-white">Batal</button>
+                <button
+                  onClick={handleExport}
+                  disabled={exportLoading}
+                  className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {exportLoading ? 'Downloading...' : <><Download className="w-4 h-4" /> Export CSV</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

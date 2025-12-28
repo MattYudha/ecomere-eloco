@@ -467,7 +467,7 @@ const AdminSingleOrder = () => {
                                     </select>
                                     {order.courier && !isKnownCourier(order.courier) && (
                                         <p className="text-xs text-amber-600 mt-1">
-                                            ⚠️ Kurir "{order.courier}" tidak ada di daftar. Pilih "Kurir Lainnya" untuk edit.
+                                            ⚠️ Kurir &quot;{order.courier}&quot; tidak ada di daftar. Pilih &quot;Kurir Lainnya&quot; untuk edit.
                                         </p>
                                     )}
                                 </div>
