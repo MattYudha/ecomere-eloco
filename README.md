@@ -6,7 +6,6 @@
 
 <div align="center">
   <img src="public/assets/logo.png" alt="Banner Eloqo" width="200" />
->>>>>>> 80238e1cff5bb254d5bd715b8a53fbcf4b4036cb
 </div>
 
 ## 📖 Tentang Proyek Ini
