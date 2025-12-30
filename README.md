@@ -5,9 +5,7 @@
 > Solusi e-commerce *enterprise-grade* dengan arsitektur monolitik terdistribusi, dirancang untuk performa tinggi, keamanan maksimal, dan pengalaman pengguna yang mulus. Karya Anak Bangsa untuk UMKM Indonesia.
 
 <div align="center">
-<<<<<<< HEAD
-  <img src="/assets/logo.png" alt="Banner Eloqo" width="200" />
-=======
+<<<<<<< HEAD <img src="public/assets/logo.png" alt="Banner Eloqo" width="200" / =======
   <img src="public/assets/logo.png" alt="Banner Eloqo" width="200" />
 >>>>>>> 80238e1cff5bb254d5bd715b8a53fbcf4b4036cb
 </div>
