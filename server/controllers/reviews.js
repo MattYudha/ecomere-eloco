@@ -194,7 +194,8 @@ const getReviews = async (req, res) => {
                     select: {
                         id: true,
                         email: true,
-                        role: true
+                        role: true,
+                        image: true
                     },
                 },
             },
