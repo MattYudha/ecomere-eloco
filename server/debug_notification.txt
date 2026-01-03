@@ -1416,3 +1416,78 @@ Data: {
   "notificationId": "RkyyMSZdctgXUwYteve2Q"
 }
 --------------------------------------------------
+[2026-01-03T11:07:20.260Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "admin@gmail.com",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2026-01-03T11:07:20.813Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:07:20.879Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2026-01-03T11:07:20.880Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "99fe2537-99ec-4a5c-beaa-d566b342c5cf"
+}
+--------------------------------------------------
+[2026-01-03T11:07:21.314Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:07:21.315Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Update: Pending ⏳
+Data: {
+  "notificationId": "EPK1H38YaBEFiB4UBwlfE"
+}
+--------------------------------------------------
+[2026-01-03T11:07:21.315Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2026-01-03T11:08:20.210Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:08:20.210Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Update: Processing 🛠️
+Data: {
+  "notificationId": "MKTt42r_he3i7VkrMmsLp"
+}
+--------------------------------------------------
+[2026-01-03T11:08:25.936Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:08:25.937Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Selesai
+Data: {
+  "notificationId": "J_9yrm0TUVlzEfK-kMmIP"
+}
+--------------------------------------------------
+[2026-01-03T11:13:32.393Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "admin@gmail.com",
+  "userIdFromBody": "6d5f3d6a-0964-48ab-9980-091f068e6c8c"
+}
+--------------------------------------------------
+[2026-01-03T11:13:32.863Z] 🔍 Using provided userId: 6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:13:32.936Z] ✅ Found user by ID: admin@gmail.com
+--------------------------------------------------
+[2026-01-03T11:13:32.936Z] Attempting to create notification
+Data: {
+  "userId": "6d5f3d6a-0964-48ab-9980-091f068e6c8c",
+  "status": "pending",
+  "orderId": "4228edfc-8d77-4c7e-9da3-db08dcb627cc"
+}
+--------------------------------------------------
+[2026-01-03T11:13:33.384Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T11:13:33.385Z] 📧 Order confirmation notification sent to user: admin@gmail.com
+--------------------------------------------------
+[2026-01-03T11:13:33.385Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Update: Pending ⏳
+Data: {
+  "notificationId": "nccPx4OXq7GoHGrPFAaaf"
+}
+--------------------------------------------------
+[2026-01-03T16:26:59.338Z] 📡 Socket event emitted to user_6d5f3d6a-0964-48ab-9980-091f068e6c8c
+--------------------------------------------------
+[2026-01-03T16:26:59.341Z] ✅ Notification created for user 6d5f3d6a-0964-48ab-9980-091f068e6c8c: Pesanan Selesai
+Data: {
+  "notificationId": "D_b5KCtS8ByzhWlUi6qin"
+}
+--------------------------------------------------

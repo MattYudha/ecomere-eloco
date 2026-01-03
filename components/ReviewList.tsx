@@ -59,8 +59,21 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                     <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
                             {/* Avatar Placeholder */}
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 text-[#cb6112] dark:text-orange-200 flex items-center justify-center font-bold text-sm shadow-sm">
-                                {review.user?.email ? review.user.email.charAt(0).toUpperCase() : 'U'}
+                            {/* Avatar or Placeholder */}
+                            <div className="relative shrink-0 w-10 h-10 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 shadow-sm">
+                                {review.user?.image ? (
+                                    <OptimizedImage
+                                        src={review.user.image}
+                                        alt={review.user.email || 'User'}
+                                        width={40}
+                                        height={40}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-[#cb6112] dark:text-orange-200 font-bold text-sm">
+                                        {review.user?.email ? review.user.email.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                )}
                             </div>
 
                             <div>

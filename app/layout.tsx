@@ -12,6 +12,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { WishlistModule } from '@/components/modules/wishlist';
 import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
 import GlobalSoundPlayer from '@/components/GlobalSoundPlayer';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 // Fonts
 const inter = Inter({ subsets: ['latin'] });
@@ -57,6 +58,8 @@ export default function RootLayout({
               <GlobalSoundPlayer />
 
               <Header />
+
+              <MobileBottomNav />
 
               <ClientLayoutWrapper>
                 <main className="pt-[80px] relative z-10 mb-20 min-h-screen">

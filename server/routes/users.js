@@ -22,6 +22,12 @@ router.options('/profile', (req, res) => {
 // Must be before /:id capture
 router.get('/profile', getMe);
 
+const { updateUserProfile } = require('../controllers/users');
+router.put('/profile/:id', updateUserProfile);
+
+const { uploadAvatar } = require('../controllers/users');
+router.post('/avatar/:id', uploadAvatar);
+
 router.route('/:id').get(getUser).put(updateUser).delete(deleteUser);
 
 router.route('/email/:email').get(getUserByEmail);
