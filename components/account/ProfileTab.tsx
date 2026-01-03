@@ -129,7 +129,7 @@ export default function ProfileTab() {
                                 {user.image ? (
                                     <Image
                                         src={user.image}
-                                        alt={user.name}
+                                        alt={user.name || 'User Profile'}
                                         width={128}
                                         height={128}
                                         className="w-full h-full object-cover"
