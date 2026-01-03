@@ -9,6 +9,8 @@ interface User {
     email?: string;
     role?: string;
     image?: string;
+    phone?: string;
+    address?: string;
 }
 
 interface AuthContextType {
