@@ -131,16 +131,11 @@ app.get('/health', (req, res) => {
 // CORS Configuration (STRICT & FIX)
 // =========================
 const allowedOrigins = [
-    'https://elloco.vercel.app',
-    'https://eloco.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001',
-<<<<<<< HEAD
     'https://eloco.vercel.app',
     'https://elloco.vercel.app',
     'https://eloqo.vercel.app', // Added new domain
-=======
->>>>>>> dc4c2429eedbe03ac3b8fa5b89cb8f8b79594845
     process.env.FRONTEND_URL,
     process.env.NEXTAUTH_URL,
 ].filter(Boolean);
