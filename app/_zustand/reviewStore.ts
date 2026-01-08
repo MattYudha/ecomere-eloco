@@ -10,6 +10,7 @@ interface Review {
         id: string;
         email: string;
         role?: string;
+        image?: string | null;
     };
     images?: string[]; // Array of image URLs
 }

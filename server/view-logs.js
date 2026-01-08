@@ -93,6 +93,28 @@ switch (command) {
   case 'security':
     viewLogs(command, lines);
     break;
+  case 'email':
+    // Email logs are JSON events
+    const logFile = path.join(logsDir, 'email.log');
+    if (!fs.existsSync(logFile)) {
+      console.log('No email logs found.');
+      break;
+    }
+    const content = fs.readFileSync(logFile, 'utf8');
+    const recentLogs = content.split('\n').filter(Boolean).slice(-lines);
+
+    console.log(`\n=== Recent Email Logs (last ${lines} events) ===\n`);
+    recentLogs.forEach(line => {
+      try {
+        const log = JSON.parse(line);
+        console.log(`[${log.timestamp}] ${log.level.toUpperCase()}: ${log.event} (${log.type || 'unknown'})`);
+        console.log(`  Order: ${log.orderId || '-'} User: ${log.userId || '-'}`);
+        if (log.error) console.log(`  Error: ${log.error}`);
+      } catch (e) {
+        console.log(line);
+      }
+    });
+    break;
   case 'analyze':
     analyzeSecurity();
     break;
@@ -102,15 +124,16 @@ switch (command) {
 Usage: node view-logs.js [command] [lines]
 
 Commands:
-  access [lines]  - View access logs (default: 50 lines)
-  error [lines]   - View error logs
-  security [lines] - View security logs
-  analyze         - Analyze security logs
-  help            - Show this help
+  access [lines]    - View access logs (default: 50 lines)
+  error [lines]     - View error logs
+  security [lines]  - View security logs
+  email [lines]     - View email logs
+  analyze           - Analyze security logs
+  help              - Show this help
 
 Examples:
   node view-logs.js access 100
-  node view-logs.js security
+  node view-logs.js email 20
   node view-logs.js analyze
     `);
 }

@@ -15,6 +15,7 @@ interface NotificationState {
   error: string | null;
   filters: NotificationFilters;
   selectedIds: string[];
+  soundEnabled: boolean;
 
   // Actions
   setNotifications: (response: NotificationResponse) => void;
@@ -29,6 +30,7 @@ interface NotificationState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setUnreadCount: (count: number) => void;
+  setSoundEnabled: (enabled: boolean) => void;
   clearNotifications: () => void;
 }
 
@@ -48,6 +50,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     sortOrder: 'desc',
   },
   selectedIds: [],
+  soundEnabled: false,
 
   // Actions
   setNotifications: (response: NotificationResponse) =>
@@ -128,6 +131,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   setError: (error: string | null) => set({ error, loading: false }),
 
   setUnreadCount: (unreadCount: number) => set({ unreadCount }),
+
+  setSoundEnabled: (soundEnabled: boolean) => set({ soundEnabled }),
 
   clearNotifications: () =>
     set({

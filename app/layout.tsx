@@ -11,6 +11,8 @@ import SessionTimeoutWrapper from '@/components/SessionTimeoutWrapper';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WishlistModule } from '@/components/modules/wishlist';
 import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
+import GlobalSoundPlayer from '@/components/GlobalSoundPlayer';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 // Fonts
 const inter = Inter({ subsets: ['latin'] });
@@ -53,8 +55,11 @@ export default function RootLayout({
           <Providers>
             <AuthProvider>
               <SessionTimeoutWrapper />
+              <GlobalSoundPlayer />
 
               <Header />
+
+              <MobileBottomNav />
 
               <ClientLayoutWrapper>
                 <main className="pt-[80px] relative z-10 mb-20 min-h-screen">
@@ -62,7 +67,10 @@ export default function RootLayout({
                 </main>
               </ClientLayoutWrapper>
 
-              <Footer />
+              {/* Footer with top spacing */}
+              <div className="mt-20">
+                <Footer />
+              </div>
 
               {/* Floating WhatsApp Button */}
               <FloatingWhatsAppButton />

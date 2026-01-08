@@ -5,6 +5,7 @@ import notificationApi from '@/lib/notification-api';
 import { NotificationFilters } from '@/types/notification';
 import toast from 'react-hot-toast';
 import { useSocket } from './useSocket';
+import { useNotificationSound } from './useNotificationSound';
 
 /**
  * Custom hook for managing notifications
@@ -95,6 +96,7 @@ export const useNotifications = () => {
 
   // Socket Integration
   const socket = useSocket();
+  const { playSound } = useNotificationSound();
 
   useEffect(() => {
     if (!socket) return;
@@ -102,6 +104,7 @@ export const useNotifications = () => {
     socket.on('notification', (newNotification) => {
       // Optimistic Update
       addNotification(newNotification);
+      playSound();
       toast.success(newNotification.title);
 
       // Sync unread count

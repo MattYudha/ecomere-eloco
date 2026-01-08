@@ -15,7 +15,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { CiShoppingBasket, CiUser } from 'react-icons/ci';
 import { IoIosLogOut } from 'react-icons/io';
 import { LuLayoutDashboard } from 'react-icons/lu';
-import { Menu, X, Store } from 'lucide-react';
+import { Menu, X, Store, Building2 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 
 import SearchInput from './SearchInput';
@@ -171,6 +171,15 @@ const Header = () => {
               <Store size={20} />
             </Link>
 
+            {/* About Link - Icon Only for cleaner look */}
+            <Link
+              href="/about"
+              className="hidden md:block text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors p-2 rounded-full hover:bg-orange-50 dark:hover:bg-slate-800"
+              title="Tentang Kami"
+            >
+              <Building2 size={20} />
+            </Link>
+
             {/* User Dropdown */}
             {session?.user ? (
               <div className="relative hidden md:block" ref={dropdownRef}>
@@ -178,7 +187,18 @@ const Header = () => {
                   className="flex items-center gap-2 cursor-pointer text-slate-800 dark:text-white hover:text-[#cb6112] transition-colors px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <CiUser size={24} />
+                  {session.user.image ? (
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600 shadow-sm">
+                      <Image
+                        src={session.user.image}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <CiUser size={24} />
+                  )}
                   {/* Nama user disembunyikan saat scroll agar lebih compact */}
                   <span
                     className={`hidden lg:block font-medium text-sm transition-all duration-300 ${isScrolled ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}
@@ -207,7 +227,7 @@ const Header = () => {
                       </div>
 
                       <Link
-                        href="/my-orders"
+                        href="/account?tab=orders"
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-[#cb6112] transition-all"
                         onClick={() => setIsDropdownOpen(false)}
                       >
@@ -332,9 +352,20 @@ const Header = () => {
                     {/* User Info Card */}
                     {session?.user ? (
                       <div className="bg-[#cb6112]/5 dark:bg-slate-800/50 p-4 rounded-2xl flex items-center gap-4 mb-4 border border-[#cb6112]/10">
-                        <div className="h-10 w-10 bg-gradient-to-br from-[#cb6112] to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                          {session.user.name?.charAt(0).toUpperCase()}
-                        </div>
+                        {session.user.image ? (
+                          <div className="h-10 w-10 relative rounded-full overflow-hidden shadow-lg border-2 border-white dark:border-gray-700">
+                            <Image
+                              src={session.user.image}
+                              alt={session.user.name || 'User'}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-10 w-10 bg-gradient-to-br from-[#cb6112] to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                            {session.user.name?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <p className="font-bold text-gray-900 dark:text-white text-base">
                             {session.user.name}
@@ -361,6 +392,13 @@ const Header = () => {
                       >
                         Shop
                       </Link>
+                      <Link
+                        href="/about"
+                        onClick={closeMobileMenu}
+                        className="block p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
+                      >
+                        Tentang Kami
+                      </Link>
 
 
 
@@ -379,7 +417,7 @@ const Header = () => {
 
                       {session?.user && (
                         <Link
-                          href="/my-orders"
+                          href="/account?tab=orders"
                           onClick={closeMobileMenu}
                           className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 text-lg font-medium transition-colors"
                         >

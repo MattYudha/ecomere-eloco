@@ -6,6 +6,8 @@ import { FaStar, FaCheckCircle, FaTrash } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import ReviewSkeleton from '@/components/ReviewSkeleton';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import { IMAGE_SIZES, getSizes } from '@/lib/imageUtils';
 
 interface ReviewListProps {
     productId: string;
@@ -57,8 +59,21 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                     <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
                             {/* Avatar Placeholder */}
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 text-[#cb6112] dark:text-orange-200 flex items-center justify-center font-bold text-sm shadow-sm">
-                                {review.user?.email ? review.user.email.charAt(0).toUpperCase() : 'U'}
+                            {/* Avatar or Placeholder */}
+                            <div className="relative shrink-0 w-10 h-10 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 shadow-sm">
+                                {review.user?.image ? (
+                                    <OptimizedImage
+                                        src={review.user.image}
+                                        alt={review.user.email || 'User'}
+                                        width={40}
+                                        height={40}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-[#cb6112] dark:text-orange-200 font-bold text-sm">
+                                        {review.user?.email ? review.user.email.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -106,11 +121,14 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                         <div className="pl-[3.25rem] mt-3 flex flex-wrap gap-2">
                             {review.images.map((imgUrl, idx) => (
                                 <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer hover:opacity-90 active:scale-95 transition-all">
-                                    <Image
+                                    <OptimizedImage
                                         src={imgUrl}
                                         alt={`Review image ${idx + 1}`}
-                                        fill
-                                        className="object-cover"
+                                        width={IMAGE_SIZES.THUMBNAIL}
+                                        height={IMAGE_SIZES.THUMBNAIL}
+                                        sizes="80px"
+                                        className="object-cover w-full h-full"
+                                        loading="lazy"
                                         onClick={() => window.open(imgUrl, '_blank')}
                                     />
                                 </div>

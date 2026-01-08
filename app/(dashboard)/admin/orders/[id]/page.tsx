@@ -2,6 +2,7 @@
 import apiClient from '@/lib/api';
 import { isValidEmailAddressFormat, isValidNameOrLastname } from '@/lib/utils';
 import { formatPrice } from '@/lib/utils';
+import { COURIER_OPTIONS, COURIER_SERVICES, isKnownCourier } from '@/lib/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -21,8 +22,10 @@ import {
     Save,
     ArrowLeft,
     Info,
+    Printer,
 } from 'lucide-react';
 import OrderStatusCard from '@/components/OrderStatusCard';
+import PrintableShippingLabel from '@/components/PrintableShippingLabel';
 
 interface OrderProduct {
     id: string;
@@ -41,6 +44,28 @@ interface OrderProduct {
         inStock: number;
         categoryId: string;
     };
+}
+
+interface Order {
+    id: string;
+    adress: string;
+    apartment: string;
+    company: string;
+    dateTime: string;
+    updatedAt: string;
+    email: string;
+    lastname: string;
+    name: string;
+    phone: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    orderNotice: string;
+    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+    total: number;
+    courier: string | null;
+    courierService: string | null;
+    trackingNumber: string | null;
 }
 
 const AdminSingleOrder = () => {
@@ -62,8 +87,12 @@ const AdminSingleOrder = () => {
         orderNotice: '',
         status: 'processing',
         total: 0,
+        courier: null,
+        courierService: null,
+        trackingNumber: null,
     });
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false);
     const params = useParams<{ id: string }>();
     const router = useRouter();
 
@@ -188,6 +217,22 @@ const AdminSingleOrder = () => {
         }
     };
 
+    const handlePrintLabel = () => {
+        // Validate courier selected
+        if (!order.courier) {
+            toast.error('Silakan pilih kurir terlebih dahulu');
+            return;
+        }
+
+        setIsPrinting(true);
+        // Small delay to ensure component renders before printing
+        setTimeout(() => {
+            window.print();
+            setIsPrinting(false);
+        }, 100);
+    };
+
+
     const GlassPanel = ({
         children,
         className,
@@ -274,6 +319,20 @@ const AdminSingleOrder = () => {
                             <Save size={16} />
                             {isUpdating ? 'Updating...' : 'Update Order'}
                         </button>
+                        <button
+                            onClick={handlePrintLabel}
+                            disabled={isPrinting || !order.courier}
+                            className={`
+                                flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition shadow-md
+                                ${!order.courier || isPrinting
+                                    ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }
+                            `}
+                        >
+                            <Printer size={16} />
+                            {isPrinting ? 'Generating...' : 'Cetak Label'}
+                        </button>
                     </div>
                 </div>
 
@@ -359,7 +418,69 @@ const AdminSingleOrder = () => {
                                     value={order.postalCode}
                                     field="postalCode"
                                 />
+                                {/* Courier Dropdown with backward compatibility */}
+                                <div>
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <Truck size={16} />
+                                        Kurir Pengiriman *
+                                    </label>
+                                    <select
+                                        value={order.courier && isKnownCourier(order.courier) ? order.courier : 'OTHER'}
+                                        onChange={(e) => {
+                                            handleInputChange('courier', e.target.value === 'OTHER' ? '' : e.target.value);
+                                            handleInputChange('courierService', ''); // Reset service
+                                        }}
+                                        className="w-full bg-gray-100/80 dark:bg-white/5 border-2 border-transparent focus:border-purple-500 focus:ring-0 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-200 transition"
+                                    >
+                                        <option value="">-- Pilih Kurir --</option>
+                                        {COURIER_OPTIONS.map(courier => (
+                                            <option key={courier.value} value={courier.value}>
+                                                {courier.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {order.courier && !isKnownCourier(order.courier) && (
+                                        <p className="text-xs text-amber-600 mt-1">
+                                            ⚠️ Kurir &quot;{order.courier}&quot; tidak ada di daftar. Pilih &quot;Kurir Lainnya&quot; untuk edit.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Service Dropdown (dynamic based on courier) */}
+                                <div>
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <Truck size={16} />
+                                        Layanan Kurir
+                                    </label>
+                                    <select
+                                        value={order.courierService || ''}
+                                        onChange={(e) => handleInputChange('courierService', e.target.value)}
+                                        disabled={!order.courier || order.courier === 'OTHER'}
+                                        className="w-full bg-gray-100/80 dark:bg-white/5 border-2 border-transparent focus:border-purple-500 focus:ring-0 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <option value="">-- Pilih Layanan --</option>
+                                        {order.courier && COURIER_SERVICES[order.courier]?.map(service => (
+                                            <option key={service} value={service}>
+                                                {service}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <InputField
+                                    icon={<Hash size={16} />}
+                                    label="Nomor Resi (Optional)"
+                                    value={order.trackingNumber}
+                                    field="trackingNumber"
+                                />
                             </div>
+                            {!order.courier && (
+                                <div className="px-6 pb-4">
+                                    <p className="text-xs text-red-500">
+                                        * Pilih kurir terlebih dahulu untuk mencetak label
+                                    </p>
+                                </div>
+                            )}
                         </GlassPanel>
 
                         <GlassPanel>
@@ -460,6 +581,11 @@ const AdminSingleOrder = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Printable Label - Only visible when printing */}
+            {isPrinting && order && (
+                <PrintableShippingLabel order={order} />
+            )}
         </div>
     );
 };

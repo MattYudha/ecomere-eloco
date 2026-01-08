@@ -52,7 +52,7 @@ const FloatingWhatsAppButton = () => {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    className="fixed bottom-6 right-6 z-[9998] flex items-center gap-3"
+                    className="fixed bottom-24 md:bottom-6 right-6 z-[9998] flex items-center gap-3"
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
                 >

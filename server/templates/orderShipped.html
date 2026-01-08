@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesanan Dikirim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #cb6112 0%, #e67e22 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .order-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #cb6112;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        
+        .order-box h3 {
+            color: #cb6112;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .order-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .order-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .order-detail .label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .order-detail .value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .tracking-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed #cb6112;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .tracking-box h3 {
+            color: #cb6112;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .tracking-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            margin: 10px 5px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #cb6112;
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #a84e0e;
+        }
+        
+        .btn-secondary {
+            background-color: #25D366;
+            color: #ffffff;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1da851;
+        }
+        
+        .shipping-info {
+            background-color: #fff8f0;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        
+        .shipping-info h4 {
+            color: #cb6112;
+            margin-bottom: 10px;
+        }
+        
+        .shipping-info p {
+            color: #555;
+            margin: 5px 0;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+            margin: 30px 0;
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .footer a {
+            color: #cb6112;
+            text-decoration: none;
+        }
+        
+        .social-links {
+            margin: 20px 0;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #666;
+            text-decoration: none;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .tracking-number {
+                font-size: 20px;
+                letter-spacing: 1px;
+            }
+            
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚚 Pesanan Anda Sudah Dikirim!</h1>
+            <p>Paket dalam perjalanan menuju Anda</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">Halo <strong>{{userName}}</strong>,</p>
+            
+            <p class="message">
+                Kabar gembira! Pesanan Anda telah dikemas dengan hati-hati dan sudah dalam perjalanan. 
+                Kami pastikan paket Anda akan sampai dengan aman dan sesuai waktu yang dijanjikan.
+            </p>
+            
+            <!-- Order Details -->
+            <div class="order-box">
+                <h3>📦 Detail Pesanan</h3>
+                <div class="order-detail">
+                    <span class="label">Nomor Pesanan:</span>
+                    <span class="value">#{{orderId}}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="label">Total Pembayaran:</span>
+                    <span class="value">{{totalAmount}}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="label">Kurir:</span>
+                    <span class="value">{{courier}} - {{courierService}}</span>
+                </div>
+            </div>
+            
+            <!-- Tracking Information -->
+            <div class="tracking-box">
+                <h3>🔍 Nomor Resi Pengiriman</h3>
+                <div class="tracking-number">{{trackingNumber}}</div>
+                <p style="color: #666; margin-top: 10px;">
+                    Gunakan nomor resi ini untuk melacak paket Anda
+                </p>
+                <a href="{{trackingUrl}}" class="btn btn-primary" style="margin-top: 15px;">
+                    Lacak Paket Sekarang
+                </a>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="shipping-info">
+                <h4>📍 Alamat Pengiriman</h4>
+                <p><strong>{{customerName}}</strong></p>
+                <p>{{shippingAddress}}</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Call to Action -->
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="color: #555; margin-bottom: 20px;">
+                    Ada pertanyaan tentang pesanan Anda? Hubungi kami!
+                </p>
+                <a href="https://wa.me/6289514538998?text=Halo,%20saya%20ingin%20menanyakan%20pesanan%20%23{{orderId}}" 
+                   class="btn btn-secondary">
+                    💬 Chat WhatsApp
+                </a>
+                <a href="{{shopUrl}}/my-orders" class="btn btn-primary">
+                    📱 Lihat Pesanan Saya
+                </a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Tips -->
+            <div style="background-color: #f0f7ff; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h4 style="color: #0066cc; margin-bottom: 10px;">💡 Tips Menerima Paket:</h4>
+                <ul style="color: #555; padding-left: 20px;">
+                    <li>Pastikan ada yang menerima paket di alamat tujuan</li>
+                    <li>Siapkan KTP/identitas untuk verifikasi</li>
+                    <li>Periksa kondisi paket sebelum menerima</li>
+                    <li>Simpan nomor resi sampai paket diterima</li>
+                </ul>
+            </div>
+            
+            <p class="message">
+                Terima kasih telah berbelanja dengan kami. Kami berharap Anda puas dengan produk yang dipesan! 🎉
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Eloco Shop</strong></p>
+            <p>Email ini dikirim otomatis, mohon tidak membalas email ini.</p>
+            <p>Untuk bantuan, hubungi kami melalui WhatsApp atau kunjungi website kami.</p>
+            
+            <div class="social-links">
+                <a href="{{shopUrl}}">🌐 Website</a>
+                <a href="https://wa.me/6289514538998">💬 WhatsApp</a>
+            </div>
+            
+            <p style="margin-top: 20px; color: #999; font-size: 12px;">
+                &copy; {{currentYear}} Eloco Shop. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

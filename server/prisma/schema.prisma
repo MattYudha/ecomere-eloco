@@ -101,6 +101,12 @@ model Customer_order {
   shippingZone      String?
   isShippingEstimated Boolean                @default(true)
   isDeleted         Boolean                  @default(false)
+  
+  // Shipping label fields
+  courier         String?  // NULL = not selected yet (force admin to choose)
+  courierService  String?  // REG, YES, OKE, etc
+  trackingNumber  String?  // Manual input by admin
+  
   products          customer_order_product[]
   reviews           Review[]
 }
@@ -235,4 +241,21 @@ enum BulkUploadItemStatus {
   CREATED
   UPDATED
   ERROR
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String
+  action       String   // 'PRINT_LABEL', 'BULK_PRINT_LABEL'
+  orderId      String?  // Single order ID
+  orderIds     Json?    // Bulk order IDs array
+  batchId      String?  @unique // Idempotency key for bulk
+  requestId    String?  // Client request ID
+  metadata     Json?    // Stats, failures, courier, etc
+  createdAt    DateTime @default(now())
+  
+  @@index([userId])
+  @@index([action])
+  @@index([batchId])
+  @@index([createdAt])
 }

@@ -68,6 +68,8 @@ const bulkUploadRouter = require('./routes/bulkUpload');
 const dashboardStatsRouter = require('./routes/dashboardStats');
 const authRouter = require('./routes/auth');
 const reviewsRouter = require('./routes/reviews');
+// Use lightweight admin router (no Puppeteer/label generation)
+const adminRouter = require('./routes/admin-lite');
 
 // =========================
 // Middleware & Utils
@@ -125,50 +127,49 @@ app.get('/health', (req, res) => {
 // =========================
 // CORS Configuration (SAFE)
 // =========================
+// =========================
+// CORS Configuration (STRICT & FIX)
+// =========================
 const allowedOrigins = [
+    'https://elloco.vercel.app',
+    'https://eloco.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001',
+<<<<<<< HEAD
     'https://eloco.vercel.app',
     'https://elloco.vercel.app',
     'https://eloqo.vercel.app', // Added new domain
+=======
+>>>>>>> dc4c2429eedbe03ac3b8fa5b89cb8f8b79594845
     process.env.FRONTEND_URL,
     process.env.NEXTAUTH_URL,
 ].filter(Boolean);
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // allow non-browser / server-to-server (curl, health checks, etc.)
+        // allow non-browser / server-to-server
         if (!origin) return callback(null, true);
 
-        const ok =
-            allowedOrigins.includes(origin) ||
-            // opsi: subdomain vercel preview
-            origin.endsWith('.vercel.app');
-
-        if (!ok) {
+        if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+            callback(null, true);
+        } else {
             console.warn(`[CORS BLOCKED] Origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
         }
-
-        // PENTING: jangan callback(new Error(...)) karena itu jadi 500
-        return callback(null, ok);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'X-Request-Id',
-    ],
-    optionsSuccessStatus: 204,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Request-Id'],
+    exposedHeaders: ['X-Request-Id'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 };
 
-// CORS harus sebelum routes
-app.use(cors(corsOptions));
+// WAJIB: Handle preflight OPTIONS explicitly agar tidak 502/404 di Railway
+app.options('*', cors(corsOptions));
 
-// Handle preflight dengan benar (jangan manual sendStatus tanpa header)
-// Handle preflight dengan benar (jangan manual sendStatus tanpa header)
-app.options(/.*/, cors(corsOptions));
+// Apply CORS middleware
+app.use(cors(corsOptions));
 
 // =========================
 // Core Middlewares
@@ -229,6 +230,8 @@ app.use('/api/bulk-upload', bulkUploadRouter);
 app.use('/api/dashboard-stats', dashboardStatsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewsRouter);
+// Admin routes (lightweight version - CSV export only, no label printing)
+app.use('/api/admin', adminRouter);
 
 // =========================
 // 404 Handler
