@@ -84,9 +84,7 @@ export const CartModule = () => {
         return products.map((product) => ({
             id: product.id,
             title: product.title,
-            mainImage: product.image?.startsWith('http')
-                ? product.image
-                : `/${product.image?.replace(/^\//, '') || 'product_placeholder.jpg'}`,
+            mainImage: product.image || '/product_placeholder.jpg',
             price: product.price,
             quantity: product.amount, // Use 'amount' from ProductInCart type
         }));
@@ -215,14 +213,7 @@ export const CartModule = () => {
                                                     <Image
                                                         width={128}
                                                         height={128}
-                                                        src={
-                                                            product?.image
-                                                                ? product.image.startsWith('http')
-                                                                    ? product.image
-                                                                    : `/${product.image.replace(/^\//, '')}`
-                                                                : '/product_placeholder.jpg'
-                                                        }
-                                                        alt={sanitize(product.title)}
+                                                        src={product?.image || '/product_placeholder.jpg'} alt={sanitize(product.title)}
                                                         className="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                                                     />
                                                 </div>

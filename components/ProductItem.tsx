@@ -32,9 +32,7 @@ type ProductItemProps = {
 };
 
 const ProductItem = ({ product }: ProductItemProps) => {
-  const imageUrl = product.mainImage
-    ? (product.mainImage.startsWith('http') ? product.mainImage : `/${product.mainImage.replace(/^\//, '')}`)
-    : '/product_placeholder.jpg';
+  const imageUrl = product.mainImage || '/product_placeholder.jpg';
   const router = useRouter();
   const { addToCart } = useProductStore();
   const { data: session } = useAuth();

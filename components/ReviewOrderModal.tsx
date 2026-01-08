@@ -151,7 +151,7 @@ const ReviewOrderModal: React.FC<ReviewOrderModalProps> = ({ isOpen, onClose, or
                                         <div className="p-4 flex gap-4 items-center">
                                             <div className="relative w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                                                 <Image
-                                                    src={item.product.mainImage?.startsWith('http') ? item.product.mainImage : item.product.mainImage?.startsWith('/') ? item.product.mainImage : `/${item.product.mainImage}`}
+                                                    src={item.product?.mainImage || '/product_placeholder.jpg'}
                                                     alt={sanitize(item.product.title)}
                                                     fill
                                                     className="object-contain p-1"
