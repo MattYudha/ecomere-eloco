@@ -1287,3 +1287,30 @@ Data: {
 --------------------------------------------------
 [2025-12-26T03:11:51.503Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
 --------------------------------------------------
+[2025-12-26T11:50:17.211Z] Order validation passed
+Data: {
+  "isValid": true,
+  "email": "jhoncena@gmail.com",
+  "userIdFromBody": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a"
+}
+--------------------------------------------------
+[2025-12-26T11:50:17.786Z] 🔍 Using provided userId: 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-26T11:50:17.842Z] ✅ Found user by ID: jhoncena@gmail.com
+--------------------------------------------------
+[2025-12-26T11:50:17.843Z] Attempting to create notification
+Data: {
+  "userId": "0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a",
+  "status": "pending",
+  "orderId": "93b8d638-2b73-4110-92a0-75ba56725b72"
+}
+--------------------------------------------------
+[2025-12-26T11:50:18.234Z] 📡 Socket event emitted to user_0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a
+--------------------------------------------------
+[2025-12-26T11:50:18.234Z] ✅ Notification created for user 0cbd0d2d-72c9-4a5c-9782-a88c054f1a4a: Pesanan Update: Pending ⏳
+Data: {
+  "notificationId": "8z7NT_j955nEYezPGDdNX"
+}
+--------------------------------------------------
+[2025-12-26T11:50:18.235Z] 📧 Order confirmation notification sent to user: jhoncena@gmail.com
+--------------------------------------------------

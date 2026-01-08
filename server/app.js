@@ -130,6 +130,7 @@ const allowedOrigins = [
     'http://localhost:3001',
     'https://eloco.vercel.app',
     'https://elloco.vercel.app',
+    'https://eloqo.vercel.app', // Added new domain
     process.env.FRONTEND_URL,
     process.env.NEXTAUTH_URL,
 ].filter(Boolean);
